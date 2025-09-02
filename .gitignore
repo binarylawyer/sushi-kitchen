@@ -1,21 +1,20 @@
-# ─────────────────────────────────────────────────────────────
-# Sushi Kitchen – .gitignore (curated)
-# Keep this file tracked. Do NOT list `.gitignore` here.
-# Last updated: 2025-09-02
-# ─────────────────────────────────────────────────────────────
+# ──────────────────────────────────────────────
+# Sushi Kitchen – .gitignore
+# Last updated: 2025-09-01
+# ──────────────────────────────────────────────
 
-# ----- CRITICAL: Secrets / env -----
+### CRITICAL: Secrets / env
 .env
 .env.*
 *.env
 *.env.*
 *.env.local
 
-# ----- Models / large artifacts -----
+### CRITICAL: Models / large artifacts
 models/
 models/**
 
-# ----- Local data volumes (persisted state; never commit) -----
+### CRITICAL: Local data volumes (never commit state)
 supabase/volumes/
 n8n_data/
 portainer_data/
@@ -30,15 +29,19 @@ langfuse_clickhouse_data/
 langfuse_minio_data/
 langfuse_postgres_data/
 memgraph/
-weaviate-data/
 comfyui/output/
 
-# ----- IDE / OS caches (but keep shared editor configs we ship) -----
+### Compose files
+# Only ignore local overrides (these are machine-specific)
+docker-compose.override.yml
+docker-compose.local.yml
+
+# DO NOT ignore our official compose files
+!compose/docker-compose.*.yml
+!compose/docker-compose.*.yaml
+
+### IDE / Editor junk
 .idea/
-# We intentionally keep .vscode/ committed because we ship tasks & launch configs
-# .vscode/         ← do NOT ignore; it's part of the repo
-# We intentionally keep .devcontainer/ committed
-# .devcontainer/   ← do NOT ignore; it's part of the repo
 .DS_Store
 Thumbs.db
 *.log
@@ -48,7 +51,7 @@ Thumbs.db
 .tmp/
 .vscode-test/
 
-# ----- Python -----
+### Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -72,7 +75,7 @@ pip-delete-this-directory.txt
 .pyre/
 .ruff_cache/
 
-# ----- Node / JS -----
+### Node / JS
 node_modules/
 bower_components/
 web_modules/
@@ -93,24 +96,14 @@ dist/
 build/
 *.tsbuildinfo
 
-# ----- Containers / Docker -----
+### Docker / Container
 .docker/
 docker-volumes/
 .docker-sync/
 docker/data/
 docker/logs/
-# allow official compose files; only ignore local overrides
-docker-compose.override.yml
-docker-compose.local.yml
 
-# IMPORTANT: do NOT ignore our compose files or CI!
-# !compose/docker-compose.*.yml
-# !.github/
-# Keep lockfiles (better reproducibility)
-# package-lock.json
-# yarn.lock
-
-# ----- Misc tools -----
+### Misc tools / docs
 .site/
 docs/_build/
 .ipynb_checkpoints
@@ -118,7 +111,7 @@ docs/_build/
 *.swo
 *.swn
 
-# ----- System files -----
+### System files
 .AppleDouble
 .LSOverride
 Icon
@@ -129,7 +122,8 @@ Icon
 .TemporaryItems
 .Trashes
 .apdisk
-# Linux
+
+# Linux junk
 .fuse_hidden*
 .directory
 .Trash-*
