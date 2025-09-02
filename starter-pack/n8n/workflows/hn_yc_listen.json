@@ -1,0 +1,36 @@
+{
+  "name": "Hacker News / YC Listen \u2014 Market Signals",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://hn.algolia.com/api/v1/search?query=vendor%20lock-in&tags=story"
+      },
+      "id": "http",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "functionCode": "const items = $json.hits.slice(0,25).map(h => ({ json: { title: h.title, url: h.url, points: h.points } })); return items;"
+      },
+      "id": "map",
+      "name": "Map HN hits",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Map HN hits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "Reddit Listen \u2014 Market Signals",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "reddit-webhook"
+      },
+      "id": "webhook",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "functionCode": "return [{ json: { title: $json.title, url: $json.url, author: $json.author }}];"
+      },
+      "id": "map1",
+      "name": "Map Fields",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Map Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
