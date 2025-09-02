@@ -1,0 +1,116 @@
+# Example docker-compose file with sushi roll profiles
+#
+# This file illustrates how you might tag each service with a Docker Compose
+# profile corresponding to the Sushi Kitchen rolls (hosomaki, futomaki,
+# temaki, uramaki, dragon, agent, spider, gunkanmaki, tamago).  The core
+# services are tagged with `hosomaki` and optional services are tagged
+# accordingly.  When you start the stack with `docker compose --profile
+# futomaki up -d`, only the services with that profile (plus the core)
+# will be enabled.
+
+version: "3.9"
+
+services:
+  # Core (Hosomaki)
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    profiles: ["hosomaki"]
+
+  neo4j:
+    image: neo4j:5
+    environment:
+      NEO4J_AUTH: ${NEO4J_USER}/${NEO4J_PASSWORD}
+    profiles: ["hosomaki", "futomaki"]  # core + rag (graph)
+
+  nats:
+    image: nats:2
+    command: ["-js"]
+    profiles: ["hosomaki"]
+
+  n8n:
+    image: n8nio/n8n:1.81.1
+    profiles: ["hosomaki"]
+
+  api:
+    build:
+      context: ./services/api
+    profiles: ["hosomaki"]
+
+  # RAG pack (Futomaki)
+  anythingllm:
+    image: anythingllm/anythingllm:latest
+    profiles: ["futomaki"]
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    profiles: ["futomaki"]
+
+  memgraph:
+    image: memgraph/memgraph-platform:latest
+    profiles: ["futomaki"]
+
+  arangodb:
+    image: arangodb/arangodb:latest
+    profiles: ["futomaki"]
+
+  # Speech pack (Temaki)
+  whisper:
+    image: ghcr.io/openai/whisper-api:latest
+    profiles: ["temaki"]
+
+  piper:
+    image: rhasspy/piper:latest
+    profiles: ["temaki"]
+
+  # Image pack (Uramaki)
+  comfyui:
+    image: comfyui/comfyui:latest
+    profiles: ["uramaki"]
+
+  # Observability pack (Dragon)
+  prometheus:
+    image: prom/prometheus:latest
+    profiles: ["dragon"]
+
+  grafana:
+    image: grafana/grafana:latest
+    profiles: ["dragon"]
+
+  langfuse:
+    image: ghcr.io/langfuse/langfuse:latest
+    profiles: ["dragon"]
+
+  # Agentic pack (Agent)
+  flowise:
+    image: flowiseai/flowise:latest
+    profiles: ["agent"]
+
+  dify:
+    image: ghcr.io/langgenius/dify:latest
+    profiles: ["agent"]
+
+  letta:
+    image: yourorg/letta:latest
+    profiles: ["agent"]
+
+  # MLops pack (Spider)
+  mlflow:
+    image: mlflow/mlflow:latest
+    profiles: ["spider"]
+
+  # Inference‑pro pack (Gunkanmaki)
+  vllm:
+    image: vllm/vllm:latest
+    profiles: ["gunkanmaki"]
+
+  # Dev‑tools pack (Tamago)
+  vscode:
+    image: coder/code-server:latest
+    profiles: ["tamago"]
+
+  # All‑in pack (Omakase) does not require a separate profile; use
+  # --profile omakase or leave profiles unspecified to start everything.
