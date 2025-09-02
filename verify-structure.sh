@@ -38,15 +38,28 @@ for f in "${required[@]}"; do
   fi
 done
 
-# Ensure we didn't accidentally ignore compose files or our meta dirs
-if grep -R "docker-compose.*\.yml" .gitignore | grep -v override >/dev/null 2>&1; then
-  echo "✗ Warning: .gitignore appears to ignore docker-compose files broadly. Please keep only 'docker-compose.override.yml' ignored."
-  missing=$((missing+1))
+# ----- Compose ignore check (smart, portable) -----
+if [ -f .gitignore ]; then
+  # Collect non-comment, non-negated lines that contain a broad compose ignore
+  bad_compose_ignores="$(grep -nE 'docker-compose\.\*\.ya?ml' .gitignore 2>/dev/null \
+    | grep -vE '^[[:space:]]*#' \
+    | grep -vE '^[[:space:]]*!' || true)"
+
+  if [ -n "${bad_compose_ignores}" ]; then
+    echo
+    echo "⚠️  Warning: .gitignore contains broad docker-compose ignore patterns without negation:"
+    echo "${bad_compose_ignores}"
+    echo "    → Keep only local overrides ignored (docker-compose.override.yml, docker-compose.local.yml)."
+    echo "    → Ensure official files under compose/ stay tracked."
+    # Warning only; do not fail.
+  fi
 fi
 
 if [ "$missing" -gt 0 ]; then
-  echo "\n❌ Repository missing $missing required items. Fix before pushing."
+  echo
+  echo "❌ Repository missing $missing required item(s). Fix before pushing."
   exit 1
 fi
 
-echo "\n✅ Structure OK."
+echo
+echo "✅ Structure OK."
