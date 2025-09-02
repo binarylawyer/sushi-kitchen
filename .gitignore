@@ -1,554 +1,136 @@
-# .gitignore file for Sushi Kitchen
-# For suggestions or improvements please contact us using support@sushi.legal
-# Generated on 2025-08-31
-# Includes: docker, python, node, powershell, sql, visual_studio, windows, macos, linux
+# ─────────────────────────────────────────────────────────────
+# Sushi Kitchen – .gitignore (curated)
+# Keep this file tracked. Do NOT list `.gitignore` here.
+# Last updated: 2025-09-02
+# ─────────────────────────────────────────────────────────────
 
-### Universal ###
-# Common files that should be ignored in all projects
-
-# Logs
-*.log
-# Temporary files
-*.tmp
-*~
-
-### Sushi Kitchen Custom Rules ###
-# This is the most important section. It ignores the large, unique,
-# or sensitive files and folders specific to our AI stack.
-
-# CRITICAL: Ignore all local environment variables and secrets
+# ----- CRITICAL: Secrets / env -----
 .env
+.env.*
 *.env
 *.env.*
 *.env.local
 
-# CRITICAL: Never commit large AI model files to Git
-/models/
+# ----- Models / large artifacts -----
+models/
+models/**
 
+# ----- Local data volumes (persisted state; never commit) -----
+supabase/volumes/
+n8n_data/
+portainer_data/
+weaviate-data/
+qdrant_storage/
+neo4j/data/
+redis/data/
+prometheus_data/
+anythingllm_storage/
+arangodb/
+langfuse_clickhouse_data/
+langfuse_minio_data/
+langfuse_postgres_data/
+memgraph/
+weaviate-data/
+comfyui/output/
 
+# ----- IDE / OS caches (but keep shared editor configs we ship) -----
+.idea/
+# We intentionally keep .vscode/ committed because we ship tasks & launch configs
+# .vscode/         ← do NOT ignore; it's part of the repo
+# We intentionally keep .devcontainer/ committed
+# .devcontainer/   ← do NOT ignore; it's part of the repo
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*~
+.cache/
+.tmp/
+.vscode-test/
 
-# Ignore Docker data volumes to prevent committing databases, etc.
-/supabase/volumes/
-/n8n_data/
-/portainer_data/
-/weaviate-data/
-/qdrant_storage/
-/neo4j/data/
-/redis/data/
+# ----- Python -----
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+dist/
+build/
+*.egg-info/
+.eggs/
+.venv
+venv/
+ENV/
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+.mypy_cache/
+.pytype/
+.pyre/
+.ruff_cache/
 
-# Add other persistent data folders as needed
-
-# Ignore application-specific output folders
-/comfyui/output/
-
-# Ignore local configuration overrides
-docker-compose.override.yml
-*.bak
-
-# Environment files (containing secrets, API keys, credentials)
-#  .env
-#  *.env
-#  .env.*
-
-# Local configuration that shouldn't be shared
-*.local
-
-# --- Ignore All Docker Data Volumes ---
-# This ensures no local database state, user uploads, or other
-# persistent data from any profile is ever committed to Git.
-
-/anythingllm_storage/
-/arangodb/
-/langfuse_clickhouse_data/
-/langfuse_minio_data/
-/langfuse_postgres_data/
-/memgraph/
-/neo4j/data/
-/n8n_data/
-/portainer_data/
-/prometheus_data/
-/qdrant_storage/
-/redis/data/
-/supabase/volumes/
-/weaviate-data/
-# Add other persistent data folders here if created
-
-### Docker ###
-# Docker environment specific files and directories
-
-# Common directories to exclude
+# ----- Node / JS -----
 node_modules/
 bower_components/
-target/
+web_modules/
+.npm/
+.pnpm-debug.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.eslintcache
+.stylelintcache
+.parcel-cache
+.next/
+.nuxt/
+.svelte-kit/
+coverage/
+.nyc_output/
 dist/
-
 build/
-.cache/
-# Log files
-*.log
-logs/
+*.tsbuildinfo
 
-# Git-related files
-.git/
-.gitignore
-
-# Docker-specific files
-Dockerfile.*
-
+# ----- Containers / Docker -----
 .docker/
-docker-compose.override.yaml
-docker-compose.*.yml
-docker-compose.*.yaml
-*.env.docker
-
 docker-volumes/
 .docker-sync/
 docker/data/
 docker/logs/
-docker-compose.prod.yml
-
-docker-compose.dev.yml
+# allow official compose files; only ignore local overrides
+docker-compose.override.yml
 docker-compose.local.yml
-# CI/CD-related files
-.dockerignore
 
-# Temporary files
-*.tmp
-*.swp
-# IDE-specific files
+# IMPORTANT: do NOT ignore our compose files or CI!
+# !compose/docker-compose.*.yml
+# !.github/
+# Keep lockfiles (better reproducibility)
+# package-lock.json
+# yarn.lock
 
-.idea/
-.vscode/
-
-### Python ###
-# Python compiled files, virtual environments, and cache
-
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-
-pypackages/
-build/
-develop-eggs/
-dist/
-downloads/
-
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-
-.installed.cfg
-*.egg
-MANIFEST
-.venv
-env/
-
-venv/
-ENV/
-.pytest_cache/
-.coverage
-htmlcov/
-
-# PyInstaller
-*.manifest
-*.spec
-# Installer logs
-pip-log.txt
-
-pip-delete-this-directory.txt
-# Unit test / coverage reports
-.tox/
-.nox/
-.coverage.*
-
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-
-cover/
-# Translations
-*.mo
-*.pot
-
-# Django
-
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask
-# Ignore the Flask instance folder which can contain secrets
-instance/
-
-.webassets-cache
-# Scrapy
-.scrapy
-# Sphinx
+# ----- Misc tools -----
+.site/
 docs/_build/
-
-# PyBuilder
-.pybuilder/
-target/
-# Jupyter Notebook
 .ipynb_checkpoints
+*.swp
+*.swo
+*.swn
 
-# IPython
-profile_default/
-ipython_config.py
-# pyenv
-#.python-version
-
-# pipenv
-#Pipfile.lock
-# poetry
-#poetry.lock
-# pdm
-
-.pdm.toml
-__pypackages__/
-# Celery
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath
-*.sage.py
-# Spyder
-.spyderproject
-.spyproject
-
-# Rope
-.ropeproject
-# mkdocs
-/site
-# mypy
-
-.mypy_cache/
-.dmypy.json
-dmypy.json
-# Pyre
-.pyre/
-
-# pytype
-.pytype/
-# Cython
-cython_debug/
-# Poetry
-
-poetry.toml
-# ruff
-.ruff_cache/
-# LSP
-pyrightconfig.json
-
-*.sage.py
-.pdm.toml
-profile_default/
-.nox/
-.spyproject
-
-site/
-
-### Node ###
-# Node.js dependency directory, logs, and environment files
-
-# Dependencies
-node_modules/
-jspm_packages/
-bower_components/
-web_modules/
-
-# Logs
-logs
-*.log
-*.launch
-connect.lock/
-
-libpeerconnection.log
-.history/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-lerna-debug.log*
-.pnpm-debug.log*
-# Diagnostic reports
-report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
-# Runtime data
-
-pids
-*.pid
-*.seed
-*.pid.lock
-# Environment
-
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
-
-# Package management
-
-.npm
-package-lock.json
-yarn.lock
-.yarn-integrity
-.yarn/cache
-
-.yarn/unplugged
-.yarn/build-state.yml
-.yarn/install-state.gz
-.pnp.*
-# Coverage & Test
-
-coverage/
-lib-cov
-*.lcov
-.nyc_output
-# Build output
-
-dist/
-build/
-.next/
-out/
-.nuxt
-
-.output
-# Cache & Temporary
-.cache/
-.temp/
-.grunt
-
-.lock-wscript
-.fusebox/
-.dynamodb/
-.tern-port
-.vscode-test
-
-.node_repl_history
-.webpack/
-# TypeScript
-*.tsbuildinfo
-# Optional REPL history
-
-.node_repl_history
-# Additional caches
-.eslintcache
-.stylelintcache
-.parcel-cache
-
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
-# Misc
-
-*.tgz
-.serverless/
-.vuepress/dist
-.temp
-.docusaurus
-
-.svelte-kit
-
-### Powershell ###
-# powershell specific files
-
-*.ps1~
-
-### Sql ###
-# sql specific files
-
-*.sql.bak
-*.sql~
-
-### Visual_studio ###
-# visual_studio editor specific files
-
-# Visual Studio
-.vs/
-*.suo
-*.user
-*.userosscache
-
-*.sln.docstates
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-
-x64/
-x86/
-build/
-bld/
-[Bb]in/
-
-[Oo]bj/
-[Ll]og/
-.vs/
-*.VisualState.xml
-TestResult.xml
-
-[Tt]est[Rr]esult*/
-[Bb]uild[Ll]og.*
-*.VisualState.xml
-*.psess
-*.vsp
-
-*.vspx
-*.sap
-ipch/
-*.aps
-*.ncb
-
-*.opendb
-*.opensdf
-*.sdf
-*.cachefile
-*.VC.db
-
-*.VC.VC.opendb
-*.coverage
-*.coveragexml
-_UpgradeReport_Files/
-Backup*/
-
-UpgradeLog*.XML
-UpgradeLog*.htm
-[Ww][Ii][Nn]32/
-[Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
-
-[Ll]ogs/
-Generated\ Files/
-BenchmarkDotNet.Artifacts/
-ScaffoldingReadMe.txt
-StyleCopReport.xml
-
-*_wpftmp.csproj
-.axoCover/*
-!.axoCover/settings.json
-coverage*.json
-coverage*.xml
-
-coverage*.info
-.vshistory/
-healthchecksdb
-
-### Windows ###
-# Windows operating system specific files
-
-Thumbs.db
-Thumbs.db:encryptable
-ehthumbs.db
-ehthumbs_vista.db
-*.stackdump
-
-[Dd]esktop.ini
-$RECYCLE.BIN/
-*.cab
-*.msi
-*.msix
-
-*.msm
-*.msp
-*.lnk
-*.tmp
-*.bak
-
-System Volume Information/
-[Tt]emp/
-$Recycle.Bin/
-~$*
-*.log
-
-hiberfil.sys
-pagefile.sys
-*.db
-Desktop.ini
-ntuser.dat*
-
-### Macos ###
-# macOS operating system specific files
-
-.DS_Store
+# ----- System files -----
 .AppleDouble
 .LSOverride
 Icon
 ._*
-
 .DocumentRevisions-V100
 .fseventsd
 .Spotlight-V100
 .TemporaryItems
 .Trashes
-
-.VolumeIcon.icns
-.com.apple.timemachine.donotpresent
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-
-Temporary Items
 .apdisk
-*.icloud
-.AppleDB/
-.AppleDesktop/
-
-*.AppleDouble
-*.AppleDB
-.Spotlight-V100/
-.Trashes/
-*.swp
-
-Network Trash Folder/
-.DS_Store?
-.Spotlight-V100
-.Trashes
-
-### Linux ###
-# Linux operating system specific files
-
-*~
+# Linux
 .fuse_hidden*
 .directory
 .Trash-*
 .nfs*
-
-.swap
-.swp
-.swo
-.swn
-.bash_history
-
-.cache/
-.config/
-.local/
-lost+found/
-.gvfs/
-
-.dbus/
-.thumbnails/
-.Xauthority
-.ICEauthority
-.recently-used
-
-*.tmp
-.pid
-.lock
-core
-core.*
-
-.saves-*
-.*.kate-swp
