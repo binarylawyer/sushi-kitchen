@@ -1,0 +1,5 @@
+fastapi==0.115.0
+uvicorn[standard]==0.30.5
+pydantic==2.8.2
+langchain==0.2.*
+langserve==0.3.*

@@ -1,5 +1,5 @@
+# docker-compose.yml (repo root)
 
-version: "3.9"
 services:
   postgres:
     image: postgres:16
@@ -27,14 +27,15 @@ services:
       - "${NEO4J_HTTP_PORT:-7474}:7474"
     volumes:
       - neo4j_data:/data
+      # Note: this file won't auto-run; open Neo4j Browser and run it manually.
       - ./neo4j/init.cql:/init.cql
 
   nats:
     image: nats:2
     restart: unless-stopped
+    command: ["-js"]
     ports:
       - "${NATS_PORT:-4222}:4222"
-    command: ["-js"]
 
   n8n:
     image: n8nio/n8n:1.81.1
@@ -58,8 +59,8 @@ services:
 
   api:
     build:
-      context: ./
-      dockerfile: ./docker/api.Dockerfile
+      context: ./services/api
+      dockerfile: Dockerfile
     env_file:
       - .env
     environment:
@@ -75,6 +76,19 @@ services:
       - postgres
       - neo4j
       - nats
+
+  # Optional future service: enable with `--profile agents`
+  # agents:
+  #   profiles: ["agents"]
+  #   build:
+  #     context: ./services/agents
+  #     dockerfile: Dockerfile
+  #   env_file:
+  #     - .env
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - nats
 
 volumes:
   postgres_data:

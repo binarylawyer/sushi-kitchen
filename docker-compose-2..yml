@@ -1,0 +1,30 @@
+services:
+  api:
+    build:
+      context: ./services/api
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_DB
+      NEO4J_URL: bolt://neo4j:7687
+      NEO4J_USER: ${NEO4J_USER}
+      NEO4J_PASSWORD: ${NEO4J_PASSWORD}
+      NATS_URL: nats://nats:4222
+      TZ: ${TZ:-America/New_York}
+    ports:
+      - "${API_PORT:-8000}:8000"
+    depends_on:
+      - postgres
+      - neo4j
+      - nats
+# agents:
+#   build:
+#     context: ./services/agents
+#     dockerfile: Dockerfile
+#   env_file:
+#     - .env
+#   ports:
+#     - "8080:8080"
+#   depends_on:
+#     - nats
