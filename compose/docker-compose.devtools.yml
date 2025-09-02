@@ -1,0 +1,6 @@
+version: '3.9'
+services:
+  jupyterlab:
+    image: jupyter/datascience-notebook
+    ports:
+      - "8888:8888"

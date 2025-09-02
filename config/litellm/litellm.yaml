@@ -1,0 +1,3 @@
+model_list:
+  - name: general-llm
+    model: ollama/mistral

@@ -1,0 +1,12 @@
+- Never commit .env files; secrets must not appear in Git.
+- All docker images must use pinned tags from env/versions.example, never :latest.
+- When adding a new roll:
+  - Create docs/rolls/<roll>.md with a deep dive
+  - Add entry to docs/menu.md (emoji + ingredients)
+  - Add preset option to scripts/sushi-start.sh
+- Update docs/SETUP.md when scripts or commands change.
+- Roll names must match the sushi theme (Hosomaki, Futomaki, etc.).
+- Default vector DB: Qdrant. pgvector or others only if explicitly requested.
+- Default graph DB: Neo4j. Alternatives optional only.
+- Keep business logic in app/sushi_app; use n8n only for orchestration.
+- If editing compose files, also check docs/menu.md and docs/rolls/ for consistency.

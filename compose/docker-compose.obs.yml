@@ -1,0 +1,13 @@
+version: '3.9'
+services:
+  prometheus:
+    image: prom/prometheus
+  grafana:
+    image: grafana/grafana
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor
+  langfuse:
+    image: langfuse/langfuse
+  minio-exporter:
+    image: povilasv/prometheus-minio-exporter:0.12.7
+    profiles: ["metrics"]
