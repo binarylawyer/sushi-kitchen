@@ -1,0 +1,8 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "Doctor", "type": "shell", "command": "./scripts/sushi-doctor.sh" },
+    { "label": "Start (Mac Mini)", "type": "shell", "command": "./scripts/sushi-start.sh preset mac-mini-24g" },
+    { "label": "Stop All", "type": "shell", "command": "./scripts/sushi-stop.sh" }
+  ]
+}
