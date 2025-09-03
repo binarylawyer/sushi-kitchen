@@ -1,15 +1,14 @@
 #!/bin/sh
 # Sushi Kitchen start script – portable POSIX version
-# Works with /bin/sh or bash; no associative arrays.
 
 set -eu
 
-# --- 0) Ensure interactive TTY for menus (reattach if piped/launched non-interactively) ---
+# --- 0) Ensure interactive TTY if possible ---
 if { [ ! -t 0 ] || [ ! -t 1 ]; } && [ -r /dev/tty ] && [ -w /dev/tty ]; then
   exec </dev/tty >/dev/tty 2>&1
 fi
 
-# --- 1) Tooling checks ---
+# --- 1) Find docker compose ---
 if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1 ; then
   DC="docker compose"
 elif command -v docker-compose >/dev/null 2>&1 ; then
@@ -19,7 +18,7 @@ else
   exit 1
 fi
 
-# --- 2) Base compose file detection (support both names) ---
+# --- 2) Base compose file (support both names) ---
 if [ -f docker-compose.yml ]; then
   compose_args="-f docker-compose.yml"
 elif [ -f docker.compose.yml ]; then
@@ -29,13 +28,13 @@ else
   exit 1
 fi
 
-# --- 3) Require .env to avoid blank-substitution chaos ---
+# --- 3) Require .env in repo root ---
 if [ ! -f .env ]; then
   cat >&2 <<'EOF'
 
 Error: .env not found in repo root.
 
-Create one (you can start from .env.example if present) with at least:
+Create one with at least:
   POSTGRES_USER=sushi
   POSTGRES_PASSWORD=changeme
   POSTGRES_DB=sushi
@@ -49,7 +48,7 @@ EOF
   exit 1
 fi
 
-# --- 4) Sushi roll labels (friendly names shown to the user) ---
+# --- 4) Labels (menu text) ---
 LABELS="Core (Hosomaki)
 RAG (Futomaki)
 Speech (Temaki)
@@ -58,43 +57,58 @@ Observability (Dragon)
 Dev-tools (Tamago)
 All-in (Omakase)"
 
-# --- 5) Ask the user to choose rolls ---
-choose() {
-  if command -v gum >/dev/null 2>&1 && [ -t 0 ] && [ -t 1 ]; then
-    printf '%s\n' "$LABELS" \
-      | gum choose --no-limit --prompt="Select rolls (space to toggle, Enter to confirm): "
-    return
-  fi
-
+print_menu() {
   i=1
-  echo "Pick rolls (space-separated numbers). Press Enter for Core only:"
+  echo "Select one or more rolls (space-separated numbers)."
+  echo "Press Enter for Core only."
+  echo
   printf '%s\n' "$LABELS" | while IFS= read -r line ; do
     echo "  $i) $line"
     i=$(( i + 1 ))
   done
-  printf "> "
-  if ! read -r nums ; then nums=""; fi
-  [ -z "${nums:-}" ] && return 0
+  echo
+}
 
-  # Convert selected numbers -> labels (newline-separated)
+# --- 5) Selection: CLI numbers -> labels, else interactive (gum or numeric) ---
+numbers_to_labels() {
+  # $1: numbers string
   printf '%s\n' "$LABELS" \
     | nl -ba -w1 -s' ' \
-    | awk -v sel="$nums" '
+    | awk -v sel="$1" '
         BEGIN { n=split(sel,a,/[^0-9]+/); for(i=1;i<=n;i++) pick[a[i]]=1; }
         pick[$1] { $1=""; sub(/^ +/,""); print }
       '
 }
 
-SELECTED="$(choose || true)"
+if [ "$#" -gt 0 ]; then
+  # Allow: ./startup.sh 1 3 5
+  nums="$*"
+  SELECTED="$(numbers_to_labels "$nums")"
+else
+  if command -v gum >/dev/null 2>&1 && [ -t 0 ] && [ -t 1 ]; then
+    # Gum TUI
+    SELECTED="$(printf '%s\n' "$LABELS" | gum choose --no-limit --prompt="(space to toggle, Enter to confirm): ")"
+  else
+    # Plain numeric menu
+    print_menu
+    printf "> "
+    if read nums ; then : ; else nums=""; fi
+    if [ -n "${nums:-}" ]; then
+      SELECTED="$(numbers_to_labels "$nums")"
+    else
+      SELECTED=""
+    fi
+  fi
+fi
 
-# --- 6) Compute requested profiles (Core always on) ---
+# --- 6) Compute profiles (Core always on) ---
 want_futomaki=false
 want_temaki=false
 want_uramaki=false
 want_dragon=false
 want_tamago=false
 
-# Use a here-doc (not a pipeline) so variable changes persist in this shell
+# Use a here-doc (not a pipe) so var changes persist in this shell
 while IFS= read -r label ; do
   case "$label" in
     "RAG (Futomaki)")          want_futomaki=true ;;
@@ -115,7 +129,7 @@ done <<__END_SELECTED__
 $SELECTED
 __END_SELECTED__
 
-# --- 7) Include overlay compose files if present ---
+# --- 7) Include overlays if present ---
 addf() { [ -f "$1" ] && compose_args="$compose_args -f $1"; }
 addf "compose/docker-compose.obs.dragon.yml"
 addf "compose/docker-compose.media.uramaki.yml"
