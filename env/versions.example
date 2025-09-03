@@ -1,2 +1,4 @@
 CADDY_VERSION=2.7.6
 PROM_VERSION=v2.48.0
+COMFYUI_IMAGE=ghcr.io/comfyanonymous/comfyui:stable
+WHISPER_IMAGE=ghcr.io/sushikitchen/whisper-gpu:placeholder

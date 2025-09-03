@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  whisper:
+    image: ${WHISPER_IMAGE:-ghcr.io/sushikitchen/whisper-gpu:placeholder}
+    container_name: whisper-gpu
+    restart: unless-stopped
+    environment:
+      - WHISPER_MODEL=${WHISPER_MODEL:-medium}
+      - ASR_BEAM_SIZE=${ASR_BEAM_SIZE:-5}
+      - ASR_COMPUTE_TYPE=${ASR_COMPUTE_TYPE:-float16}
+      - ASR_ENABLE_VAD=${ASR_ENABLE_VAD:-true}
+    ports:
+      - "9001:9001"
+    volumes:
+      - ${WHISPER_CACHE_DIR:-./data/whisper/cache}:/root/.cache
+      - ${WHISPER_AUDIO_DIR:-./data/whisper/audio}:/audio
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["gpu"]

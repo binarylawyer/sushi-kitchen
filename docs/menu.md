@@ -60,6 +60,8 @@ Use it for: transcription, TTS, callflows.
 Ingredients
 
 Whisper (small/medium by default)
+- Whisper (GPU) – see `compose/docker-compose.whisper.yml`
+
 
 Piper (TTS)
 
@@ -77,6 +79,8 @@ Use it for: SD 1.5 locally, SDXL in the cloud.
 Ingredients
 
 ComfyUI (node graph)
+- ComfyUI (GPU) – see `compose/docker-compose.comfyui.yml`
+
 
 (Sidecar) rclone → pushes outputs to MinIO/S3
 
