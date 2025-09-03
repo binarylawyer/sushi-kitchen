@@ -20,7 +20,7 @@ See our [Hardware Sizing Guide](docs/plates.md) to pick the right Plate.
 Each Teishoku is a **pre-assembled combo** of rolls (apps) that already work together.
 
 #### Hosomaki Platter (Core)
-- **n8n** — automation and orchestration workflows  
+- [**n8n**](docs/rolls/n8n.md) — automation and orchestration workflows  
 - **Supabase** — database + authentication platform  
 - **Postgres + pgvector** — relational DB with vector search  
 - **Qdrant (optional)** — vector database alternative  
