@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="././assets/sushi kitchen 4.png" alt="Sushi Kitchen Banner" width="800"/>
+</p>
+
 # 🍣 Sushi Kitchen
 
 Welcome to **Sushi Kitchen** — a composable, self-hosted AI development environment.  
