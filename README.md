@@ -55,6 +55,9 @@ Each Teishoku is a **pre-assembled combo** of rolls (apps) that already work tog
 
 ---
 
+<p align="center">
+  <img src="././assets/sushi kitchen movie 2.mp4" alt="Sushi Kitchen Banner" width="800"/>
+</p>
 ### 3. Add Starters (Optional Dishes)
 
 Still hungry? Round out your platter with extra dishes:
