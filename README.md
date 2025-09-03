@@ -25,33 +25,33 @@ Each Teishoku is a **pre-assembled combo** of rolls (apps) that already work tog
 
 #### Hosomaki Platter (Core)
 - [**n8n**](docs/rolls/n8n.md) — automation and orchestration workflows  
-- **Supabase** — database + authentication platform  
-- **Postgres + pgvector** — relational DB with vector search  
-- **Qdrant (optional)** — vector database alternative  
-- **Redis** — caching and queues  
-- **LiteLLM** — unified LLM API router  
-- **Ollama (small)** — local LLM runner  
-- **MinIO** — S3-compatible object storage  
+- [**Supabase**](docs/rolls/supabase.md) — database + authentication platform  
+- [**Postgres + pgvector**](docs/rolls/postgres.md) — relational DB with vector search  
+- [**Qdrant (optional)**](docs/rolls/qdrant.md) — vector database alternative  
+- [**Redis**](docs/rolls/redis.md) — caching and queues  
+- [**LiteLLM**](docs/rolls/litellm.md) — unified LLM API router  
+- [**Ollama (small)**](docs/rolls/ollama.md) — local LLM runner  
+- [**MinIO**](docs/rolls/minio.md) — S3-compatible object storage  
 
 #### Futomaki Platter (Knowledge & RAG)
-- **Neo4j** — graph database  
-- **Weaviate (optional)** — vector DB with modular extensions  
-- **Chroma (optional)** — simple vector DB  
-- **Infinity embeddings (optional)** — fast embedding service  
+- [**Neo4j**](docs/rolls/neo4j.md) — graph database  
+- [**Weaviate (optional)**](docs/rolls/weaviate.md) — vector DB with modular extensions  
+- [**Chroma (optional)**](docs/rolls/chroma.md) — simple vector DB  
+- [**Infinity embeddings (optional)**](docs/rolls/infinity.md) — fast embedding service  
 
 #### Temaki Platter (Voice & Interaction)
-- **Whisper** — speech-to-text  
-- **Piper** — text-to-speech  
+- [**Whisper**](docs/rolls/whisper.md) — speech-to-text  
+- [**Piper**](docs/rolls/piper.md) — text-to-speech  
 
 #### Uramaki Platter (Imaging)
-- **ComfyUI** — image pipeline builder  
-- **rclone** — sync images to MinIO/S3  
+- [**ComfyUI**](docs/rolls/comfyui.md) — image pipeline builder  
+- [**rclone**](docs/rolls/rclone.md) — sync images to MinIO/S3  
 
 #### Chirashi Platter (Data Science)
-- **JupyterLab** — interactive notebooks  
+- [**JupyterLab**](docs/rolls/jupyterlab.md) — interactive notebooks  
 
 #### Tamago Platter (Dev Tools)
-- **VS Code Server** — browser-based IDE  
+- [**VS Code Server**](docs/rolls/vscode-server.md) — browser-based IDE  
 
 ---
 
@@ -64,35 +64,35 @@ Each Teishoku is a **pre-assembled combo** of rolls (apps) that already work tog
 Still hungry? Round out your platter with extra dishes:
 
 #### 🥟 Zensai (Appetizers)
-- **Homepage** — simple launchpad linking to all running UIs  
-- **MinIO Console** — web console for object storage  
-- **Qdrant Console** — UI for exploring vector collections  
-- **Neo4j Browser** — interactive graph explorer  
-- **sushi-doctor** — local helper script to check Docker, env, ports  
+- [**Homepage**](docs/rolls/homepage.md) — simple launchpad linking to all running UIs  
+- [**MinIO Console**](docs/rolls/minio-console.md) — web console for object storage  
+- [**Qdrant Console**](docs/rolls/qdrant-console.md) — UI for exploring vector collections  
+- [**Neo4j Browser**](docs/rolls/neo4j-browser.md) — interactive graph explorer  
+- [**sushi-doctor**](docs/rolls/sushi-doctor.md) — local helper script to check Docker, env, ports  
 
 #### 🍲 Soups (Observability & Health)
-- **Prometheus** — metrics collection  
-- **Grafana** — dashboards & visualization  
-- **cAdvisor** — container resource monitoring  
-- **Node Exporter** — system metrics exporter  
-- **Langfuse (optional)** — LLM trace observability  
-- **Loki + Promtail (enterprise)** — centralized logging stack  
+- [**Prometheus**](docs/rolls/prometheus.md) — metrics collection  
+- [**Grafana**](docs/rolls/grafana.md) — dashboards & visualization  
+- [**cAdvisor**](docs/rolls/cadvisor.md) — container resource monitoring  
+- [**Node Exporter**](docs/rolls/node-exporter.md) — system metrics exporter  
+- [**Langfuse (optional)**](docs/rolls/langfuse.md) — LLM trace observability  
+- [**Loki + Promtail (enterprise)**](docs/rolls/loki-promtail.md) — centralized logging stack  
 
 #### 🍜 Noodles (Hearty Dev Tools)
-- **JupyterLab** — notebooks for data science (also part of Chirashi Platter)  
-- **VS Code Server** — web IDE (also part of Tamago Platter)  
+- [**JupyterLab**](docs/rolls/jupyterlab.md) — notebooks for data science (also part of Chirashi Platter)  
+- [**VS Code Server**](docs/rolls/vscode-server.md) — web IDE (also part of Tamago Platter)  
 
 #### 🍱 Sides (Ops & Security Rails)
 - **Hanko — Identity**:  
-  - **Authentik** — authentication and identity management  
-  - **Caddy forward-auth** — proxy-level auth integration  
+  - [**Authentik**](docs/rolls/authentik.md) — authentication and identity management  
+  - [**Caddy forward-auth**](docs/rolls/caddy-forward-auth.md) — proxy-level auth integration  
 - **Shio — Secrets**:  
-  - **Infisical** — lightweight secret management  
-  - **Vault OSS (optional)** — enterprise-grade secret storage  
+  - [**Infisical**](docs/rolls/infisical.md) — lightweight secret management  
+  - [**Vault OSS (optional)**](docs/rolls/vault.md) — enterprise-grade secret storage  
 - **Tsukemono — Backups**:  
-  - **Borgmatic** — automated backups  
-  - **pgBackRest / wal-g** — Postgres backup tools  
-  - **neo4j-admin backup** — backup/restore graph data  
+  - [**Borgmatic**](docs/rolls/borgmatic.md) — automated backups  
+  - [**pgBackRest / wal-g**](docs/rolls/pgbackrest.md) — Postgres backup tools  
+  - [**neo4j-admin backup**](docs/rolls/neo4j-admin-backup.md) — backup/restore graph data  
 
 ---
 
