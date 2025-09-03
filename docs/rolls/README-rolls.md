@@ -84,6 +84,10 @@ graph TD
     qdrant --> ollama([Ollama])
   end
 
+%% --- Spacer node ---
+  spacer1[ ]:::invisible
+
+  
   subgraph Futomaki[Futomaki Combo 🍣 Big Data]
     neo4j([Neo4j]) --> weaviate([Weaviate])
     weaviate --> chroma([Chroma])
