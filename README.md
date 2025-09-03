@@ -55,7 +55,7 @@ Each Teishoku is a **pre-assembled combo** of rolls (apps) that already work tog
 
 ---
 
-<p align="center">
+<p align="left">
   <img src="././assets/sushi kitchen final.png" alt="Sushi Kitchen Banner" width="400" height="400"/>
 </p>
 
