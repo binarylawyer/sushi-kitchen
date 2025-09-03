@@ -86,10 +86,10 @@ if [ "$#" -gt 0 ]; then
   SELECTED="$(numbers_to_labels "$nums")"
 else
   if command -v gum >/dev/null 2>&1 && [ -t 0 ] && [ -t 1 ]; then
-    # Gum TUI
-    SELECTED="$(printf '%s\n' "$LABELS" | gum choose --no-limit --prompt="(space to toggle, Enter to confirm): ")"
+    echo "Use space to toggle, Enter to confirm:"
+    SELECTED="$(printf '%s\n' "$LABELS" | gum choose --no-limit)"
+    # If user hits Enter with nothing selected, SELECTED will be empty -> core only
   else
-    # Plain numeric menu
     print_menu
     printf "> "
     if read nums ; then : ; else nums=""; fi
@@ -108,7 +108,7 @@ want_uramaki=false
 want_dragon=false
 want_tamago=false
 
-# Use a here-doc (not a pipe) so var changes persist in this shell
+# Use here-doc so var changes persist in this shell
 while IFS= read -r label ; do
   case "$label" in
     "RAG (Futomaki)")          want_futomaki=true ;;
