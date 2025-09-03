@@ -2,12 +2,16 @@ version: '3.9'
 services:
   prometheus:
     image: prom/prometheus
+    profiles: ["dragon"]
   grafana:
     image: grafana/grafana
+    profiles: ["dragon"]
   cadvisor:
     image: gcr.io/cadvisor/cadvisor
+    profiles: ["dragon"]
   langfuse:
     image: langfuse/langfuse
+    profiles: ["dragon"]
   minio-exporter:
     image: povilasv/prometheus-minio-exporter:0.12.7
-    profiles: ["metrics"]
+    profiles: ["dragon","metrics"]

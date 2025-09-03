@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  comfyui:
+    image: ${COMFYUI_IMAGE:-ghcr.io/comfyanonymous/comfyui:stable}
+    container_name: comfyui-gpu
+    restart: unless-stopped
+    ports:
+      - "8188:8188"
+    volumes:
+      - ${COMFYUI_MODELS_DIR:-./data/comfyui/models}:/models
+      - ${COMFYUI_OUTPUT_DIR:-./data/comfyui/output}:/output
+      - ${COMFYUI_CUSTOM_DIR:-./data/comfyui/custom_nodes}:/custom_nodes
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["gpu"]

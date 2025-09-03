@@ -2,5 +2,6 @@ version: '3.9'
 services:
   jupyterlab:
     image: jupyter/datascience-notebook
+    profiles: ["tamago"]
     ports:
       - "8888:8888"

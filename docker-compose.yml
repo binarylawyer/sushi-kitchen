@@ -3,6 +3,8 @@
 services:
   postgres:
     image: postgres:16
+    profiles: ["hosomaki"]
+
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -15,6 +17,7 @@ services:
 
   neo4j:
     image: neo4j:5
+    profiles: ["hosomaki", "futomaki"]
     restart: unless-stopped
     environment:
       NEO4J_AUTH: ${NEO4J_USER}/${NEO4J_PASSWORD}
@@ -32,6 +35,7 @@ services:
 
   nats:
     image: nats:2
+    profiles: ["hosomaki"]
     restart: unless-stopped
     command: ["-js"]
     ports:
@@ -39,6 +43,7 @@ services:
 
   n8n:
     image: n8nio/n8n:1.81.1
+    profiles: ["hosomaki"]
     restart: unless-stopped
     ports:
       - "${N8N_PORT:-5678}:5678"
@@ -61,6 +66,7 @@ services:
     build:
       context: ./services/api
       dockerfile: Dockerfile
+    profiles: ["hosomaki"]  
     env_file:
       - .env
     environment:
