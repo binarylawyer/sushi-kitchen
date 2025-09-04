@@ -70,7 +70,7 @@ Still hungry? Round out your platter with extra dishes:
 - [**Neo4j Browser**](docs/rolls/neo4j-browser.md) — interactive graph explorer  
 - [**sushi-doctor**](docs/rolls/sushi-doctor.md) — local helper script to check Docker, env, ports  
 
-#### 🍲 Soups (Observability & Health)
+#### 🍲 Ramen (Observability & Health)
 - [**Prometheus**](docs/rolls/prometheus.md) — metrics collection  
 - [**Grafana**](docs/rolls/grafana.md) — dashboards & visualization  
 - [**cAdvisor**](docs/rolls/cadvisor.md) — container resource monitoring  
@@ -78,7 +78,7 @@ Still hungry? Round out your platter with extra dishes:
 - [**Langfuse (optional)**](docs/rolls/langfuse.md) — LLM trace observability  
 - [**Loki + Promtail (enterprise)**](docs/rolls/loki-promtail.md) — centralized logging stack  
 
-#### 🍜 Noodles (Hearty Dev Tools)
+#### 🍜 Udon (Hearty Dev Tools)
 - [**JupyterLab**](docs/rolls/jupyterlab.md) — notebooks for data science (also part of Chirashi Platter)  
 - [**VS Code Server**](docs/rolls/vscode-server.md) — web IDE (also part of Tamago Platter)  
 

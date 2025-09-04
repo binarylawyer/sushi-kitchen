@@ -1,132 +1,103 @@
-# 🍣 Sushi Kitchen Rolls
-
-This is the master index of all rolls in the Sushi Kitchen. 
-Each roll has its own page under `docs/rolls/`.
-
-## Hosomaki Combo (Core Rolls)
-
-- [N8n](./n8n.md)
-- [Supabase](./supabase.md)
-- [Postgres](./postgres.md)
-- [Redis](./redis.md)
-- [Minio](./minio.md)
-- [Qdrant](./qdrant.md)
-- [Ollama](./ollama.md)
-
-## Futomaki Combo (Big Data Rolls)
-
-- [Neo4j](./neo4j.md)
-- [Weaviate](./weaviate.md)
-- [Chroma](./chroma.md)
-- [Infinity](./infinity.md)
-
-## Nigiri Combo (AI/ML Specialties)
-
-- [Litellm](./litellm.md)
-- [Whisper](./whisper.md)
-- [Piper](./piper.md)
-- [Comfyui](./comfyui.md)
-
-## Side Dishes (Tools & Utilities)
-
-- [Rclone](./rclone.md)
-- [Jupyterlab](./jupyterlab.md)
-- [Vscode-server](./vscode-server.md)
-- [Homepage](./homepage.md)
-
-## Condiments (Consoles & Browsers)
-
-- [Minio-console](./minio-console.md)
-- [Qdrant-console](./qdrant-console.md)
-- [Neo4j-browser](./neo4j-browser.md)
-- [Sushi-doctor](./sushi-doctor.md)
-
-## Observability Combo (Metrics & Logs)
-
-- [Prometheus](./prometheus.md)
-- [Grafana](./grafana.md)
-- [Cadvisor](./cadvisor.md)
-- [Node-exporter](./node-exporter.md)
-- [Langfuse](./langfuse.md)
-- [Loki-promtail](./loki-promtail.md)
-
-## Security Combo (Auth & Secrets)
-
-- [Authentik](./authentik.md)
-- [Caddy-forward-auth](./caddy-forward-auth.md)
-- [Infisical](./infisical.md)
-- [Vault](./vault.md)
-
-## Backups Combo (Data Safety)
-
-- [Borgmatic](./borgmatic.md)
-- [Pgbackrest](./pgbackrest.md)
-- [Neo4j-admin-backup](./neo4j-admin-backup.md)
+<p align="center">
+  <img src="../assets/sushi-kitchen-rolls-banner.png" alt="Sushi Kitchen Rolls Banner" width="600"/>
+</p>
 
 # 🍣 Sushi Kitchen Rolls
 
-This is the **master index** of all rolls in the Sushi Kitchen.  
-Each roll has its own page under `docs/rolls/`.  
-Think of this as the **menu cover** — you can browse the platters below and click into each roll for the full recipe.  
+This is the **index of all Sushi Kitchen rolls (apps)**.  
+Each link below takes you to an information page about the individual app.  
+Use this index to explore the different platters and optional dishes that make up the Sushi Kitchen.  
 
 ---
 
-## 🍱 Visual Platter Map
+## Hosomaki Platter (Core)
 
-```mermaid
-graph TD
-  subgraph Hosomaki[Hosomaki Combo 🍣 Core Rolls]
-    n8n([N8n]) --> supabase([Supabase])
-    supabase --> postgres([Postgres])
-    postgres --> redis([Redis])
-    redis --> minio([MinIO])
-    minio --> qdrant([Qdrant])
-    qdrant --> ollama([Ollama])
-  end
+- [**n8n**](./n8n.md) — automation and orchestration workflows  
+- [**Supabase**](./supabase.md) — database + authentication platform  
+- [**Postgres + pgvector**](./postgres.md) — relational DB with vector search  
+- [**Qdrant (optional)**](./qdrant.md) — vector database alternative  
+- [**Redis**](./redis.md) — caching and queues  
+- [**LiteLLM**](./litellm.md) — unified LLM API router  
+- [**Ollama (small)**](./ollama.md) — local LLM runner  
+- [**MinIO**](./minio.md) — S3-compatible object storage  
 
-%% --- Spacer node ---
-  spacer1[ ]:::invisible
+---
 
-  
-  subgraph Futomaki[Futomaki Combo 🍣 Big Data]
-    neo4j([Neo4j]) --> weaviate([Weaviate])
-    weaviate --> chroma([Chroma])
-    chroma --> infinity([Infinity])
-  end
+## Futomaki Platter (Knowledge & RAG)
 
-  subgraph Nigiri[Nigiri Combo 🍤 AI/ML Specialties]
-    litellm([LiteLLM]) --> whisper([Whisper])
-    whisper --> piper([Piper])
-    piper --> comfyui([ComfyUI])
-  end
+- [**Neo4j**](./neo4j.md) — graph database  
+- [**Weaviate (optional)**](./weaviate.md) — vector DB with modular extensions  
+- [**Chroma (optional)**](./chroma.md) — simple vector DB  
+- [**Infinity embeddings (optional)**](./infinity.md) — fast embedding service  
 
-  subgraph Side[🍵 Side Dishes]
-    rclone([Rclone]) --> jupyterlab([JupyterLab])
-    jupyterlab --> vscode([VSCode Server])
-    vscode --> homepage([Homepage])
-  end
+---
 
-  subgraph Condiments[🌿 Condiments & Consoles]
-    minioC([MinIO Console]) --> qdrantC([Qdrant Console])
-    qdrantC --> neo4jB([Neo4j Browser])
-    neo4jB --> doctor([Sushi Doctor])
-  end
+## Temaki Platter (Voice & Interaction)
 
-  subgraph Observability[📊 Observability Combo]
-    prometheus([Prometheus]) --> grafana([Grafana])
-    grafana --> cadvisor([cAdvisor])
-    cadvisor --> nodeexporter([Node Exporter])
-    grafana --> langfuse([Langfuse])
-    langfuse --> loki([Loki-Promtail])
-  end
+- [**Whisper**](./whisper.md) — speech-to-text  
+- [**Piper**](./piper.md) — text-to-speech  
 
-  subgraph Security[🔒 Security Combo]
-    authentik([Authentik]) --> caddy([Caddy Forward Auth])
-    caddy --> infisical([Infisical])
-    infisical --> vault([Vault])
-  end
+---
 
-  subgraph Backups[💾 Backups Combo]
-    borgmatic([Borgmatic]) --> pgbackrest([pgBackRest])
-    pgbackrest --> neo4jbackup([Neo4j Admin Backup])
-  end
+## Uramaki Platter (Imaging)
+
+- [**ComfyUI**](./comfyui.md) — image pipeline builder  
+- [**rclone**](./rclone.md) — sync images to MinIO/S3  
+
+---
+
+## Chirashi Platter (Data Science)
+
+- [**JupyterLab**](./jupyterlab.md) — interactive notebooks  
+
+---
+
+## Tamago Platter (Dev Tools)
+
+- [**VS Code Server**](./vscode-server.md) — browser-based IDE  
+
+---
+
+## 🥟 Zensai (Appetizers)
+
+- [**Homepage**](./homepage.md) — simple launchpad linking to all running UIs  
+- [**MinIO Console**](./minio-console.md) — web console for object storage  
+- [**Qdrant Console**](./qdrant-console.md) — UI for exploring vector collections  
+- [**Neo4j Browser**](./neo4j-browser.md) — interactive graph explorer  
+- [**sushi-doctor**](./sushi-doctor.md) — local helper script to check Docker, env, ports  
+
+---
+
+## 🍲 Ramen (Observability & Health)
+
+- [**Prometheus**](./prometheus.md) — metrics collection  
+- [**Grafana**](./grafana.md) — dashboards & visualization  
+- [**cAdvisor**](./cadvisor.md) — container resource monitoring  
+- [**Node Exporter**](./node-exporter.md) — system metrics exporter  
+- [**Langfuse (optional)**](./langfuse.md) — LLM trace observability  
+- [**Loki + Promtail (enterprise)**](./loki-promtail.md) — centralized logging stack  
+
+---
+
+## 🍜 Udon (Hearty Dev Tools)
+
+- [**JupyterLab**](./jupyterlab.md) — notebooks for data science (also part of Chirashi Platter)  
+- [**VS Code Server**](./vscode-server.md) — web IDE (also part of Tamago Platter)  
+
+---
+
+## 🍱 Sides (Ops & Security Rails)
+
+**Hanko — Identity**  
+- [**Authentik**](./authentik.md) — authentication and identity management  
+- [**Caddy forward-auth**](./caddy-forward-auth.md) — proxy-level auth integration  
+
+**Shio — Secrets**  
+- [**Infisical**](./infisical.md) — lightweight secret management  
+- [**Vault OSS (optional)**](./vault.md) — enterprise-grade secret storage  
+
+**Tsukemono — Backups**  
+- [**Borgmatic**](./borgmatic.md) — automated backups  
+- [**pgBackRest / wal-g**](./pgbackrest.md) — Postgres backup tools  
+- [**neo4j-admin backup**](./neo4j-admin-backup.md) — backup/restore graph data  
+
