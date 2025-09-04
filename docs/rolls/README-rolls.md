@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="../assets/sushi-kitchen-rolls-banner.png" alt="Sushi Kitchen Rolls Banner" width="600"/>
+  <img src="././assets/sushi-kitchen-rolls-banner.png" alt="Sushi Kitchen Rolls Banner" width="600"/>
 </p>
 
 # 🍣 Sushi Kitchen Rolls
