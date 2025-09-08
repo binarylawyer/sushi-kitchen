@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  jupyterlab:
+    image: quay.io/jupyter/pytorch-notebook:latest  # GPU-ready image
+    container_name: sushi_jupyterlab
+    profiles: ["chirashi"]
+    restart: unless-stopped
+    environment:
+      - JUPYTER_TOKEN=${JUPYTER_TOKEN}
+      - JUPYTER_ENABLE_LAB=yes
+      - GRANT_SUDO=yes
+      - CHOWN_HOME=yes
+      - CHOWN_HOME_OPTS=-R
+      - NB_UID=${PUID}
+      - NB_GID=${PGID}
+    volumes:
+      - ./data/jupyter/notebooks:/home/jovyan/work
+      - ./data/jupyter/datasets:/home/jovyan/datasets
+      - ./data/models:/home/jovyan/models  # Shared with Ollama
+      - /var/run/docker.sock:/var/run/docker.sock  # Docker access
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+      - "4040:4040"  # Spark UI if needed
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    networks:
+      - sushi_network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.jupyter.rule=Host(`jupyter.${DOMAIN}`)"
+      - "homepage.group=Data Science"
+      - "homepage.name=JupyterLab"
+      - "homepage.icon=jupyter.png"
+      - "homepage.href=http://localhost:${JUPYTER_PORT}"
+      - "homepage.description=Interactive notebooks"

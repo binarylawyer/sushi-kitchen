@@ -1,3 +1,12 @@
 :80 {
- respond "Hello from Caddy"
+	encode zstd gzip
+	route {
+		reverse_proxy /api/* api:8000
+		reverse_proxy /n8n/* n8n:5678
+		reverse_proxy /qdrant/* qdrant:6333
+		reverse_proxy /neo4j/* neo4j:7474
+		reverse_proxy /grafana/* grafana:3001
+		reverse_proxy /prometheus/* prometheus:9090
+		reverse_proxy / homepage:3000
+	}
 }

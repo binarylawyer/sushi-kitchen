@@ -1,10 +1,7 @@
-# docker-compose.yml (repo root)
-
 services:
   postgres:
     image: postgres:16
     profiles: ["hosomaki"]
-
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -30,7 +27,6 @@ services:
       - "${NEO4J_HTTP_PORT:-7474}:7474"
     volumes:
       - neo4j_data:/data
-      # Note: this file won't auto-run; open Neo4j Browser and run it manually.
       - ./neo4j/init.cql:/init.cql
 
   nats:
@@ -66,11 +62,11 @@ services:
     build:
       context: ./services/api
       dockerfile: Dockerfile
-    profiles: ["hosomaki"]  
+    profiles: ["hosomaki"]
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgresql+psycopg://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_DB
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
       NEO4J_URL: bolt://neo4j:7687
       NEO4J_USER: ${NEO4J_USER}
       NEO4J_PASSWORD: ${NEO4J_PASSWORD}
@@ -83,20 +79,175 @@ services:
       - neo4j
       - nats
 
-  # Optional future service: enable with `--profile agents`
-  # agents:
-  #   profiles: ["agents"]
-  #   build:
-  #     context: ./services/agents
-  #     dockerfile: Dockerfile
-  #   env_file:
-  #     - .env
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     - nats
+  # Additional core services (Hosomaki)
+  redis:
+    image: redis:7
+    profiles: ["hosomaki"]
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    profiles: ["hosomaki", "futomaki"]
+    restart: unless-stopped
+    ports:
+      - "${QDRANT_PORT:-6333}:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  weaviate:
+    image: semitechnologies/weaviate:latest
+    profiles: ["futomaki"]
+    restart: unless-stopped
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25
+      ENABLE_MODULES: text2vec-openai
+      PERSISTENCE_DATA_PATH: /var/lib/weaviate
+    ports:
+      - "${WEAVIATE_PORT:-8080}:8080"
+    volumes:
+      - weaviate_data:/var/lib/weaviate
+
+  minio:
+    image: minio/minio:latest
+    profiles: ["hosomaki"]
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minio123}
+    command: server /data --console-address ":9001"
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
+    volumes:
+      - minio_data:/data
+
+  caddy:
+    image: caddy:2
+    profiles: ["hosomaki"]
+    restart: unless-stopped
+    ports:
+      - "${CADDY_HTTP_PORT:-80}:80"
+      - "${CADDY_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./config/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["hosomaki"]
+    restart: unless-stopped
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+  litellm:
+    image: ghcr.io/berriai/litellm:main
+    profiles: ["hosomaki"]
+    restart: unless-stopped
+    environment:
+      LITELLM_CONFIG: /etc/litellm/config.yaml
+    ports:
+      - "${LITELLM_PORT:-4000}:4000"
+    volumes:
+      - ./config/litellm/litellm.yaml:/etc/litellm/config.yaml:ro
+
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    profiles: ["hosomaki"]
+    restart: unless-stopped
+    environment:
+      HOMEPAGE_VAR_FILE: /config/settings.yml
+    ports:
+      - "${HOMEPAGE_PORT:-3000}:3000"
+    volumes:
+      - ./config/homepage:/config:ro
+
+  # Observability roll (Dragon)
+  prometheus:
+    image: prom/prometheus:latest
+    profiles: ["dragon"]
+    restart: unless-stopped
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+
+  grafana:
+    image: grafana/grafana:latest
+    profiles: ["dragon"]
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+    ports:
+      - "${GRAFANA_PORT:-3001}:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    profiles: ["dragon"]
+    restart: unless-stopped
+    ports:
+      - "${CADVISOR_PORT:-8081}:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+
+  node_exporter:
+    image: prom/node-exporter:latest
+    profiles: ["dragon"]
+    restart: unless-stopped
+    ports:
+      - "${NODE_EXPORTER_PORT:-9100}:9100"
+    command:
+      - '--path.rootfs=/host'
+    volumes:
+      - '/:/host:ro,rslave'
+
+  # Dev tools roll (Tamago)
+  code_server:
+    image: coder/code-server:latest
+    profiles: ["tamago"]
+    restart: unless-stopped
+    environment:
+      PASSWORD: ${CODE_SERVER_PASSWORD:-password}
+    ports:
+      - "${CODE_SERVER_PORT:-8443}:8080"
+    volumes:
+      - code_data:/home/coder/project
+
+  jupyter:
+    image: jupyter/base-notebook:latest
+    profiles: ["tamago"]
+    restart: unless-stopped
+    environment:
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:-jupyter}
+    ports:
+      - "${JUPYTER_PORT:-8888}:8888"
+    volumes:
+      - jupyter_data:/home/jovyan/work
 
 volumes:
   postgres_data:
   neo4j_data:
   n8n_data:
+  redis_data:
+  qdrant_data:
+  weaviate_data:
+  minio_data:
+  caddy_data:
+  caddy_config:
+  ollama_data:
+  prometheus_data:
+  grafana_data:
+  code_data:
+  jupyter_data:

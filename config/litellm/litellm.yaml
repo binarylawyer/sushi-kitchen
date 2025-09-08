@@ -1,3 +1,10 @@
 model_list:
-  - name: general-llm
-    model: ollama/mistral
+  - model_name: openai/gpt-4o
+    litellm_params:
+      model: openai/gpt-4o
+      api_key: ${OPENAI_API_KEY}
+  - model_name: ollama/llama3
+    litellm_params:
+      model: ollama/llama3
+      api_base: http://ollama:11434
+      api_key: "ollama"   # not used but required by some clients

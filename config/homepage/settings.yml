@@ -1,0 +1,13 @@
+title: Sushi Kitchen
+sections:
+  - Core:
+      - API:
+          href: http://api:8000/docs
+      - n8n:
+          href: http://n8n:5678
+      - Qdrant:
+          href: http://qdrant:6333
+      - Neo4j:
+          href: http://neo4j:7474
+      - MinIO Console:
+          href: http://minio:9001
