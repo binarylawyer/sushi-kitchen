@@ -72,7 +72,9 @@ Self-hosted Git service with a web UI, issues, pull requests, and CI hooks — a
 ```bash
 
 
-* docker compose --profile tamago up -d gitea
+docker compose --profile tamago up -d gitea
+
+'''
 
 * Web UI → http://localhost:3350
 
