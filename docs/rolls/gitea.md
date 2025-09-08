@@ -71,28 +71,29 @@ Self-hosted Git service with a web UI, issues, pull requests, and CI hooks — a
 
 ```bash
 
-~~~bash
-docker compose --profile tamago up -d gitea
-~~~
+docker compose --profile tamago up -d gitea```
+
 
 - **Web UI:** http://localhost:3350  
 - **SSH:** `ssh://git@localhost:3351`  
 - **First run:** Set `ROOT_URL` to `http://localhost:3350/`.
 
 Configuration
-Environment Variables
+### Environment Variables
 
-Variable	Default	Required	Notes
-USER_UID	1000	No	UID for git user
-USER_GID	1000	No	GID for git user
-GITEA_DB_TYPE	sqlite3	Yes	Options: sqlite3, postgres, mysql
-GITEA_DB_HOST	(empty)	If DB≠sqlite3	Database host:port
-GITEA_DB_NAME	(empty)	If DB≠sqlite3	Database name
-GITEA_DB_USER	(empty)	If DB≠sqlite3	Database user
-GITEA_DB_PASSWORD	(empty)	If DB≠sqlite3	Database password (store securely)
-GITEA_ROOT_URL	http://localhost:3350/	Yes	Public base URL
-GITEA_SSH_DOMAIN	localhost	No	Domain for SSH clone URLs
-GITEA_SSH_PORT	3351	No	Host SSH port for clone URLs
+| **Variable**        | **Default**              | **Required**      | **Notes**                          |
+|---------------------|--------------------------|-------------------|------------------------------------|
+| `USER_UID`          | `1000`                   | No                | UID for git user                   |
+| `USER_GID`          | `1000`                   | No                | GID for git user                   |
+| `GITEA_DB_TYPE`     | `sqlite3`                | Yes               | Options: `sqlite3`, `postgres`, `mysql` |
+| `GITEA_DB_HOST`     | (empty)                  | If DB≠sqlite3     | Database host:port                 |
+| `GITEA_DB_NAME`     | (empty)                  | If DB≠sqlite3     | Database name                      |
+| `GITEA_DB_USER`     | (empty)                  | If DB≠sqlite3     | Database user                      |
+| `GITEA_DB_PASSWORD` | (empty)                  | If DB≠sqlite3     | Database password (store securely) |
+| `GITEA_ROOT_URL`    | `http://localhost:3350/` | Yes               | Public base URL                    |
+| `GITEA_SSH_DOMAIN`  | `localhost`              | No                | Domain for SSH clone URLs          |
+| `GITEA_SSH_PORT`    | `3351`                   | No                | Host SSH port for clone URLs       |
+
 Volumes
 
 gitea_data:/data — stores repositories, attachments, configs.
