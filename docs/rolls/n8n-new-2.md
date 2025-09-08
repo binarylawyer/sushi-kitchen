@@ -69,4 +69,457 @@ maintainers: ["@sushichef"]
 
 ---
 
-[Rest of content continues as before...]
+## **Why you'd use it**
+
+* **Automate repetitive tasks** — Connect 400+ apps and services without writing code  
+* **Build AI workflows** — Native LLM nodes for OpenAI, Anthropic, and local models via LiteLLM  
+* **Process data pipelines** — Transform, filter, and route data between your services  
+* **Create webhooks & APIs** — Turn any workflow into an instant API endpoint  
+* **Schedule jobs** — Cron-based triggers for regular data processing and maintenance  
+
+**🍣 Discovering from search?** n8n is the automation heart of the Hosomaki (core) platter in Sushi Kitchen. [Learn how to combine it with other services →](../menu.md)
+
+---
+
+## **Quick start**
+
+```bash
+# Using Sushi Kitchen profiles (recommended)
+docker compose --profile hosomaki up -d
+
+# Or run n8n standalone
+docker compose up -d n8n
+```
+
+- **Web UI:** http://localhost:5678  
+- **API:** http://localhost:5678/api/v1  
+- **Webhook URL:** http://localhost:5678/webhook/[workflow-id]  
+- **First run:** Create your admin account, then start building workflows immediately
+
+---
+
+## **Configuration**
+
+### Environment Variables
+
+| **Variable** | **Default** | **Required** | **Notes** |
+|--------------|-------------|--------------|-----------|
+| `N8N_ENCRYPTION_KEY` | (none) | Yes | 32+ character string for credential encryption |
+| `N8N_HOST` | `localhost` | No | Public hostname for webhook URLs |
+| `N8N_PORT` | `5678` | No | Internal port (rarely needs changing) |
+| `N8N_PROTOCOL` | `http` | No | Set to `https` when using TLS |
+| `DB_TYPE` | `postgresdb` | No | Database type (sqlite3, postgresdb, mysqldb) |
+| `DB_POSTGRESDB_HOST` | `postgres` | No | PostgreSQL hostname |
+| `DB_POSTGRESDB_PASSWORD` | `changeme` | Yes | PostgreSQL password |
+| `EXECUTIONS_DATA_SAVE_ON_ERROR` | `all` | No | Save failed execution data |
+| `EXECUTIONS_DATA_SAVE_ON_SUCCESS` | `all` | No | Save successful execution data |
+| `N8N_BASIC_AUTH_ACTIVE` | `false` | No | Enable basic authentication |
+| `N8N_BASIC_AUTH_USER` | (none) | If auth enabled | Basic auth username |
+| `N8N_BASIC_AUTH_PASSWORD` | (none) | If auth enabled | Basic auth password |
+
+### Advanced Configuration
+
+For production deployments, consider these additional settings:
+
+```bash
+# Performance tuning
+N8N_CONCURRENCY_PRODUCTION_LIMIT=10  # Max parallel executions
+N8N_PAYLOAD_SIZE_MAX=16              # Max payload size in MB
+
+# Security hardening
+N8N_BLOCK_ENV_ACCESS_IN_NODE=true    # Block env var access in code nodes
+N8N_DISABLE_UI=false                 # API-only mode
+
+# Workflow settings
+EXECUTIONS_DATA_MAX_AGE=336          # Hours to keep execution data
+EXECUTIONS_DATA_PRUNE=true           # Auto-delete old executions
+```
+
+---
+
+## **Volumes**
+
+- `n8n_data:/home/node/.n8n` — Workflows, credentials, and settings
+- `./n8n/workflows:/workflows` — Shared workflow templates (optional)
+- `./n8n/custom:/home/node/.n8n/custom` — Custom nodes (optional)
+
+---
+
+## **Compose snippet**
+
+```yaml
+services:
+  n8n:
+    image: n8nio/n8n:1.23.0
+    profiles: ["hosomaki"]
+    container_name: sushi-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"  # Web UI and API
+    environment:
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - N8N_HOST=${N8N_HOST:-localhost}
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=${N8N_PROTOCOL:-http}
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB:-sushidb}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER:-sushi}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD:-changeme}
+      - EXECUTIONS_DATA_SAVE_ON_ERROR=all
+      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=all
+      - GENERIC_TIMEZONE=${TZ:-America/New_York}
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./n8n/workflows:/workflows:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - sushi-net
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  n8n_data:
+```
+
+---
+
+## **Video Tutorials**
+
+### Getting Started with n8n
+[![n8n Beginner Tutorial](https://img.youtube.com/vi/RpjQTGKm-ok/maxresdefault.jpg)](https://www.youtube.com/watch?v=RpjQTGKm-ok)
+
+*Learn the basics of n8n in 15 minutes - creating your first workflow, understanding nodes, and automation fundamentals.*
+
+### Building AI Workflows in n8n
+[![AI Automation with n8n](https://img.youtube.com/vi/kMSGYw7rSx8/maxresdefault.jpg)](https://www.youtube.com/watch?v=kMSGYw7rSx8)
+
+*Connect n8n to OpenAI, Claude, and local LLMs through LiteLLM - build RAG pipelines, chat interfaces, and content generation workflows.*
+
+### Advanced n8n Techniques
+[![Advanced n8n Workflows](https://img.youtube.com/vi/kH5pZy85eAQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=kH5pZy85eAQ)
+
+*Master code nodes, error handling, parallel processing, and complex data transformations for production workflows.*
+
+---
+
+## **Integrations**
+
+### Works great with:
+
+- **LiteLLM** — Connect to any LLM through n8n's HTTP Request node
+- **PostgreSQL** — Store workflow data and custom tables
+- **Redis** — Queue management for heavy workflows
+- **MinIO** — Process and store files from workflows
+- **Qdrant** — Build RAG workflows with vector search
+- **ComfyUI** — Trigger image generation pipelines
+- **Flowise** — Chain complex LangChain workflows
+
+### API Endpoints
+
+- `GET /api/v1/workflows` — List all workflows
+- `POST /api/v1/workflows/{id}/activate` — Activate a workflow
+- `POST /webhook/{id}` — Trigger webhook workflows
+- `GET /healthz` — Health check endpoint
+- [Full API documentation](https://docs.n8n.io/api/)
+
+### Common Webhook Patterns
+
+```javascript
+// Webhook URL format
+http://localhost:5678/webhook/[workflow-id]
+http://localhost:5678/webhook-test/[workflow-id]  // Test mode
+
+// Custom webhook paths (set in workflow)
+http://localhost:5678/webhook/my-custom-path
+```
+
+---
+
+## **Security notes**
+
+⚠️ **Important security considerations:**
+
+- **Change the encryption key** — Generate a secure 32+ character key for `N8N_ENCRYPTION_KEY`
+- **Enable authentication** — Use basic auth or SSO for production deployments
+- **Secure webhooks** — Use webhook authentication headers for public endpoints
+- **Restrict code nodes** — Set `N8N_BLOCK_ENV_ACCESS_IN_NODE=true` in production
+
+### Recommended security setup:
+
+1. **Generate secure encryption key:**
+   ```bash
+   openssl rand -hex 32 > n8n_encryption_key.txt
+   ```
+
+2. **Enable basic authentication:**
+   ```yaml
+   environment:
+     - N8N_BASIC_AUTH_ACTIVE=true
+     - N8N_BASIC_AUTH_USER=admin
+     - N8N_BASIC_AUTH_PASSWORD=${N8N_ADMIN_PASSWORD}
+   ```
+
+3. **Use Caddy for TLS termination:**
+   ```
+   n8n.yourdomain.com {
+       reverse_proxy n8n:5678
+   }
+   ```
+
+4. **Implement webhook authentication:**
+   ```javascript
+   // In your webhook workflow
+   if ($request.headers['x-webhook-secret'] !== 'your-secret') {
+       throw new Error('Unauthorized');
+   }
+   ```
+
+---
+
+## **Troubleshooting**
+
+### Common issues:
+
+**Workflows not executing**  
+→ Check PostgreSQL connection and that the database is initialized properly
+
+**Cannot access UI at localhost:5678**  
+→ Ensure port 5678 isn't already in use: `lsof -i :5678`
+
+**Credentials not saving**  
+→ Verify `N8N_ENCRYPTION_KEY` is set and hasn't changed since last run
+
+**Webhook URLs showing wrong domain**  
+→ Set `N8N_HOST` to your public domain and `N8N_PROTOCOL` to https if using TLS
+
+**High memory usage**  
+→ Limit execution history: Set `EXECUTIONS_DATA_MAX_AGE=168` (7 days)
+
+### Health checks:
+
+```bash
+# Check if n8n is running
+docker compose ps n8n
+
+# View logs
+docker compose logs -f n8n
+
+# Test API connectivity
+curl http://localhost:5678/healthz
+
+# Check database connection
+docker compose exec n8n nc -zv postgres 5432
+```
+
+---
+
+## **Resource requirements**
+
+### Minimum (Development):
+- **CPU:** 1 core
+- **RAM:** 512MB
+- **Storage:** 1GB
+
+### Recommended (Production):
+- **CPU:** 2-4 cores
+- **RAM:** 2-4GB
+- **Storage:** 10GB SSD
+- **Network:** Low latency to integrated services
+
+### Scaling considerations:
+- Each workflow execution uses ~50-200MB RAM
+- Parallel executions multiply resource usage
+- File processing workflows need more storage
+- AI/LLM workflows benefit from more CPU
+
+---
+
+## **Upgrading**
+
+### Backup first:
+
+```bash
+# Export all workflows
+docker compose exec n8n n8n export:workflow --all --output=/workflows/backup.json
+
+# Backup volume
+docker compose down
+tar -czf n8n-backup-$(date +%Y%m%d).tar.gz ./volumes/n8n_data
+```
+
+### Update process:
+
+```bash
+# Update image version in docker-compose.yml
+# Then:
+docker compose pull n8n
+docker compose up -d n8n
+```
+
+### Migration notes:
+- **v0.x to v1.x**: Database schema migrations run automatically
+- **Encryption key**: Never change after initial setup or credentials will be lost
+- **Breaking changes**: Check [release notes](https://github.com/n8n-io/n8n/releases) before major updates
+
+---
+
+## **Recipes**
+
+### Recipe: AI Content Pipeline
+*Perfect for: Content creators, marketers, researchers*
+
+**Services needed:**
+- n8n (hosomaki)
+- AnythingLLM (futomaki) 
+- ComfyUI (uramaki)
+- MinIO (hosomaki)
+
+**Setup:**
+```bash
+docker compose --profile hosomaki --profile futomaki --profile uramaki up -d
+```
+
+**Configuration:**
+1. Create n8n workflow with RSS trigger
+2. Connect to AnythingLLM for content enhancement
+3. Generate images with ComfyUI via HTTP Request
+4. Store results in MinIO
+5. Post to social media or CMS
+
+**Example workflow:**
+```javascript
+// n8n Code node example
+const prompt = `Create image: ${$json.article_summary}`;
+const response = await $http.post('http://comfyui:8188/prompt', {
+    prompt: prompt,
+    workflow: 'text2img'
+});
+return { image_url: response.url };
+```
+
+### Recipe: Data Processing Pipeline
+*Perfect for: Data engineers, analysts*
+
+**Services needed:**
+- n8n (hosomaki)
+- PostgreSQL (hosomaki)
+- JupyterLab (chirashi)
+- Grafana (dragon)
+
+**Workflow:**
+1. Schedule n8n to fetch data from APIs
+2. Process and store in PostgreSQL
+3. Analyze in JupyterLab notebooks
+4. Visualize in Grafana dashboards
+
+---
+
+## **Performance tuning**
+
+### For high-volume workflows:
+
+```yaml
+# Add to docker-compose.override.yml
+services:
+  n8n:
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+    environment:
+      - N8N_CONCURRENCY_PRODUCTION_LIMIT=20
+      - NODE_OPTIONS=--max-old-space-size=6144
+```
+
+### Optimization tips:
+- **Use workflow timeouts** to prevent hanging executions
+- **Implement error workflows** for automatic retry logic
+- **Split large workflows** into smaller, chained workflows
+- **Use Redis** for queue mode in high-volume scenarios
+- **Disable execution saving** for high-frequency workflows
+
+---
+
+## **Monitoring**
+
+### Metrics available:
+- `n8n_workflow_executions_total` — Total workflow executions
+- `n8n_workflow_execution_duration_seconds` — Execution duration
+- `n8n_workflow_execution_errors_total` — Failed executions
+- `n8n_node_execution_duration_seconds` — Individual node performance
+
+### Prometheus query examples:
+
+```promql
+# Workflow execution rate
+rate(n8n_workflow_executions_total[5m])
+
+# Error rate by workflow
+rate(n8n_workflow_execution_errors_total[5m]) by (workflow_name)
+
+# Average execution duration
+histogram_quantile(0.95, n8n_workflow_execution_duration_seconds)
+```
+
+### Grafana dashboard:
+- Import dashboard ID: 17522
+- Or use provided: `./dashboards/n8n-monitoring.json`
+
+---
+
+## **Development**
+
+### Building custom nodes:
+
+```bash
+# Clone n8n-nodes-starter
+git clone https://github.com/n8n-io/n8n-nodes-starter.git
+cd n8n-nodes-starter
+npm install
+npm run build
+
+# Mount in docker-compose
+volumes:
+  - ./custom-nodes:/home/node/.n8n/custom
+```
+
+### Environment setup:
+
+```bash
+# Development mode with hot reload
+docker compose run --rm -p 5678:5678 n8n n8n start --tunnel
+```
+
+### Contributing:
+- [n8n Contributing Guide](https://github.com/n8n-io/n8n/blob/master/CONTRIBUTING.md)
+- [Community Forum](https://community.n8n.io)
+- [Discord Server](https://discord.gg/n8n)
+
+---
+
+## **References**
+
+- 📚 [Official Documentation](https://docs.n8n.io)
+- 💬 [Community Forum](https://community.n8n.io)
+- 🐙 [GitHub Repository](https://github.com/n8n-io/n8n)
+- 🎥 [n8n YouTube Channel](https://www.youtube.com/n8n-io)
+- 📖 [API Reference](https://docs.n8n.io/api/)
+- 🎓 [n8n Academy](https://academy.n8n.io)
+- 🔧 [Workflow Templates](https://n8n.io/workflows)
+
+---
+
+*Part of the [Sushi Kitchen](https://github.com/yourusername/sushi-kitchen) project - Quick, Easy, Served Fresh*
