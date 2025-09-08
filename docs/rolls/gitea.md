@@ -70,16 +70,20 @@ Self-hosted Git service with a web UI, issues, pull requests, and CI hooks — a
 ## **Quick start**
 
 ```bash
-
-docker compose --profile tamago up -d gitea```
-
+docker compose --profile tamago up -d gitea
+```
 
 - **Web UI:** http://localhost:3350  
 - **SSH:** `ssh://git@localhost:3351`  
 - **First run:** Set `ROOT_URL` to `http://localhost:3350/`.
 
-Configuration
+
+
+# Configuration
+
 ### Environment Variables
+
+
 
 | **Variable**        | **Default**              | **Required**      | **Notes**                          |
 |---------------------|--------------------------|-------------------|------------------------------------|
@@ -98,9 +102,35 @@ Volumes
 
 gitea_data:/data — stores repositories, attachments, configs.
 
-## Compose snippet
+## **Compose snippet**
 
-Integrations
+```yaml
+services:
+  gitea:
+    image: gitea/gitea:latest
+    profiles: ["tamago"]
+    ports:
+      - "3350:3000"  # HTTP
+      - "3351:22"    # SSH
+    environment:
+      - USER_UID=${USER_UID:-1000}
+      - USER_GID=${USER_GID:-1000}
+      - GITEA__database__DB_TYPE=${GITEA_DB_TYPE:-sqlite3}
+      - GITEA__database__HOST=${GITEA_DB_HOST:-}
+      - GITEA__database__NAME=${GITEA_DB_NAME:-}
+      - GITEA__database__USER=${GITEA_DB_USER:-}
+      - GITEA__database__PASSWD=${GITEA_DB_PASSWORD:-}
+      - GITEA__server__ROOT_URL=${GITEA_ROOT_URL:-http://localhost:3350/}
+      - GITEA__server__SSH_DOMAIN=${GITEA_SSH_DOMAIN:-localhost}
+      - GITEA__server__SSH_PORT=${GITEA_SSH_PORT:-3351}
+    volumes:
+      - gitea_data:/data
+
+```
+
+---
+
+## Integrations
 
 n8n (webhooks & automations)
 
@@ -110,19 +140,19 @@ Promtail + Loki (logs)
 
 OTEL collector (traces)
 
-Security notes
+## Security notes
 
 Store GITEA_DB_PASSWORD in Infisical or Vaultwarden.
 
 Consider putting Gitea behind Caddy/Authentik for TLS + SSO.
 
-Troubleshooting
+## Troubleshooting
 
 Wrong clone URLs? → Set ROOT_URL properly.
 
 SSH clone fails? → Verify host mapping 3351:22 and firewall rules.
 
-References
+## References
 
 Gitea Docs
 
