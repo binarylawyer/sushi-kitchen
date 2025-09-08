@@ -98,9 +98,9 @@ docker compose --profile tamago up -d gitea
 | `GITEA_SSH_DOMAIN`  | `localhost`              | No                | Domain for SSH clone URLs          |
 | `GITEA_SSH_PORT`    | `3351`                   | No                | Host SSH port for clone URLs       |
 
-Volumes
 
-gitea_data:/data — stores repositories, attachments, configs.
+## **Volumes**
+- `gitea_data:/data` — stores repositories, attachments, configs.
 
 ## **Compose snippet**
 
