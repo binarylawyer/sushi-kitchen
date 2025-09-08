@@ -152,8 +152,7 @@ Wrong clone URLs? → Set ROOT_URL properly.
 
 SSH clone fails? → Verify host mapping 3351:22 and firewall rules.
 
-## References
+## **References**
 
-Gitea Docs
-
-Docker Hub
+- [Gitea Docs](https://docs.gitea.com/)
+- [Docker Hub — gitea/gitea](https://hub.docker.com/r/gitea/gitea)
