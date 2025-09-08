@@ -2,7 +2,7 @@
 title: n8n
 profile: hosomaki
 category: automation
-status: core
+status: core 
 image: n8nio/n8n:1.23.0
 ports: ["5678:5678"]
 env_vars:
