@@ -71,16 +71,13 @@ Self-hosted Git service with a web UI, issues, pull requests, and CI hooks — a
 
 ```bash
 
-
+~~~bash
 docker compose --profile tamago up -d gitea
+~~~
 
-'''
-
-* Web UI → http://localhost:3350
-
-* SSH → ssh://git@localhost:3351
-
-First-run: create an admin user in the web UI; set ROOT_URL to http://localhost:3350/.
+- **Web UI:** http://localhost:3350  
+- **SSH:** `ssh://git@localhost:3351`  
+- **First run:** Set `ROOT_URL` to `http://localhost:3350/`.
 
 Configuration
 Environment Variables
