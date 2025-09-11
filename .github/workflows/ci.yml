@@ -1,58 +1,46 @@
-# .github/workflows/ci.yml
 name: CI
 
 on:
   push:
     branches: [ main ]
-    paths-ignore:
-      - '**.md'
-      - '.github/ISSUE_TEMPLATE/**'
   pull_request:
     branches: [ main ]
-    paths-ignore:
-      - '**.md'
-      - '.github/ISSUE_TEMPLATE/**'
 
 permissions:
   contents: read
+  security-events: write   # needed for SARIF uploads
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  # ---- Python lane (your app/) ----
   lint:
     name: Ruff Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
-      - name: Install ruff
-        run: pip install ruff
-      - name: Run ruff
-        run: ruff check .
+      - run: pip install ruff
+      - run: ruff check .
 
   typecheck:
     name: Mypy Type Check
     runs-on: ubuntu-latest
     needs: [lint]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
       - name: Install mypy and deps
         run: |
           pip install mypy
-          # install your app deps if needed for type stubs
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Run mypy (skip if no app/)
         run: |
@@ -63,10 +51,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [typecheck]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -81,34 +67,38 @@ jobs:
       - name: Run tests
         run: pytest -q
 
-name: ci
-on:
-  pull_request:
-  push:
-    branches: [ main ]
-
-jobs:
+  # ---- Node/docs lane (schema, compose, links, Trivy) ----
   quality:
+    name: Quality (schema, compose, links, Trivy)
     runs-on: ubuntu-latest
+    needs: [tests]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'pnpm'
+
       - name: Install deps
         run: |
           npm i -g pnpm
-          pnpm -w i
+          pnpm -w install
+
+      # Make these blocking to enforce quality. If you prefer advisory, add "|| true".
       - name: Lint & style
         run: |
-          pnpm -w format:check || true
-          pnpm -w lint || true
+          pnpm -w format:check
+          pnpm -w lint
+
       - name: Schema validate
         run: pnpm -w validate:schema
+
       - name: Compose validate
         run: docker compose config
-      - name: Link check
-        run: pnpm -w check:links
+
+      - name: Link check (advisory until tuned)
+        run: pnpm -w check:links || true
+
       - name: Trivy scan (advisory)
         uses: aquasecurity/trivy-action@0.18.0
         with:
@@ -117,8 +107,7 @@ jobs:
           format: sarif
           output: trivy.sarif
 
-# .github/workflows/ci.yml (after Trivy step that writes trivy.sarif)
-- name: Upload Trivy scan results
-  uses: github/codeql-action/upload-sarif@v2
-  with:
-    sarif_file: trivy.sarif
+      - name: Upload Trivy SARIF
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: trivy.sarif
