@@ -1,0 +1,15 @@
+/node_modules
+/.next
+/.turbo
+/.vercel
+/.cache
+/.idea
+/dist
+/coverage
+/.logs
+/db_backups
+/observability/grafana/dashboards/*.json
+/observability/prometheus.yml
+/.env
+/.env.*
+/ollama_models
