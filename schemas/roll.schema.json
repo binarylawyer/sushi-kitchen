@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://sushi.kitchen/schemas/roll.schema.json",
+    "title": "Roll (Agent/Service/Tool Profile)",
+    "type": "object",
+    "required": ["id", "name", "version", "type", "description", "author"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string", "pattern": "^[a-z0-9]([a-z0-9-_]{1,62})$", "description": "Stable, URL-safe identifier" },
+      "name": { "type": "string", "minLength": 3, "maxLength": 80 },
+      "version": { "type": "string", "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[\\da-z-]+(?:\\.[\\da-z-]+)*)?(?:\\+[\\da-z-]+)?$", "description": "SemVer" },
+      "type": { "type": "string", "enum": ["llm-agent", "tool", "service"] },
+      "description": { "type": "string", "minLength": 10 },
+      "author": { "type": "string" },
+      "tags": { "type": "array", "items": { "type": "string" }, "maxItems": 20 },
+      "inputs": { "type": "array", "items": { "$ref": "#/definitions/ioField" }, "maxItems": 50 },
+      "outputs": { "type": "array", "items": { "$ref": "#/definitions/ioField" }, "maxItems": 50 },
+      "resources": { "type": "array", "items": { "type": "string", "enum": ["n8n", "ollama", "langfuse", "prometheus", "grafana", "postgres", "comfyui", "litellm"] } },
+      "tools": { "type": "array", "items": { "type": "string" }, "maxItems": 50 },
+      "env": { "type": "array", "items": { "type": "string", "pattern": "^[A-Z0-9_]+(=.*)?$" }, "maxItems": 100 },
+      "security": { "type": "object", "additionalProperties": false, "properties": { "notes": { "type": "string" }, "disallowed": { "type": "array", "items": { "type": "string" } } } },
+      "license": { "type": "string", "default": "Apache-2.0" },
+      "docs": { "type": "object", "additionalProperties": false, "properties": { "url": { "type": "string", "format": "uri-reference" } } },
+      "compat": { "type": "string", "pattern": "^>=?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$", "description": "Minimum stack version" },
+      "validated": { "type": "boolean", "default": false },
+      "marketplace": { "type": "object", "additionalProperties": false, "properties": { "visibility": { "type": "string", "enum": ["public", "unlisted"] } } }
+    },
+    "definitions": {
+      "ioField": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,63}$", "description": "snake_case field name" }
+    }
+  }
+  

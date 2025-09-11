@@ -1,0 +1,33 @@
+items:
+  - id: meeting-minutes-platter
+    type: platter
+    name: Meeting Minutes Assistant
+    version: 0.1.0
+    author: @sushi
+    tags: [voice, summarization, email]
+    rolls: [whisper-transcriber, summarizer-agent, email-notifier]
+    docs: /docs/recipes/meeting-minutes
+    validated: true
+    visibility: public
+
+  - id: personal-rag-assistant
+    type: platter
+    name: Personal RAG Assistant
+    version: 0.1.0
+    author: @sushi
+    tags: [rag, docs, qa]
+    rolls: [summarizer-agent]
+    docs: /docs/recipes/personal-rag
+    validated: true
+    visibility: public
+
+  - id: image-variations-studio
+    type: platter
+    name: Image Variations Studio
+    version: 0.1.0
+    author: @sushi
+    tags: [comfyui, diffusion, images]
+    rolls: [summarizer-agent]
+    docs: /docs/recipes/image-variations
+    validated: true
+    visibility: public

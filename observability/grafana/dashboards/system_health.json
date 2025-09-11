@@ -1,0 +1,14 @@
+{
+    "uid": "sys-health",
+    "title": "System Health",
+    "tags": ["sushi", "core"],
+    "schemaVersion": 39,
+    "version": 1,
+    "panels": [
+      { "type": "stat", "title": "Uptime (Prometheus)", "targets": [{ "expr": "time() - process_start_time_seconds{job='prometheus'}" }], "gridPos": { "h": 4, "w": 6, "x": 0, "y": 0 } },
+      { "type": "graph", "title": "Prometheus tsdb_head_series", "targets": [{ "expr": "prometheus_tsdb_head_series" }], "gridPos": { "h": 7, "w": 12, "x": 6, "y": 0 } },
+      { "type": "graph", "title": "Container Restarts (approx)", "targets": [{ "expr": "sum(increase(container_restart_count_total[5m]))" }], "gridPos": { "h": 7, "w": 24, "x": 0, "y": 7 } }
+    ],
+    "time": { "from": "now-6h", "to": "now" }
+  }
+  

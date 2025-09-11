@@ -1,0 +1,15 @@
+{
+    "uid": "llm-usage",
+    "title": "LLM Usage & Latency",
+    "tags": ["sushi", "llm"],
+    "schemaVersion": 39,
+    "version": 1,
+    "panels": [
+      { "type": "stat", "title": "Requests/min", "targets": [{ "expr": "sum(rate(llm_requests_total[1m]))" }], "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 } },
+      { "type": "stat", "title": "Avg Latency (ms)", "targets": [{ "expr": "avg(llm_request_latency_ms)" }], "gridPos": { "h": 6, "w": 8, "x": 8, "y": 0 } },
+      { "type": "stat", "title": "Tokens/sec", "targets": [{ "expr": "avg(llm_tokens_per_second)" }], "gridPos": { "h": 6, "w": 8, "x": 16, "y": 0 } },
+      { "type": "graph", "title": "p95 Latency", "targets": [{ "expr": "histogram_quantile(0.95, sum(rate(llm_request_latency_ms_bucket[5m])) by (le))" }], "gridPos": { "h": 8, "w": 24, "x": 0, "y": 6 } }
+    ],
+    "time": { "from": "now-6h", "to": "now" }
+  }
+  

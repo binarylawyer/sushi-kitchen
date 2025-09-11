@@ -1,0 +1,14 @@
+{
+    "uid": "wf-reliability",
+    "title": "Workflow Reliability",
+    "tags": ["sushi", "workflows"],
+    "schemaVersion": 39,
+    "version": 1,
+    "panels": [
+      { "type": "stat", "title": "Success Rate (%)", "targets": [{ "expr": "sum(rate(n8n_workflow_success_total[5m])) / sum(rate(n8n_workflow_runs_total[5m])) * 100" }], "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 } },
+      { "type": "graph", "title": "Runs by Workflow", "targets": [{ "expr": "sum by (workflow) (rate(n8n_workflow_runs_total[5m]))" }], "gridPos": { "h": 8, "w": 24, "x": 0, "y": 6 } },
+      { "type": "stat", "title": "Failures (5m)", "targets": [{ "expr": "sum(increase(n8n_workflow_failures_total[5m]))" }], "gridPos": { "h": 6, "w": 8, "x": 8, "y": 0 } }
+    ],
+    "time": { "from": "now-6h", "to": "now" }
+  }
+  

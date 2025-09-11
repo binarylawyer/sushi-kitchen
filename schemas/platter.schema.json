@@ -1,0 +1,42 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://sushi.kitchen/schemas/platter.schema.json",
+    "title": "Platter (Preset/Combo)",
+    "type": "object",
+    "required": ["id", "name", "version", "description", "author", "rolls"],
+    "additionalProperties": false,
+    "properties": {
+      "id": { "type": "string", "pattern": "^[a-z0-9]([a-z0-9-_]{1,62})$" },
+      "name": { "type": "string", "minLength": 3, "maxLength": 80 },
+      "version": { "type": "string", "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-[\\da-z-]+(?:\\.[\\da-z-]+)*)?(?:\\+[\\da-z-]+)?$" },
+      "description": { "type": "string", "minLength": 10 },
+      "author": { "type": "string" },
+      "tags": { "type": "array", "items": { "type": "string" }, "maxItems": 20 },
+      "rolls": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+      "flow": {
+        "type": "array",
+        "items": { "$ref": "#/definitions/flowStep" },
+        "minItems": 1
+      },
+      "triggers": { "type": "array", "items": { "type": "string", "pattern": "^(manual|chat|webhook:[/a-z0-9_-]+|api:[/a-z0-9_-]+|cron:.+)$" }, "maxItems": 20 },
+      "params": { "type": "object" },
+      "estimated_resources": { "type": "object", "additionalProperties": false, "properties": { "cpu": { "type": "string" }, "ram": { "type": "string" }, "gpu": { "type": "string" } } },
+      "compat": { "type": "string", "pattern": "^>=?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$" },
+      "validated": { "type": "boolean", "default": false }
+    },
+    "definitions": {
+      "flowStep": {
+        "type": "object",
+        "required": ["step", "uses"],
+        "additionalProperties": false,
+        "properties": {
+          "step": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{0,63}$" },
+          "uses": { "type": "string" },
+          "input": {},
+          "params": {},
+          "output": { "type": "string" }
+        }
+      }
+    }
+  }
+  
