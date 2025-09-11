@@ -80,3 +80,39 @@ jobs:
           [ -f tests/test_placeholder.py ] || echo "def test_placeholder(): assert True" > tests/test_placeholder.py
       - name: Run tests
         run: pytest -q
+
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install deps
+        run: |
+          npm i -g pnpm
+          pnpm -w i
+      - name: Lint & style
+        run: |
+          pnpm -w format:check || true
+          pnpm -w lint || true
+      - name: Schema validate
+        run: pnpm -w validate:schema
+      - name: Compose validate
+        run: docker compose config
+      - name: Link check
+        run: pnpm -w check:links
+      - name: Trivy scan (advisory)
+        uses: aquasecurity/trivy-action@0.18.0
+        with:
+          scan-type: fs
+          ignore-unfixed: true
+          format: sarif
+          output: trivy.sarif

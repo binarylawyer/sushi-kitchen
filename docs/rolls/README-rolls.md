@@ -1,7 +1,5 @@
 
-  <img src="/assets/sushi kitchen 4.pngassets/sushi-kitchen-rolls-banner.png" alt="Sushi Kitchen Rolls Banner" width="600"/>
->>>>>>> ee8df7b (Fix image path in README-rolls.md for the Sushi Kitchen banner to ensure proper rendering and visual consistency.)
-</p>
+![Sushi Kitchen Rolls Banner](../../assets/sushi kitchen 4.png)
 
 # 🍣 Sushi Kitchen Rolls
 

@@ -61,3 +61,29 @@
 - Fresh clone boots + ingests sample + surfaces finding in <30 min.
 - 200+ artifacts ingested with 90% dedup in 48h.
 - CI blocking; smoke test passes.
+
+---
+
+### FILE: `ROADMAP.md`
+```md
+# Roadmap
+
+## MVP (v0.1)
+- Core & Full profiles; single internal network
+- Next.js + Supabase auth (magic links)
+- RAG on `/docs` with pgvector
+- Observability (Grafana/Prometheus/Langfuse) + Low-Maintenance mode
+- Marketplace (PR-curated), stars/likes
+- Agents: seed hierarchy, write access with guardrails
+
+## v0.2
+- Air-gapped installer (pre-seeded images)
+- SSO bridge: Authentik→Supabase mapping
+- Caddy + Cloudflare Tunnel wizard
+- Reranking & hybrid search (BM25 + vector)
+
+## v0.3
+- Agent eval harness in CI (RAG QA, tool use, summarization)
+- SBOM & image signing (Syft/Cosign); Trivy gates
+- Multi-network segmentation (DB/Secrets/Obs)
+- On-site marketplace uploads + moderation queue
