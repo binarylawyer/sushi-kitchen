@@ -14,6 +14,7 @@ nats-py==2.7.2               # NATS client
 python-dotenv==1.0.1         # load .env files
 requests==2.32.3             # basic HTTP requests
 httpx==0.27.0                # async HTTP client
+PyYAML==6.0.1                # YAML parsing for manifest generator
 
 # --- Testing & Dev ---
 pytest==8.3.2

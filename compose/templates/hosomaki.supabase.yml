@@ -1,0 +1,354 @@
+services:
+  postgres:
+    image: supabase/postgres:latest
+    container_name: sushi_postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-6543}:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./neo4j/init.cql:/docker-entrypoint-initdb.d/init.cql
+    networks:
+      - sushi-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "homepage.group=Core"
+      - "homepage.name=PostgreSQL"
+      - "homepage.icon=postgresql.png"
+      - "homepage.href=http://localhost:${POSTGRES_PORT:-6543}"
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  sushi-net:
+    external: true
+```
+
+```yaml:compose/templates/hosomaki.supabase.yml
+<code_block_to_apply_changes_from>
+services:
+  postgres:
+    image: supabase/postgres:latest
+    container_name: sushi_postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-6543}:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./neo4j/init.cql:/docker-entrypoint-initdb.d/init.cql
+    networks:
+      - sushi-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "homepage.group=Core"
+      - "homepage.name=PostgreSQL"
+      - "homepage.icon=postgresql.png"
+      - "homepage.href=http://localhost:${POSTGRES_PORT:-6543}"
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  sushi-net:
+    external: true
+```
+
+```yaml:compose/templates/hosomaki.n8n.yml
+services:
+  n8n:
+    image: n8nio/n8n:1.81.1
+    container_name: sushi_n8n
+    restart: unless-stopped
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    environment:
+      - N8N_SECURE_COOKIE=false
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - sushi-net
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "homepage.group=Automation"
+      - "homepage.name=n8n"
+      - "homepage.icon=n8n.png"
+      - "homepage.href=http://localhost:${N8N_PORT:-5678}"
+
+volumes:
+  n8n_data:
+    driver: local
+
+networks:
+  sushi-net:
+    external: true
+```
+
+## **Step 3: Create a Template Assembler**
+
+Now let me create a script that can assemble these templates into full compose files:
+
+```python:scripts/assemble-templates.py
+#!/usr/bin/env python3
+"""
+🍣 Sushi Kitchen — Template Assembler
+
+This script assembles individual service templates into complete Docker Compose files.
+It reads the manifest resolver output and combines the appropriate templates.
+"""
+
+import argparse
+import yaml
+import sys
+from pathlib import Path
+from typing import Dict, List, Set
+
+def load_template(template_path: Path) -> Dict:
+    """Load a service template"""
+    if not template_path.exists():
+        return {}
+    
+    with open(template_path, 'r') as f:
+        return yaml.safe_load(f)
+
+def assemble_compose(roll_ids: Set[str], templates_dir: Path) -> Dict:
+    """Assemble compose file from templates"""
+    compose = {
+        'version': '3.9',
+        'services': {},
+        'volumes': {},
+        'networks': {
+            'sushi-net': {
+                'driver': 'bridge'
+            }
+        }
+    }
+    
+    for roll_id in roll_ids:
+        template_file = templates_dir / f"{roll_id}.yml"
+        template = load_template(template_file)
+        
+        if template and 'services' in template:
+            # Merge services
+            for service_name, service_config in template['services'].items():
+                compose['services'][service_name] = service_config
+            
+            # Merge volumes
+            if 'volumes' in template:
+                compose['volumes'].update(template['volumes'])
+    
+    return compose
+
+def main():
+    parser = argparse.ArgumentParser(description='Assemble Docker Compose from templates')
+    parser.add_argument('--rolls', nargs='+', help='Roll IDs to include')
+    parser.add_argument('--output', help='Output file path')
+    parser.add_argument('--templates-dir', default='compose/templates', help='Templates directory')
+    
+    args = parser.parse_args()
+    
+    if not args.rolls:
+        parser.error('Must specify --rolls')
+    
+    templates_dir = Path(args.templates_dir)
+    if not templates_dir.exists():
+        print(f"Error: Templates directory '{templates_dir}' not found")
+        sys.exit(1)
+    
+    roll_ids = set(args.rolls)
+    compose = assemble_compose(roll_ids, templates_dir)
+    
+    # Output
+    if args.output:
+        output_path = Path(args.output)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(output_path, 'w') as f:
+            yaml.dump(compose, f, default_flow_style=False, sort_keys=False)
+        print(f"Assembled compose file: {output_path}")
+    else:
+        print(yaml.dump(compose, default_flow_style=False, sort_keys=False))
+
+if __name__ == '__main__':
+    main()
+```
+
+## **Step 4: Create a Hybrid Generator**
+
+Now let me create a hybrid approach that combines the manifest resolver with template assembly:
+
+```python:scripts/generate-compose-hybrid.py
+#!/usr/bin/env python3
+"""
+🍣 Sushi Kitchen — Hybrid Manifest-to-Compose Generator
+
+This script combines manifest resolution with template assembly for more
+realistic Docker Compose generation.
+"""
+
+import argparse
+import yaml
+import sys
+from pathlib import Path
+from typing import Dict, List, Set, Optional, Any
+from dataclasses import dataclass
+
+# Import our existing resolver
+from generate_compose import ManifestResolver
+
+def load_template(template_path: Path) -> Dict:
+    """Load a service template"""
+    if not template_path.exists():
+        return {}
+    
+    with open(template_path, 'r') as f:
+        return yaml.safe_load(f)
+
+def assemble_from_templates(roll_ids: Set[str], templates_dir: Path) -> Dict:
+    """Assemble compose file from templates"""
+    compose = {
+        'version': '3.9',
+        'services': {},
+        'volumes': {},
+        'networks': {
+            'sushi-net': {
+                'driver': 'bridge'
+            }
+        }
+    }
+    
+    for roll_id in roll_ids:
+        template_file = templates_dir / f"{roll_id}.yml"
+        template = load_template(template_file)
+        
+        if template and 'services' in template:
+            # Merge services
+            for service_name, service_config in template['services'].items():
+                compose['services'][service_name] = service_config
+            
+            # Merge volumes
+            if 'volumes' in template:
+                compose['volumes'].update(template['volumes'])
+    
+    return compose
+
+def main():
+    parser = argparse.ArgumentParser(description='Generate Docker Compose from manifests and templates')
+    parser.add_argument('--platter', help='Platter ID to generate')
+    parser.add_argument('--combo', help='Combo ID to generate')
+    parser.add_argument('--roll', help='Single roll ID to generate')
+    parser.add_argument('--output', help='Output file path')
+    parser.add_argument('--include-optional', action='store_true', help='Include optional components')
+    parser.add_argument('--manifest-dir', default='docs/manifest', help='Manifest directory path')
+    parser.add_argument('--templates-dir', default='compose/templates', help='Templates directory path')
+    parser.add_argument('--use-templates', action='store_true', help='Use template assembly instead of manifest generation')
+    
+    args = parser.parse_args()
+    
+    if not any([args.platter, args.combo, args.roll]):
+        parser.error('Must specify --platter, --combo, or --roll')
+    
+    manifest_dir = Path(args.manifest_dir)
+    templates_dir = Path(args.templates_dir)
+    
+    if not manifest_dir.exists():
+        print(f"Error: Manifest directory '{manifest_dir}' not found")
+        sys.exit(1)
+    
+    resolver = ManifestResolver(manifest_dir)
+    
+    try:
+        if args.platter:
+            roll_ids = resolver.resolve_platter(args.platter, args.include_optional)
+            print(f"Resolving platter '{args.platter}' -> {len(roll_ids)} rolls")
+        elif args.combo:
+            roll_ids = resolver.resolve_combo(args.combo)
+            print(f"Resolving combo '{args.combo}' -> {len(roll_ids)} rolls")
+        elif args.roll:
+            roll_ids = {args.roll}
+            print(f"Generating single roll '{args.roll}'")
+        
+        # Resolve dependencies
+        all_rolls = resolver.resolve_dependencies(roll_ids)
+        print(f"With dependencies -> {len(all_rolls)} total rolls")
+        
+        # Generate compose
+        if args.use_templates and templates_dir.exists():
+            print("Using template assembly...")
+            compose = assemble_from_templates(all_rolls, templates_dir)
+        else:
+            print("Using manifest generation...")
+            compose = resolver.generate_compose(all_rolls)
+        
+        # Output
+        if args.output:
+            output_path = Path(args.output)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(output_path, 'w') as f:
+                yaml.dump(compose, f, default_flow_style=False, sort_keys=False)
+            print(f"Generated compose file: {output_path}")
+        else:
+            print(yaml.dump(compose, default_flow_style=False, sort_keys=False))
+    
+    except Exception as e:
+        print(f"Error: {e}")
+        sys.exit(1)
+
+if __name__ == '__main__':
+    main()
+```
+
+## 🎯 **What We've Accomplished**
+
+I've created a **comprehensive template system** that includes:
+
+1. ✅ **Service Templates** - Individual service definitions in `compose/templates/`
+2. ✅ **Template Assembler** - Combines templates into full compose files
+3. ✅ **Hybrid Generator** - Uses both manifest resolution and template assembly
+4. ✅ **Test Scripts** - To validate the system works
+
+##  **Next Steps**
+
+Now we can:
+
+1. **Test the template system** with a simple roll
+2. **Convert more existing compose files** to templates
+3. **Test the full workflow** from manifest to running services
+4. **Update the setup scripts** to use the new system
+
+**Would you like me to:**
+
+1. **Test the template system** with the redis template I created?
+2. **Convert more existing compose files** to templates?
+3. **Test the hybrid generator** with a simple platter?
+
+The foundation is getting stronger - let's test it and see how the template system works!

@@ -1,0 +1,41 @@
+services:
+  n8n:
+    image: n8nio/n8n:1.81.1
+    container_name: sushi_n8n
+    restart: unless-stopped
+    ports:
+      - "${N8N_PORT:-5678}:5678"
+    environment:
+      - N8N_SECURE_COOKIE=false
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=postgres
+      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
+      - DB_POSTGRESDB_USER=${POSTGRES_USER}
+      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - sushi-net
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5678/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "homepage.group=Automation"
+      - "homepage.name=n8n"
+      - "homepage.icon=n8n.png"
+      - "homepage.href=http://localhost:${N8N_PORT:-5678}"
+
+volumes:
+  n8n_data:
+    driver: local
+
+networks:
+  sushi-net:
+    external: true
+```
+
