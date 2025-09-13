@@ -1,37 +1,60 @@
+# 🍣 Sushi Kitchen — Redis Cache Chef
+# ===================================
+# 
+# 👨‍🍳 **Chef Profile**: The Lightning-Fast Sous Chef
+# 
+# Our Redis chef is the memory master of the kitchen - keeping all the hot data 
+# ready to serve instantly. No waiting around for this one! This chef remembers 
+# everything and serves it up at lightning speed.
+# 
+# 💡 **Pro Tip**: This chef works best with a password - keep your secrets safe!
+# 🔧 **Specialty**: Caching, session storage, and real-time data
+# 🌟 **Best Paired With**: Any service that needs fast data access
+# 
+# ---
+# 
+# ## 🍙 What This Chef Brings to Your Kitchen
+# 
+# - **Lightning-fast data access** - No more waiting for slow queries
+# - **Session management** - Keeps your users logged in smoothly  
+# - **Real-time features** - Perfect for live updates and notifications
+# - **Queue management** - Handles background jobs like a pro
+# 
+# ## 🚀 Ready to Serve!
+# 
+# This chef is ready to work! Just make sure to:
+# 1. Set a strong `REDIS_PASSWORD` in your `.env` file
+# 2. Configure the `REDIS_PORT` if you need a different port
+# 3. Start your kitchen and watch this chef work their magic!
+# 
+# ---
+
 services:
-  n8n:
-    image: n8nio/n8n:1.81.1
-    container_name: sushi_n8n
+  redis:
+    image: redis:7-alpine
+    container_name: sushi_redis
     restart: unless-stopped
     ports:
-      - "${N8N_PORT:-5678}:5678"
+      - "${REDIS_PORT:-6379}:6379"
     environment:
-      - N8N_SECURE_COOKIE=false
-      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
-      - DB_TYPE=postgresdb
-      - DB_POSTGRESDB_HOST=postgres
-      - DB_POSTGRESDB_DATABASE=${POSTGRES_DB}
-      - DB_POSTGRESDB_USER=${POSTGRES_USER}
-      - DB_POSTGRESDB_PASSWORD=${POSTGRES_PASSWORD}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     volumes:
-      - n8n_data:/home/node/.n8n
+      - redis_data:/data
     networks:
       - sushi-net
-    depends_on:
-      - postgres
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5678/healthz"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 30s
       timeout: 10s
       retries: 3
     labels:
-      - "homepage.group=Automation"
-      - "homepage.name=n8n"
-      - "homepage.icon=n8n.png"
-      - "homepage.href=http://localhost:${N8N_PORT:-5678}"
+      - "homepage.group=Core"
+      - "homepage.name=Redis"
+      - "homepage.icon=redis.png"
+      - "homepage.href=http://localhost:${REDIS_PORT:-6379}"
 
 volumes:
-  n8n_data:
+  redis_data:
     driver: local
 
 networks:

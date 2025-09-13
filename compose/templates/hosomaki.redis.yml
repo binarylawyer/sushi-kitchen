@@ -1,3 +1,34 @@
+# 🍣 Sushi Kitchen — Redis Cache Chef
+# ===================================
+#
+# 👨‍🍳 **Chef Profile**: The Lightning-Fast Sous Chef
+#
+# Our Redis chef is the memory master of the kitchen - keeping all the hot data
+# ready to serve instantly. No waiting around for this one! This chef remembers
+# everything and serves it up at lightning speed.
+#
+# 💡 **Pro Tip**: This chef works best with a password - keep your secrets safe!
+# 🎯 **Specialty**: Caching, session storage, and real-time data
+# 🌟 **Best Paired With**: Any service that needs fast data access
+#
+# ---
+#
+# ## 🍙 What This Chef Brings to Your Kitchen
+#
+# - **Lightning-fast data access** - No more waiting for slow queries
+# - **Session management** - Keeps your users logged in smoothly
+# - **Real-time features** - Perfect for live updates and notifications
+# - **Queue management** - Handles background jobs like a pro
+#
+# ## 🚀 Ready to Serve!
+#
+# This chef is ready to work! Just make sure to:
+# 1. Set a strong `REDIS_PASSWORD` in your `.env` file
+# 2. Configure the `REDIS_PORT` if you need a different port
+# 3. Start your kitchen and watch this chef work their magic!
+#
+# ---
+
 services:
   redis:
     image: redis:7-alpine
