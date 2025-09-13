@@ -1,159 +1,593 @@
-# Capabilities are generic labels so multiple rolls can satisfy a need.
-# Example: cap.postgres can be provided by Supabase OR a Postgres-alt (if added later).
+# =====================================================================
+# 🍣 Sushi Kitchen — CONTRACTS (v2.3)
+# Purpose: Machine-readable logic for Rolls (capabilities, deps, images,
+#          ports, env, conflicts). Keep human copy in menu-manifest.md.
+#
+# WHY separate from menu-manifest.md?
+# - Prevents drift: ops details change often (images, ports, env).
+# - Clean UX: Menu stays readable; this file powers the resolver/CLI.
+#
+# HOW UIs/CLI use this:
+# - "requires" can reference capabilities (cap.*) or roll IDs.
+# - The resolver picks ONE provider per capability (according to priority).
+# - Ports here are "defaults" and can be overridden via env/overrides.
+#
+# Conventions:
+# - image tags: pin OR allow "latest" temporarily; prefer digests in CI.
+# - ports: host are suggested defaults; users may override.
+# - environment_vars: list the keys your compose expects.
+# - suggests: optional soft deps (nice to have).
+# - conflicts: use groups below for multi-service warnings.
+# =====================================================================
 
+schema_version: "1.1"
+
+# --------------------------------------------------
+# CAPABILITIES REGISTRY (single source of truth)
+# Describe what each cap means + default providers.
+# Providers listed here are *suggested* priorities.
+# --------------------------------------------------
+capabilities:
+  cap.postgres:            { description: "PostgreSQL with pgvector (DB)", providers: [hosomaki.supabase] }
+  cap.auth:                { description: "Authentication provider", providers: [hosomaki.supabase, hanko.authentik, hanko.keycloak] }
+  cap.realtime:            { description: "Realtime channels (WS)", providers: [hosomaki.supabase] }
+
+  cap.cache:               { description: "Keyed short-term cache", providers: [hosomaki.redis] }
+  cap.queue:               { description: "Background job queue", providers: [hosomaki.redis] }
+
+  cap.llm-api:             { description: "OpenAI-compatible HTTP endpoint", providers: [hosomaki.litellm, gunkanmaki.vllm, gunkanmaki.tgi] }
+  cap.local-llm:           { description: "Local model runtime", providers: [hosomaki.ollama] }
+  cap.embeddings:          { description: "Embeddings service", providers: [futomaki.infinity] }
+
+  cap.vector-db:           { description: "Vector database", providers: [futomaki.qdrant, futomaki.chroma, futomaki.weaviate] }
+  cap.graph-db:            { description: "Graph database", providers: [futomaki.neo4j, futomaki.memgraph, futomaki.arangodb] }
+  cap.document-db:         { description: "Document store", providers: [futomaki.arangodb] }
+  cap.kv-store:            { description: "Key/Value store", providers: [futomaki.arangodb] }
+
+  cap.workflow:            { description: "Workflow automation/orchestration", providers: [hosomaki.n8n] }
+  cap.chat-ui:             { description: "Chat user interface", providers: [temaki.open-webui, futomaki.anythingllm] }
+  cap.ui-gen:              { description: "UI generator (experimental)", providers: [temaki.openui] }
+  cap.asr:                 { description: "Automatic speech recognition", providers: [temaki.whisper] }
+  cap.tts:                 { description: "Text-to-speech", providers: [temaki.piper] }
+  cap.voice-clone:         { description: "Voice cloning", providers: [temaki.openvoice] }
+
+  cap.image-gen:           { description: "Image generation", providers: [uramaki.comfyui] }
+  cap.video-gen:           { description: "Programmatic video generation", providers: [uramaki.remotion] }
+  cap.media-tool:          { description: "Media CLI utilities", providers: [uramaki.ffmpeg] }
+  cap.video-analysis:      { description: "Video analysis utilities", providers: [uramaki.scanned] }
+  cap.image-tool:          { description: "Image manipulation toolkit", providers: [uramaki.imagemagick] }
+  cap.storage-sync:        { description: "Storage sync/bridge", providers: [uramaki.rclone] }
+
+  cap.metrics:             { description: "Metrics collection", providers: [dragon.prometheus] }
+  cap.dashboards:          { description: "Dashboards/visualization", providers: [dragon.grafana] }
+  cap.container-metrics:   { description: "Container resource metrics", providers: [dragon.cadvisor] }
+  cap.llm-observability:   { description: "LLM tracing & analytics", providers: [dragon.langfuse] }
+  cap.telemetry-collector: { description: "OpenTelemetry collector", providers: [dragon.otel-collector] }
+  cap.logs:                { description: "Log aggregation", providers: [dragon.loki] }
+  cap.log-shipper:         { description: "Log shipping agent", providers: [dragon.promtail] }
+  cap.code-quality:        { description: "Static analysis / code quality", providers: [dragon.sonarqube] }
+  cap.service-mesh:        { description: "Service mesh (K8s)", providers: [dragon.istio] }
+  cap.reverse-proxy:       { description: "Reverse proxy / routing", providers: [hosomaki.caddy, dragon.traefik] }
+
+  cap.ide:                 { description: "Web IDE", providers: [tamago.vscode-server] }
+  cap.notebooks:           { description: "Notebook environment", providers: [tamago.jupyterlab] }
+  cap.dashboarding:        { description: "Lightweight dashboards", providers: [tamago.panel] }
+  cap.parallel-compute:    { description: "Parallel/distributed compute", providers: [tamago.dask] }
+  cap.docs-site:           { description: "Docs site generator", providers: [tamago.docusaurus] }
+  cap.analytics-db:        { description: "Analytical DB (OLAP)", providers: [tamago.duckdb] }
+  cap.embedded-db:         { description: "Embedded relational DB", providers: [tamago.sqlite] }
+
+  cap.experiment-tracking: { description: "ML experiment tracking", providers: [spider.mlflow] }
+  cap.distributed-train:   { description: "Distributed training", providers: [spider.ray] }
+  cap.distributed-serve:   { description: "Distributed serving", providers: [spider.ray] }
+  cap.model-serving:       { description: "Packaged model serving", providers: [spider.bentoml] }
+  cap.ml-pipelines:        { description: "ML pipeline orchestration", providers: [spider.kubeflow] }
+  cap.durable-workflows:   { description: "Durable workflow engine", providers: [spider.temporal] }
+
+  cap.object-store:        { description: "S3-compatible object storage", providers: [shoyu.minio] }
+  cap.backups:             { description: "Backup engine", providers: [shoyu.restic, shoyu.duplicati, shoyu.borgbackup] }
+  cap.db-admin:            { description: "DB admin UI", providers: [shoyu.pgadmin] }
+  cap.kv-admin:            { description: "KV/Redis admin UI", providers: [shoyu.redisinsight] }
+  cap.pg-backup:           { description: "Postgres backup tool", providers: [shoyu.pgbackrest] }
+
+  cap.sso:                 { description: "Single Sign-On / IdP", providers: [hanko.authentik, hanko.keycloak] }
+  cap.secrets:             { description: "Secrets manager", providers: [hanko.infisical, hanko.vault] }
+  cap.passwords:           { description: "Password manager", providers: [hanko.vaultwarden] }
+  cap.pki:                 { description: "PKI / certificates", providers: [hanko.vault] }
+  cap.git-secrets:         { description: "Git-based secrets encryption", providers: [hanko.sops] }
+  cap.k8s-secrets:         { description: "Kubernetes-native secrets", providers: [hanko.sealed-secrets] }
+
+  cap.gpu-infer:           { description: "GPU inference runtime", providers: [gunkanmaki.vllm, gunkanmaki.tgi, gunkanmaki.triton] }
+
+# ---------------------------------------------
+# GLOBAL DEFAULTS (used by generators/resolver)
+# ---------------------------------------------
+defaults:
+  network: sushi-net
+  image_pull_policy: "if-not-present"
+  # NOTE: host ports below are "suggested defaults".
+  # Users can override via env or compose overrides.
+
+# ---------------------------------------------
+# ROLLS — capabilities + operational metadata
+# - image : container image (prefer pinned tag or digest)
+# - ports : [{ container: <int>, host: <int> }]
+# - environment_vars : list of keys your compose expects
+# - requires/suggests/provides : see capabilities above
+# ---------------------------------------------
 rolls:
+
+  # ===== Hosomaki (Core) =====
   hosomaki.supabase:
     provides: [cap.postgres, cap.auth, cap.realtime]
+    image: "supabase/postgres:latest"           # TIP: pin digest in CI
+    ports: [{ container: 5432, host: 6543 }]    # avoid clobbering local 5432
+    environment_vars: [POSTGRES_PASSWORD, POSTGRES_DB]
+
   hosomaki.redis:
     provides: [cap.cache, cap.queue]
+    image: "redis:7-alpine"
+    ports: [{ container: 6379, host: 6379 }]
+    environment_vars: []
+
   hosomaki.litellm:
     provides: [cap.llm-api]
+    suggests: [hosomaki.redis]
+    image: "ghcr.io/berriai/litellm:1.0.0"
+    ports: [{ container: 4000, host: 3001 }]
+    environment_vars: [OPENAI_API_KEY, LITELLM_MASTER_KEY]
+
   hosomaki.ollama:
     provides: [cap.local-llm]
+    image: "ollama/ollama:0.1.44"
+    ports: [{ container: 11434, host: 3000 }]
+    environment_vars: [OLLAMA_MODELS]
+
   hosomaki.n8n:
     requires: [cap.postgres]
     suggests: [hosomaki.redis]
     provides: [cap.workflow]
+    image: "n8nio/n8n:latest"
+    ports: [{ container: 5678, host: 3002 }]
+    environment_vars: [N8N_HOST, N8N_ENCRYPTION_KEY, DB_POSTGRESDB_HOST]
+
   hosomaki.caddy:
     provides: [cap.reverse-proxy]
+    image: "caddy:2-alpine"
+    ports: [{ container: 80, host: 8080 }, { container: 443, host: 8443 }]
+    environment_vars: []
 
+  hosomaki.portainer:
+    provides: []   # pure UI helper; no cap needed
+    image: "portainer/portainer-ce:latest"
+    ports: [{ container: 9000, host: 9000 }]
+    environment_vars: []
+
+  # ===== Temaki (Voice/Chat) =====
   temaki.open-webui:
     requires: [cap.llm-api]
     suggests: [hosomaki.litellm]
     provides: [cap.chat-ui]
+    image: "ghcr.io/open-webui/open-webui:latest"
+    ports: [{ container: 8080, host: 3021 }]
+    environment_vars: [OPENAI_API_BASE_URL, OPENAI_API_KEY]
+
   temaki.whisper:
     provides: [cap.asr]
+    image: "onerahmet/openai-whisper-asr-webservice:latest"
+    ports: [{ container: 9000, host: 3022 }]
+    environment_vars: [ASR_MODEL, WHISPER_BEAM_SIZE]
+
   temaki.piper:
     provides: [cap.tts]
+    image: "rhasspy/piper:latest"
+    ports: [{ container: 10200, host: 3023 }]
+    environment_vars: [PIPER_VOICE]
+
   temaki.openvoice:
     suggests: [temaki.piper]
     provides: [cap.voice-clone]
+    image: "ghcr.io/myshell-ai/openvoice:latest"
+    ports: [{ container: 7860, host: 3024 }]
+    environment_vars: []
+
   temaki.openui:
     provides: [cap.ui-gen]
+    image: "ghcr.io/wandb/openui:latest"
+    ports: [{ container: 5173, host: 3025 }]
+    environment_vars: []
 
+  temaki.adorable-clone:
+    provides: [cap.chat-ui]        # lightweight alternative UI
+    image: "sushi-kitchen/adorable-clone:latest"
+    ports: [{ container: 3000, host: 3026 }]
+    environment_vars: []
+
+  # ===== Futomaki (RAG/DBs) =====
   futomaki.qdrant:
     provides: [cap.vector-db]
+    image: "qdrant/qdrant:latest"
+    ports: [{ container: 6333, host: 3010 }]
+    environment_vars: [QDRANT__STORAGE__PATH]
+
   futomaki.chroma:
     provides: [cap.vector-db]
+    image: "ghcr.io/chroma-core/chroma:latest"
+    ports: [{ container: 8000, host: 3011 }]
+    environment_vars: []
+
   futomaki.weaviate:
     provides: [cap.vector-db]
+    image: "semitechnologies/weaviate:latest"
+    ports: [{ container: 8080, host: 3012 }]
+    environment_vars: [QUERY_DEFAULTS_LIMIT, AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED]
+
   futomaki.neo4j:
     provides: [cap.graph-db]
+    image: "neo4j:5"
+    ports:
+      - { container: 7474, host: 3013 }  # HTTP
+      - { container: 7687, host: 3014 }  # Bolt
+    environment_vars: [NEO4J_AUTH]
+
   futomaki.memgraph:
     provides: [cap.graph-db]
+    image: "memgraph/memgraph:latest"
+    ports: [{ container: 7687, host: 3015 }]
+    environment_vars: []
+
   futomaki.arangodb:
     provides: [cap.graph-db, cap.document-db, cap.kv-store]
+    image: "arangodb/arangodb:latest"
+    ports: [{ container: 8529, host: 3016 }]
+    environment_vars: [ARANGO_ROOT_PASSWORD]
+
   futomaki.infinity:
     provides: [cap.embeddings]
+    image: "michaelf34/infinity:latest"
+    ports: [{ container: 7997, host: 3017 }]
+    environment_vars: [MODEL_NAME]
+
   futomaki.anythingllm:
     requires: [cap.llm-api, cap.vector-db]
     suggests: [cap.embeddings]
     provides: [cap.rag-ui]
+    image: "mintplexlabs/anythingllm:latest"
+    ports: [{ container: 3001, host: 3018 }]
+    environment_vars: [EMBEDDINGS_BASE_URL, OPENAI_API_KEY]
+
   futomaki.flowise:
     provides: [cap.agent-builder]
+    image: "flowiseai/flowise:latest"
+    ports: [{ container: 3000, host: 3019 }]
+    environment_vars: [FLOWISE_USERNAME, FLOWISE_PASSWORD]
+
   futomaki.dify:
     provides: [cap.agent-orchestrator]
+    image: "langgenius/dify-api:latest"
+    ports: [{ container: 5001, host: 30120 }]
+    environment_vars: [DIFY_ENCRYPTION_KEY]
 
+  # ===== Uramaki (Visual/Media) =====
   uramaki.comfyui:
-    requires: []
-    suggests: [gunkanmaki.vllm]   # for LLM node integrations (optional)
     provides: [cap.image-gen]
+    image: "yanwk/comfyui-boot:latest"
+    ports: [{ container: 8188, host: 3030 }]
+    environment_vars: [COMFYUI_MODELS_PATH]
+
   uramaki.ffmpeg:
     provides: [cap.media-tool]
+    image: "jrottenberg/ffmpeg:latest"
+    ports: []
+    environment_vars: []
+
   uramaki.remotion:
     provides: [cap.video-gen]
+    image: "remotion/remotion:latest"
+    ports: [{ container: 3000, host: 3031 }]
+    environment_vars: []
+
   uramaki.scanned:
     provides: [cap.video-analysis]
+    image: "ghcr.io/scanned/scanned:latest"
+    ports: [{ container: 8000, host: 3032 }]
+    environment_vars: []
+
   uramaki.rclone:
     provides: [cap.storage-sync]
+    image: "rclone/rclone:latest"
+    ports: []
+    environment_vars: [RCLONE_CONFIG]
+
   uramaki.imagemagick:
     provides: [cap.image-tool]
+    image: "dpokidov/imagemagick:latest"
+    ports: []
+    environment_vars: []
 
+  # ===== Dragon Roll (Observability) =====
   dragon.prometheus:
     provides: [cap.metrics]
+    image: "prom/prometheus:latest"
+    ports: [{ container: 9090, host: 3040 }]
+    environment_vars: []
+
   dragon.grafana:
     provides: [cap.dashboards]
+    image: "grafana/grafana:latest"
+    ports: [{ container: 3000, host: 3041 }]
+    environment_vars: [GF_SECURITY_ADMIN_USER, GF_SECURITY_ADMIN_PASSWORD]
+
   dragon.cadvisor:
     provides: [cap.container-metrics]
+    image: "gcr.io/cadvisor/cadvisor:latest"
+    ports: [{ container: 8080, host: 3042 }]
+    environment_vars: []
+
   dragon.langfuse:
     provides: [cap.llm-observability]
+    image: "langfuse/langfuse:latest"
+    ports: [{ container: 3000, host: 3043 }]
+    environment_vars: [DATABASE_URL]
+
   dragon.otel-collector:
     provides: [cap.telemetry-collector]
+    image: "otel/opentelemetry-collector:latest"
+    ports:
+      - { container: 4317, host: 3044 }  # OTLP gRPC
+      - { container: 4318, host: 3045 }  # OTLP HTTP
+    environment_vars: []
+
   dragon.loki:
     provides: [cap.logs]
+    image: "grafana/loki:latest"
+    ports: [{ container: 3100, host: 3046 }]
+    environment_vars: []
+
   dragon.promtail:
     requires: [dragon.loki]
     provides: [cap.log-shipper]
+    image: "grafana/promtail:latest"
+    ports: []
+    environment_vars: [LOKI_URL]
+
   dragon.sonarqube:
     provides: [cap.code-quality]
+    image: "sonarqube:lts-community"
+    ports: [{ container: 9000, host: 3047 }]
+    environment_vars: [SONARQUBE_JDBC_URL]
+
   dragon.istio:
     provides: [cap.service-mesh]
+    image: "istio/pilot:latest"       # NOTE: K8s-only; placeholder for roadmap
+    ports: []
+    environment_vars: []
+    # TIP: mark as K8s-only in UI.
+
   dragon.traefik:
     provides: [cap.reverse-proxy]
+    image: "traefik:latest"
+    ports:
+      - { container: 80, host: 8081 }
+      - { container: 443, host: 8444 }
+    environment_vars: []
 
+  # ===== Tamago (Dev Tools) =====
   tamago.vscode-server:
     provides: [cap.ide]
+    image: "codercom/code-server:latest"
+    ports: [{ container: 8080, host: 3050 }]
+    environment_vars: [PASSWORD]
+
   tamago.jupyterlab:
     provides: [cap.notebooks]
+    image: "jupyter/datascience-notebook:latest"
+    ports: [{ container: 8888, host: 3051 }]
+    environment_vars: [JUPYTER_TOKEN]
+
   tamago.panel:
     provides: [cap.dashboarding]
+    image: "pyviz/panel:latest"
+    ports: [{ container: 80, host: 3052 }]
+    environment_vars: []
+
   tamago.dask:
     provides: [cap.parallel-compute]
+    image: "daskdev/dask:latest"
+    ports:
+      - { container: 8786, host: 3053 }  # scheduler
+      - { container: 8787, host: 3054 }  # dashboard
+    environment_vars: []
+
   tamago.docusaurus:
     provides: [cap.docs-site]
+    image: "node:18-alpine"             # Node base; your site image may differ
+    ports: [{ container: 3000, host: 3055 }]
+    environment_vars: []
+
   tamago.duckdb:
     provides: [cap.analytics-db]
+    image: "duckdb/duckdb:latest"
+    ports: []
+    environment_vars: []
+
   tamago.sqlite:
     provides: [cap.embedded-db]
+    image: "alpine/sqlite:latest"
+    ports: []
+    environment_vars: []
 
+  # ===== Spider Roll (MLOps) =====
   spider.mlflow:
     provides: [cap.experiment-tracking]
+    image: "ghcr.io/mlflow/mlflow:latest"    # prefer maintained MLflow image
+    ports: [{ container: 5000, host: 3061 }]
+    environment_vars: [BACKEND_STORE_URI, ARTIFACT_ROOT]
+
   spider.ray:
     provides: [cap.distributed-train, cap.distributed-serve]
+    image: "rayproject/ray:latest"
+    ports:
+      - { container: 8265, host: 3062 }  # dashboard
+      - { container: 6379, host: 3063 }  # redis (ray internal)
+    environment_vars: []
+
   spider.bentoml:
     provides: [cap.model-serving]
+    image: "bentoml/bentoml:latest"
+    ports: [{ container: 3000, host: 3064 }]
+    environment_vars: []
+
   spider.kubeflow:
     provides: [cap.ml-pipelines]
+    image: "kubeflownotebookswg/jupyter-scipy:latest"  # K8s-focused; roadmap
+    ports: []
+    environment_vars: []
+
   spider.temporal:
     provides: [cap.durable-workflows]
+    image: "temporalio/temporal:latest"
+    ports:
+      - { container: 7233, host: 3065 }  # Temporal Frontend
+    environment_vars: []
 
+  # ===== Shoyu (Storage/Backups) =====
   shoyu.minio:
     provides: [cap.object-store]
+    image: "minio/minio:latest"
+    ports: [{ container: 9000, host: 3070 }]
+    environment_vars: [MINIO_ROOT_USER, MINIO_ROOT_PASSWORD]
+
   shoyu.restic:
-    requires: [cap.object-store]   # strongly suggested; can also do local FS
+    requires: [cap.object-store]
     provides: [cap.backups]
+    image: "restic/restic:latest"
+    ports: []
+    environment_vars: [RESTIC_REPOSITORY, RESTIC_PASSWORD]
+
   shoyu.duplicati:
     provides: [cap.backups]
+    image: "duplicati/duplicati:latest"
+    ports: [{ container: 8200, host: 3071 }]
+    environment_vars: []
+
   shoyu.pgadmin:
     requires: [cap.postgres]
     provides: [cap.db-admin]
+    image: "dpage/pgadmin4:latest"
+    ports: [{ container: 80, host: 3072 }]
+    environment_vars: [PGADMIN_DEFAULT_EMAIL, PGADMIN_DEFAULT_PASSWORD]
+
   shoyu.redisinsight:
-    requires: [cap.queue]          # or cap.cache
+    requires: [cap.queue]   # or cap.cache
     provides: [cap.kv-admin]
+    image: "redislabs/redisinsight:latest"
+    ports: [{ container: 8001, host: 3073 }]
+    environment_vars: []
+
   shoyu.borgbackup:
     provides: [cap.backups]
+    image: "borgbackup/borg:latest"
+    ports: []
+    environment_vars: []
+
   shoyu.pgbackrest:
     requires: [cap.postgres]
     provides: [cap.pg-backup]
+    image: "pgbackrest/pgbackrest:latest"
+    ports: []
+    environment_vars: []
 
+  # ===== Hanko (Identity/Security) =====
   hanko.authentik:
     provides: [cap.sso]
+    image: "ghcr.io/goauthentik/server:latest"
+    ports: [{ container: 9000, host: 3080 }]
+    environment_vars: [AUTHENTIK_SECRET_KEY]
+
   hanko.keycloak:
     provides: [cap.sso]
+    image: "quay.io/keycloak/keycloak:latest"
+    ports: [{ container: 8080, host: 3081 }]
+    environment_vars: [KEYCLOAK_ADMIN, KEYCLOAK_ADMIN_PASSWORD]
+
   hanko.infisical:
     provides: [cap.secrets]
+    image: "infisical/infisical:latest"
+    ports: [{ container: 8080, host: 3082 }]
+    environment_vars: [ENCRYPTION_KEY]
+
   hanko.vaultwarden:
     provides: [cap.passwords]
+    image: "vaultwarden/server:latest"
+    ports: [{ container: 80, host: 3083 }]
+    environment_vars: []
+
   hanko.vault:
     provides: [cap.secrets, cap.pki]
+    image: "vault:latest"
+    ports: [{ container: 8200, host: 3084 }]
+    environment_vars: [VAULT_DEV_ROOT_TOKEN_ID]
+
   hanko.sops:
     provides: [cap.git-secrets]
+    image: "mozilla/sops:latest"
+    ports: []
+    environment_vars: []
+
   hanko.sealed-secrets:
     provides: [cap.k8s-secrets]
+    image: "bitnami/sealed-secrets-controller:latest"
+    ports: []
+    environment_vars: []
 
+  # ===== Gunkanmaki (Perf Inference) =====
   gunkanmaki.vllm:
     provides: [cap.llm-api, cap.gpu-infer]
+    image: "vllm/vllm-openai:latest"
+    ports: [{ container: 8000, host: 3090 }]
+    environment_vars: [VLLM_MODEL, VLLM_GPU_MEMORY_UTILIZATION]
+
   gunkanmaki.tgi:
     provides: [cap.llm-api, cap.gpu-infer]
+    image: "ghcr.io/huggingface/text-generation-inference:latest"
+    ports:
+      - { container: 80, host: 3091 }
+    environment_vars: [MODEL_ID, NUM_SHARD]
+
   gunkanmaki.triton:
     provides: [cap.gpu-infer]
+    image: "nvcr.io/nvidia/tritonserver:latest"
+    ports:
+      - { container: 8000, host: 3092 }   # HTTP
+      - { container: 8001, host: 3093 }   # gRPC
+      - { container: 8002, host: 3094 }   # Metrics
+    environment_vars: []
+    # NOTE: heavy + enterprise; ensure GPU drivers/runtime available.
+
+# -----------------------
+# CONFLICT GROUPS / RULES
+# Use "warn_user" for UX nudge rather than hard block, unless breaking.
+# -----------------------
+conflicts:
+  chat_ui_overlap:
+    description: "Multiple chat UIs may confuse users"
+    services: [temaki.open-webui, futomaki.anythingllm, temaki.adorable-clone]
+    resolution: "warn_user"
+
+  reverse_proxy_overlap:
+    description: "Multiple reverse proxies (Caddy/Traefik)"
+    services: [hosomaki.caddy, dragon.traefik]
+    resolution: "choose_one"
+
+# -----------------------
+# RESOLUTION HINTS (opt.)
+# Provide deterministic provider choices when multiple caps match.
+# -----------------------
+resolution_hints:
+  cap.llm-api: [hosomaki.litellm, gunkanmaki.vllm, gunkanmaki.tgi]
+  cap.vector-db: [futomaki.qdrant, futomaki.chroma, futomaki.weaviate]
+  cap.graph-db: [futomaki.neo4j, futomaki.memgraph, futomaki.arangodb]
+  cap.reverse-proxy: [hosomaki.caddy, dragon.traefik]
+
+# EOF
