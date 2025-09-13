@@ -1,0 +1,77 @@
+combos:
+  - id: combo.dev-feast
+    name: "Dev Feast"
+    description: "IDE + notebooks + docs."
+    includes:
+      - tamago.vscode-server
+      - tamago.jupyterlab
+      - tamago.docusaurus
+    provides: [cap.dev-env]
+
+  - id: combo.voice-loop
+    name: "Voice Loop"
+    description: "Speech-in, speech-out with orchestration."
+    includes:
+      - temaki.whisper
+      - temaki.piper
+      - hosomaki.litellm
+      - hosomaki.n8n
+    provides: [cap.voice-pipeline]
+
+  - id: combo.knowledge-bento
+    name: "Knowledge Bento"
+    description: "Turnkey RAG with UI."
+    includes:
+      - futomaki.anythingllm
+      - futomaki.qdrant
+      - hosomaki.litellm
+    provides: [cap.rag-ui, cap.vector-db, cap.llm-api]
+
+  - id: combo.creative-studio
+    name: "Creative Studio"
+    description: "Image/video generation and media plumbing."
+    includes:
+      - uramaki.comfyui
+      - uramaki.ffmpeg
+      - uramaki.rclone
+    optional:
+      - uramaki.remotion
+      - uramaki.scanned
+    provides: [cap.image-gen, cap.media-tool]
+
+  - id: combo.observability-starter
+    name: "Observability Starter"
+    description: "Metrics + dashboards (logs optional)."
+    includes:
+      - dragon.prometheus
+      - dragon.grafana
+      - dragon.cadvisor
+    optional:
+      - dragon.loki
+      - dragon.promtail
+    provides: [cap.metrics, cap.dashboards]
+
+  - id: combo.security-set
+    name: "Security Set"
+    description: "SSO + secrets + passwords."
+    includes:
+      - hanko.authentik
+      - hanko.infisical
+      - hanko.vaultwarden
+    provides: [cap.sso, cap.secrets, cap.passwords]
+
+  - id: combo.data-lake-mini
+    name: "Data Lake Mini"
+    description: "Object storage + DB tooling."
+    includes:
+      - shoyu.minio
+      - shoyu.pgadmin
+    provides: [cap.object-store, cap.db-admin]
+
+  - id: combo.perf-serving
+    name: "Performance Serving"
+    description: "High-performance LLM serving."
+    includes:
+      - gunkanmaki.vllm
+      - gunkanmaki.tgi
+    provides: [cap.llm-api, cap.gpu-infer]

@@ -236,6 +236,24 @@ services:
     volumes:
       - jupyter_data:/home/jovyan/work
 
+        grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    user: "472" # non-root grafana user
+    ports:
+      - "${PORT_GRAFANA:-13000}:3000"
+    environment:
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/system_health.json
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+
+
 volumes:
   postgres_data:
   neo4j_data:

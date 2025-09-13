@@ -1,0 +1,44 @@
+popular:
+  label: "Popular"
+  tone: "positive"
+  tooltip: "High activity and community adoption; safer long-term bet."
+
+optional:
+  label: "Optional"
+  tone: "neutral"
+  tooltip: "Not required for most builds; enable for specific needs."
+
+enterprise:
+  label: "Enterprise"
+  tone: "warning"
+  tooltip: "Best for enterprise or large teams; heavier operational overhead."
+
+heavy:
+  label: "Heavy"
+  tone: "warning"
+  tooltip: "Higher resource footprint; ensure adequate CPU/RAM/GPU."
+
+gpu:
+  label: "GPU"
+  tone: "info"
+  tooltip: "Runs best with a CUDA-capable GPU; CPU fallback may be slow."
+
+k8s:
+  label: "Kubernetes"
+  tone: "info"
+  tooltip: "Primarily for Kubernetes deployments; advanced users only."
+
+future:
+  label: "Roadmap"
+  tone: "info"
+  tooltip: "Planned for later iterations; subject to change."
+
+experimental:
+  label: "Experimental"
+  tone: "warning"
+  tooltip: "Early-stage; APIs may change; expect rough edges."
+
+ci:
+  label: "CI/CD"
+  tone: "info"
+  tooltip: "Primarily used in development pipelines and code quality checks."

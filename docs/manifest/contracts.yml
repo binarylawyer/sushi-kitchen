@@ -1,0 +1,159 @@
+# Capabilities are generic labels so multiple rolls can satisfy a need.
+# Example: cap.postgres can be provided by Supabase OR a Postgres-alt (if added later).
+
+rolls:
+  hosomaki.supabase:
+    provides: [cap.postgres, cap.auth, cap.realtime]
+  hosomaki.redis:
+    provides: [cap.cache, cap.queue]
+  hosomaki.litellm:
+    provides: [cap.llm-api]
+  hosomaki.ollama:
+    provides: [cap.local-llm]
+  hosomaki.n8n:
+    requires: [cap.postgres]
+    suggests: [hosomaki.redis]
+    provides: [cap.workflow]
+  hosomaki.caddy:
+    provides: [cap.reverse-proxy]
+
+  temaki.open-webui:
+    requires: [cap.llm-api]
+    suggests: [hosomaki.litellm]
+    provides: [cap.chat-ui]
+  temaki.whisper:
+    provides: [cap.asr]
+  temaki.piper:
+    provides: [cap.tts]
+  temaki.openvoice:
+    suggests: [temaki.piper]
+    provides: [cap.voice-clone]
+  temaki.openui:
+    provides: [cap.ui-gen]
+
+  futomaki.qdrant:
+    provides: [cap.vector-db]
+  futomaki.chroma:
+    provides: [cap.vector-db]
+  futomaki.weaviate:
+    provides: [cap.vector-db]
+  futomaki.neo4j:
+    provides: [cap.graph-db]
+  futomaki.memgraph:
+    provides: [cap.graph-db]
+  futomaki.arangodb:
+    provides: [cap.graph-db, cap.document-db, cap.kv-store]
+  futomaki.infinity:
+    provides: [cap.embeddings]
+  futomaki.anythingllm:
+    requires: [cap.llm-api, cap.vector-db]
+    suggests: [cap.embeddings]
+    provides: [cap.rag-ui]
+  futomaki.flowise:
+    provides: [cap.agent-builder]
+  futomaki.dify:
+    provides: [cap.agent-orchestrator]
+
+  uramaki.comfyui:
+    requires: []
+    suggests: [gunkanmaki.vllm]   # for LLM node integrations (optional)
+    provides: [cap.image-gen]
+  uramaki.ffmpeg:
+    provides: [cap.media-tool]
+  uramaki.remotion:
+    provides: [cap.video-gen]
+  uramaki.scanned:
+    provides: [cap.video-analysis]
+  uramaki.rclone:
+    provides: [cap.storage-sync]
+  uramaki.imagemagick:
+    provides: [cap.image-tool]
+
+  dragon.prometheus:
+    provides: [cap.metrics]
+  dragon.grafana:
+    provides: [cap.dashboards]
+  dragon.cadvisor:
+    provides: [cap.container-metrics]
+  dragon.langfuse:
+    provides: [cap.llm-observability]
+  dragon.otel-collector:
+    provides: [cap.telemetry-collector]
+  dragon.loki:
+    provides: [cap.logs]
+  dragon.promtail:
+    requires: [dragon.loki]
+    provides: [cap.log-shipper]
+  dragon.sonarqube:
+    provides: [cap.code-quality]
+  dragon.istio:
+    provides: [cap.service-mesh]
+  dragon.traefik:
+    provides: [cap.reverse-proxy]
+
+  tamago.vscode-server:
+    provides: [cap.ide]
+  tamago.jupyterlab:
+    provides: [cap.notebooks]
+  tamago.panel:
+    provides: [cap.dashboarding]
+  tamago.dask:
+    provides: [cap.parallel-compute]
+  tamago.docusaurus:
+    provides: [cap.docs-site]
+  tamago.duckdb:
+    provides: [cap.analytics-db]
+  tamago.sqlite:
+    provides: [cap.embedded-db]
+
+  spider.mlflow:
+    provides: [cap.experiment-tracking]
+  spider.ray:
+    provides: [cap.distributed-train, cap.distributed-serve]
+  spider.bentoml:
+    provides: [cap.model-serving]
+  spider.kubeflow:
+    provides: [cap.ml-pipelines]
+  spider.temporal:
+    provides: [cap.durable-workflows]
+
+  shoyu.minio:
+    provides: [cap.object-store]
+  shoyu.restic:
+    requires: [cap.object-store]   # strongly suggested; can also do local FS
+    provides: [cap.backups]
+  shoyu.duplicati:
+    provides: [cap.backups]
+  shoyu.pgadmin:
+    requires: [cap.postgres]
+    provides: [cap.db-admin]
+  shoyu.redisinsight:
+    requires: [cap.queue]          # or cap.cache
+    provides: [cap.kv-admin]
+  shoyu.borgbackup:
+    provides: [cap.backups]
+  shoyu.pgbackrest:
+    requires: [cap.postgres]
+    provides: [cap.pg-backup]
+
+  hanko.authentik:
+    provides: [cap.sso]
+  hanko.keycloak:
+    provides: [cap.sso]
+  hanko.infisical:
+    provides: [cap.secrets]
+  hanko.vaultwarden:
+    provides: [cap.passwords]
+  hanko.vault:
+    provides: [cap.secrets, cap.pki]
+  hanko.sops:
+    provides: [cap.git-secrets]
+  hanko.sealed-secrets:
+    provides: [cap.k8s-secrets]
+
+  gunkanmaki.vllm:
+    provides: [cap.llm-api, cap.gpu-infer]
+  gunkanmaki.tgi:
+    provides: [cap.llm-api, cap.gpu-infer]
+  gunkanmaki.triton:
+    provides: [cap.gpu-infer]
