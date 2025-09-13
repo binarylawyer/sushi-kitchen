@@ -1,77 +1,236 @@
+# =====================================================================
+# 🍣 Sushi Kitchen — COMBOS (v2.3)
+# Purpose: Curated bundles of rolls that "just work" together.
+# - Keep this human-friendly and stable.
+# - Do NOT put images/ports/env here (that's contracts.yml).
+# - The resolver will auto-add required providers (via contracts.yml).
+# =====================================================================
+
+schema_version: "1.1"
+
+# ---------------------------------------------------------------------
+# Field guide (for humans & machines)
+#   id:                       unique combo identifier
+#   name:                     display name
+#   description:              short, human-friendly summary
+#   includes:                 required roll IDs (from menu/contracts)
+#   optional:                 nice-to-have roll IDs (user can tick on)
+#   provides:                 high-level capabilities the combo enables
+#   category:                 UI grouping (dev, observability, rag, etc.)
+#   difficulty:               "easy" | "intermediate" | "advanced"
+#   estimated_setup_time_min: rough time to first green lights
+#   resource_estimate:        coarse guidance (overridden by contracts)
+#   warnings:                 human warnings (e.g., GPU, heavy)
+#   success_criteria:         quick checks to confirm it's working
+#   notes:                    extra guidance for docs/UI
+# ---------------------------------------------------------------------
+
 combos:
-  - id: combo.dev-feast
-    name: "Dev Feast"
-    description: "IDE + notebooks + docs."
-    includes:
-      - tamago.vscode-server
-      - tamago.jupyterlab
-      - tamago.docusaurus
-    provides: [cap.dev-env]
 
-  - id: combo.voice-loop
-    name: "Voice Loop"
-    description: "Speech-in, speech-out with orchestration."
-    includes:
-      - temaki.whisper
-      - temaki.piper
-      - hosomaki.litellm
-      - hosomaki.n8n
-    provides: [cap.voice-pipeline]
+  # ------------------------------------------------
+  # Developer experience: IDE + notebooks + docs
+  # ------------------------------------------------
+  - id: combo.dev-tools
+    name: "Dev Tools"
+    description: "VS Code + Jupyter + Docusaurus for a comfy dev bench."
+    includes: [tamago.vscode-server, tamago.jupyterlab, tamago.docusaurus]
+    optional: []
+    provides: [cap.dev-env, cap.ide, cap.notebooks, cap.docs-site]
+    category: dev
+    difficulty: easy
+    estimated_setup_time_min: 8
+    resource_estimate: { cpu_cores: 2, ram_gb: 4, vram_gb: 0 }
+    warnings: []
+    success_criteria:
+      - "Open VS Code Server in the browser and connect."
+      - "Launch JupyterLab and run a Python cell."
+      - "Serve docs locally and view the homepage."
+    notes: "Great first combo for new users; pairs well with Observability."
 
+  # ------------------------------------------------
+  # RAG starter: UI + vector DB + LLM API
+  # ------------------------------------------------
   - id: combo.knowledge-bento
     name: "Knowledge Bento"
-    description: "Turnkey RAG with UI."
-    includes:
-      - futomaki.anythingllm
-      - futomaki.qdrant
-      - hosomaki.litellm
+    description: "Turnkey RAG starter with a friendly UI."
+    includes: [futomaki.anythingllm, futomaki.qdrant, hosomaki.litellm]
+    optional: [futomaki.infinity]  # embeddings service is nice-to-have
     provides: [cap.rag-ui, cap.vector-db, cap.llm-api]
+    category: rag
+    difficulty: intermediate
+    estimated_setup_time_min: 12
+    resource_estimate: { cpu_cores: 4, ram_gb: 8, vram_gb: 0 }
+    warnings: []
+    success_criteria:
+      - "Index a small document and get a grounded answer."
+      - "Latency < 1s for short prompts."
+    notes: "If you already run vLLM/TGI, you can point LiteLLM at those."
 
+  # ------------------------------------------------
+  # Agents / Low-code orchestration
+  # ------------------------------------------------
+  - id: combo.agent-lab
+    name: "Agent Lab"
+    description: "Low-code graph builders for agents and tools."
+    includes: [futomaki.flowise]       # baseline visual builder
+    optional: [futomaki.dify, hosomaki.litellm]
+    provides: [cap.agent-builder, cap.agent-orchestrator]
+    category: agents
+    difficulty: intermediate
+    estimated_setup_time_min: 10
+    resource_estimate: { cpu_cores: 2, ram_gb: 4, vram_gb: 0 }
+    warnings: []
+    success_criteria:
+      - "Create a simple chain/flow and execute end-to-end."
+    notes: "LiteLLM optional if you want a unified LLM gateway."
+
+  # ------------------------------------------------
+  # Voice: ASR -> LLM -> TTS loop
+  # ------------------------------------------------
+  - id: combo.voice-loop
+    name: "Voice Loop"
+    description: "Speech-in, speech-out with an orchestration brain."
+    includes: [temaki.whisper, temaki.piper, hosomaki.litellm, hosomaki.n8n]
+    optional: [temaki.openvoice]
+    provides: [cap.asr, cap.tts, cap.llm-api, cap.workflow]
+    category: voice
+    difficulty: intermediate
+    estimated_setup_time_min: 15
+    resource_estimate: { cpu_cores: 4, ram_gb: 8, vram_gb: 0 }
+    warnings:
+      - "GPU recommended for faster Whisper inference (gpu-optional)."
+    success_criteria:
+      - "Record a clip and receive a spoken response."
+    notes: "OpenVoice adds cloning; requires more compute and careful UX."
+
+  # ------------------------------------------------
+  # Creative: image/video generation & media tools
+  # ------------------------------------------------
   - id: combo.creative-studio
     name: "Creative Studio"
-    description: "Image/video generation and media plumbing."
-    includes:
-      - uramaki.comfyui
-      - uramaki.ffmpeg
-      - uramaki.rclone
-    optional:
-      - uramaki.remotion
-      - uramaki.scanned
+    description: "Image/video generation with the essential media tools."
+    includes: [uramaki.comfyui, uramaki.ffmpeg, uramaki.rclone]
+    optional: [uramaki.remotion, uramaki.scanned]
     provides: [cap.image-gen, cap.media-tool]
+    category: creative
+    difficulty: intermediate
+    estimated_setup_time_min: 14
+    resource_estimate: { cpu_cores: 6, ram_gb: 12, vram_gb: 8 }
+    warnings:
+      - "GPU strongly recommended for ComfyUI pipelines."
+    success_criteria:
+      - "Generate at least one image in ComfyUI end-to-end."
+    notes: "Add Remotion for programmatic video; Scanned for analysis."
 
-  - id: combo.observability-starter
-    name: "Observability Starter"
-    description: "Metrics + dashboards (logs optional)."
-    includes:
-      - dragon.prometheus
-      - dragon.grafana
-      - dragon.cadvisor
-    optional:
-      - dragon.loki
-      - dragon.promtail
-    provides: [cap.metrics, cap.dashboards]
+  # ------------------------------------------------
+  # Observability: basic (metrics + dashboards)
+  # ------------------------------------------------
+  - id: combo.monitoring-basic
+    name: "Monitoring (Basic)"
+    description: "Metrics + dashboards for insight into your stack."
+    includes: [dragon.prometheus, dragon.grafana, dragon.cadvisor]
+    optional: []
+    provides: [cap.metrics, cap.dashboards, cap.container-metrics]
+    category: observability
+    difficulty: easy
+    estimated_setup_time_min: 7
+    resource_estimate: { cpu_cores: 2, ram_gb: 2, vram_gb: 0 }
+    warnings: []
+    success_criteria:
+      - "Grafana shows Prometheus datasource and cAdvisor dashboards."
+    notes: "Solid default for any platter."
 
+  # ------------------------------------------------
+  # Observability: advanced (logs + tracing + LLM observability)
+  # ------------------------------------------------
+  - id: combo.monitoring-advanced
+    name: "Monitoring (Advanced)"
+    description: "Metrics, logs, tracing, and LLM analytics."
+    includes: [dragon.prometheus, dragon.grafana, dragon.cadvisor]
+    optional: [dragon.loki, dragon.promtail, dragon.otel-collector, dragon.langfuse]
+    provides: [cap.metrics, cap.dashboards, cap.logs, cap.telemetry-collector, cap.llm-observability]
+    category: observability
+    difficulty: intermediate
+    estimated_setup_time_min: 15
+    resource_estimate: { cpu_cores: 4, ram_gb: 6, vram_gb: 0 }
+    warnings: []
+    success_criteria:
+      - "Grafana logs panel shows Promtail→Loki flow."
+      - "OTel traces appear for at least one service."
+    notes: "Start basic; enable logs/tracing when you need deeper forensics."
+
+  # ------------------------------------------------
+  # Security basics: SSO + secrets + passwords
+  # ------------------------------------------------
   - id: combo.security-set
     name: "Security Set"
-    description: "SSO + secrets + passwords."
-    includes:
-      - hanko.authentik
-      - hanko.infisical
-      - hanko.vaultwarden
+    description: "SSO, app secrets, and password management."
+    includes: [hanko.authentik, hanko.infisical, hanko.vaultwarden]
+    optional: [hanko.vault]     # enterprise PKI + advanced secrets
     provides: [cap.sso, cap.secrets, cap.passwords]
+    category: security
+    difficulty: intermediate
+    estimated_setup_time_min: 18
+    resource_estimate: { cpu_cores: 2, ram_gb: 4, vram_gb: 0 }
+    warnings:
+      - "Plan your domain/issuer URLs before enabling SSO in apps."
+    success_criteria:
+      - "Login via Authentik and fetch a secret from Infisical."
+    notes: "HashiCorp Vault is powerful but heavier—offer as opt-in."
 
+  # ------------------------------------------------
+  # Storage + backup: object store + encrypted snapshots
+  # ------------------------------------------------
+  - id: combo.backup-strategy
+    name: "Backup Strategy"
+    description: "Object storage + encrypted backups for resilience."
+    includes: [shoyu.minio, shoyu.restic]
+    optional: [shoyu.duplicati, shoyu.borgbackup, shoyu.pgbackrest]
+    provides: [cap.object-store, cap.backups]
+    category: data
+    difficulty: intermediate
+    estimated_setup_time_min: 10
+    resource_estimate: { cpu_cores: 2, ram_gb: 4, vram_gb: 0 }
+    warnings:
+      - "Offsite target recommended for disaster recovery."
+    success_criteria:
+      - "A test snapshot can be created and restored."
+    notes: "pgBackRest is Postgres-specific; keep it optional."
+
+  # ------------------------------------------------
+  # Data lake mini: object store + DB admin
+  # ------------------------------------------------
   - id: combo.data-lake-mini
     name: "Data Lake Mini"
-    description: "Object storage + DB tooling."
-    includes:
-      - shoyu.minio
-      - shoyu.pgadmin
+    description: "Object storage and Postgres admin essentials."
+    includes: [shoyu.minio, shoyu.pgadmin]
+    optional: []
     provides: [cap.object-store, cap.db-admin]
+    category: data
+    difficulty: easy
+    estimated_setup_time_min: 6
+    resource_estimate: { cpu_cores: 2, ram_gb: 2, vram_gb: 0 }
+    warnings: []
+    success_criteria:
+      - "Create a bucket in MinIO and connect pgAdmin to Postgres."
+    notes: "Pairs nicely with Knowledge Bento and Dev Tools."
 
+  # ------------------------------------------------
+  # High-performance serving: choose your engine
+  # ------------------------------------------------
   - id: combo.perf-serving
     name: "Performance Serving"
-    description: "High-performance LLM serving."
-    includes:
-      - gunkanmaki.vllm
-      - gunkanmaki.tgi
+    description: "OpenAI-compatible serving with GPU acceleration."
+    includes: [gunkanmaki.vllm]
+    optional: [gunkanmaki.tgi]   # alt engine; users can enable either or both
     provides: [cap.llm-api, cap.gpu-infer]
+    category: inference
+    difficulty: advanced
+    estimated_setup_time_min: 12
+    resource_estimate: { cpu_cores: 8, ram_gb: 16, vram_gb: 16 }
+    warnings:
+      - "Requires recent NVIDIA drivers and working CUDA runtime."
+      - "Ensure model storage has enough space and fast IO."
+    success_criteria:
+      - "Serve a model and respond to an OpenAI-format request < 200ms token."
+    notes: "If both vLLM and TGI are enabled, UI will warn about overlap."

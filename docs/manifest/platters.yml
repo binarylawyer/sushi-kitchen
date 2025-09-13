@@ -1,87 +1,377 @@
+# =====================================================================
+# 🍣 Sushi Kitchen — PLATTERS (v2.3)
+# Purpose: Opinionated, end-to-end environments built from combos/rolls.
+# - Keep human-readable metadata here.
+# - DO NOT include images/ports/env; that's in contracts.yml.
+# - Combos source from combos.yml; Rolls source from menu/contracts.
+# =====================================================================
+
+schema_version: "1.1"
+
+# ---------------------------------------------------------------------
+# Field guide
+#   id:                       unique platter identifier
+#   name:                     display name
+#   description:              concise summary for non-experts
+#   includes:                 primary building blocks (combo IDs and/or roll IDs)
+#   optional:                 recommended add-ons the user can toggle
+#   provides:                 notable high-level capabilities this platter enables
+#   target_audience:          "solo-dev" | "team" | "enterprise" | "homelab"
+#   difficulty:               "easy" | "intermediate" | "advanced"
+#   estimated_setup_time_min: rough time to first-success
+#   baseline_hardware:        coarse resource guidance (overridden by generator)
+#   ui_endpoints:             friendly labels for expected UIs (no ports here)
+#   compliance_targets:       if relevant (SOC2-ish hygiene, backups, SSO)
+#   warnings:                 anything the user should know before enabling
+#   success_criteria:         quick checks to confirm it's working
+#   notes:                    extra guidance
+# ---------------------------------------------------------------------
+
 platters:
-  - id: platter.hosomaki-core
-    name: "Hosomaki Platter (Core)"
-    description: "Baseline developer stack."
-    combos:
-      - combo.dev-feast
-      - combo.observability-starter
-    rolls:
-      - hosomaki.ollama
-      - hosomaki.litellm
-      - hosomaki.n8n
-      - hosomaki.supabase
-      - hosomaki.redis
 
-  - id: platter.futomaki-knowledge
-    name: "Futomaki Platter (Knowledge)"
-    description: "Complete RAG environment."
-    combos:
+  # ------------------------------------------------
+  # 1) On-ramp for everybody
+  # ------------------------------------------------
+  - id: platter.starter
+    name: "Starter Kitchen"
+    description: "A friendly starting point: dev bench + basic monitoring."
+    includes:
+      - combo.dev-tools
+      - combo.monitoring-basic
+      - hosomaki.caddy          # simple reverse proxy UX
+    optional:
+      - shoyu.minio             # handy for artifacts
+      - shoyu.restic            # quick local backup target
+    provides:
+      - cap.ide
+      - cap.notebooks
+      - cap.docs-site
+      - cap.metrics
+      - cap.dashboards
+      - cap.reverse-proxy
+    target_audience: homelab
+    difficulty: easy
+    estimated_setup_time_min: 10
+    baseline_hardware: { cpu_cores: 2, ram_gb: 4, vram_gb: 0, storage_gb: 20 }
+    ui_endpoints:
+      - "VS Code Server"
+      - "JupyterLab"
+      - "Grafana"
+      - "Homepage/docs"
+    compliance_targets: []
+    warnings: []
+    success_criteria:
+      - "Open VS Code Server and JupyterLab in the browser."
+      - "Grafana shows host/container metrics."
+    notes: "Great base to layer other combos on top of."
+
+  # ------------------------------------------------
+  # 2) RAG / knowledge environment
+  # ------------------------------------------------
+  - id: platter.rag-workshop
+    name: "RAG Workshop"
+    description: "Turnkey RAG with vector DB and OpenAI-compatible endpoint."
+    includes:
       - combo.knowledge-bento
-      - combo.observability-starter
-    rolls: []
+      - combo.monitoring-basic
+    optional:
+      - combo.backup-strategy
+      - tamago.vscode-server
+      - shoyu.pgadmin
+    provides:
+      - cap.rag-ui
+      - cap.vector-db
+      - cap.llm-api
+      - cap.metrics
+      - cap.dashboards
+    target_audience: solo-dev
+    difficulty: intermediate
+    estimated_setup_time_min: 15
+    baseline_hardware: { cpu_cores: 4, ram_gb: 8, vram_gb: 0, storage_gb: 40 }
+    ui_endpoints:
+      - "AnythingLLM (RAG UI)"
+      - "Grafana"
+    compliance_targets:
+      - "Backups (optional via Backup Strategy)"
+    warnings: []
+    success_criteria:
+      - "Index a PDF and get grounded answers."
+      - "Grafana shows service health panels."
+    notes: "LiteLLM can proxy to local (Ollama) or remote providers."
 
-  - id: platter.temaki-voice
-    name: "Temaki Platter (Voice)"
-    description: "Voice interaction end-to-end."
-    combos:
+  # ------------------------------------------------
+  # 3) Voice agent sandbox
+  # ------------------------------------------------
+  - id: platter.voice-agent
+    name: "Voice Agent Starter"
+    description: "ASR→LLM→TTS loop with basic orchestration."
+    includes:
       - combo.voice-loop
-    rolls: []
+      - combo.monitoring-basic
+    optional:
+      - temaki.openvoice
+      - combo.backup-strategy
+    provides:
+      - cap.asr
+      - cap.tts
+      - cap.llm-api
+      - cap.workflow
+      - cap.metrics
+      - cap.dashboards
+    target_audience: solo-dev
+    difficulty: intermediate
+    estimated_setup_time_min: 20
+    baseline_hardware: { cpu_cores: 4, ram_gb: 8, vram_gb: 0, storage_gb: 30 }
+    ui_endpoints:
+      - "n8n"
+      - "Grafana"
+    compliance_targets: []
+    warnings:
+      - "GPU strongly recommended for lower ASR latency (gpu-optional)."
+    success_criteria:
+      - "Upload a clip; receive spoken response end-to-end."
+    notes: "OpenVoice adds cloning but increases complexity and footprint."
 
-  - id: platter.uramaki-creative
-    name: "Uramaki Platter (Creative)"
-    description: "Creative generation and media tooling."
-    combos:
+  # ------------------------------------------------
+  # 4) Creative / image & video workbench
+  # ------------------------------------------------
+  - id: platter.creative-workbench
+    name: "Creative Workbench (GPU)"
+    description: "Image/video generation with essential media tools."
+    includes:
       - combo.creative-studio
-    rolls: []
+      - combo.monitoring-basic
+    optional:
+      - gunkanmaki.vllm     # optional LLM assist inside pipelines
+      - combo.backup-strategy
+    provides:
+      - cap.image-gen
+      - cap.media-tool
+      - cap.metrics
+      - cap.dashboards
+    target_audience: homelab
+    difficulty: intermediate
+    estimated_setup_time_min: 18
+    baseline_hardware: { cpu_cores: 6, ram_gb: 12, vram_gb: 8, storage_gb: 60 }
+    ui_endpoints:
+      - "ComfyUI"
+      - "Grafana"
+    compliance_targets: []
+    warnings:
+      - "Requires a CUDA-capable GPU for a good experience."
+    success_criteria:
+      - "Generate an image in ComfyUI and export artifact via rclone."
+    notes: "Add Remotion for programmatic video; Scanned for analysis."
 
-  - id: platter.dragon-ops
-    name: "Dragon Platter (Ops)"
-    description: "All the observability pieces."
-    combos:
-      - combo.observability-starter
-    rolls:
-      - dragon.loki
-      - dragon.promtail
+  # ------------------------------------------------
+  # 5) Observability only (drop-in for any stack)
+  # ------------------------------------------------
+  - id: platter.observability-basic
+    name: "Observability — Basic"
+    description: "Metrics + dashboards for any Docker host."
+    includes:
+      - combo.monitoring-basic
+    optional:
+      - dragon.otel-collector
+    provides:
+      - cap.metrics
+      - cap.dashboards
+      - cap.container-metrics
+    target_audience: team
+    difficulty: easy
+    estimated_setup_time_min: 7
+    baseline_hardware: { cpu_cores: 2, ram_gb: 2, vram_gb: 0, storage_gb: 5 }
+    ui_endpoints:
+      - "Grafana"
+    compliance_targets: []
+    warnings: []
+    success_criteria:
+      - "Grafana dashboards render host & container metrics."
 
-  - id: platter.shoyu-data
-    name: "Shoyu Platter (Data)"
-    description: "Storage + backup + DB tools."
-    combos:
-      - combo.data-lake-mini
-    rolls:
-      - shoyu.restic
+  - id: platter.observability-advanced
+    name: "Observability — Advanced"
+    description: "Metrics, logs, tracing, and LLM analytics."
+    includes:
+      - combo.monitoring-advanced
+    optional:
+      - dragon.langfuse
+    provides:
+      - cap.metrics
+      - cap.dashboards
+      - cap.logs
+      - cap.telemetry-collector
+      - cap.llm-observability
+    target_audience: team
+    difficulty: intermediate
+    estimated_setup_time_min: 15
+    baseline_hardware: { cpu_cores: 4, ram_gb: 6, vram_gb: 0, storage_gb: 20 }
+    ui_endpoints:
+      - "Grafana"
+      - "Log panels (Loki)"
+    compliance_targets: []
+    warnings: []
+    success_criteria:
+      - "Promtail→Loki pipeline shows logs in Grafana."
+      - "OTLP spans appear from at least one service."
 
-  - id: platter.hanko-security
-    name: "Hanko Platter (Security)"
-    description: "SSO + secrets + password management."
-    combos:
+  # ------------------------------------------------
+  # 6) Secure team workspace
+  # ------------------------------------------------
+  - id: platter.secure-team
+    name: "Secure Team Workspace"
+    description: "SSO + secrets + passwords with dev tooling."
+    includes:
       - combo.security-set
-    rolls: []
+      - combo.dev-tools
+      - combo.monitoring-basic
+    optional:
+      - hanko.vault                 # enterprise PKI/secrets
+      - shoyu.pgadmin
+    provides:
+      - cap.sso
+      - cap.secrets
+      - cap.passwords
+      - cap.ide
+      - cap.notebooks
+      - cap.metrics
+      - cap.dashboards
+    target_audience: team
+    difficulty: intermediate
+    estimated_setup_time_min: 25
+    baseline_hardware: { cpu_cores: 4, ram_gb: 8, vram_gb: 0, storage_gb: 30 }
+    ui_endpoints:
+      - "Authentik"
+      - "Infisical"
+      - "Vaultwarden"
+      - "VS Code Server / JupyterLab"
+      - "Grafana"
+    compliance_targets:
+      - "SSO for admin UIs"
+      - "Secrets centralization"
+      - "Basic backup hygiene (optional via Backup Strategy)"
+    warnings:
+      - "Plan domain/issuer URLs before wiring SSO to other apps."
+    success_criteria:
+      - "Login via Authentik and fetch a secret from Infisical."
+      - "Grafana shows system dashboards."
+    notes: "HashiCorp Vault increases complexity—keep it optional."
 
-  - id: platter.gunkanmaki-performance
-    name: "Gunkanmaki Platter (Performance)"
-    description: "GPU-ready LLM serving."
-    combos:
+  # ------------------------------------------------
+  # 7) Data & backups mini stack
+  # ------------------------------------------------
+  - id: platter.data-foundation
+    name: "Data Foundation"
+    description: "Object storage, DB admin, and encrypted backups."
+    includes:
+      - combo.data-lake-mini
+      - combo.backup-strategy
+      - combo.monitoring-basic
+    optional:
+      - tamago.duckdb
+    provides:
+      - cap.object-store
+      - cap.db-admin
+      - cap.backups
+      - cap.metrics
+      - cap.dashboards
+    target_audience: homelab
+    difficulty: intermediate
+    estimated_setup_time_min: 14
+    baseline_hardware: { cpu_cores: 3, ram_gb: 6, vram_gb: 0, storage_gb: 50 }
+    ui_endpoints:
+      - "MinIO Console"
+      - "pgAdmin"
+      - "Grafana"
+    compliance_targets:
+      - "Backups and restore testing"
+    warnings:
+      - "Use offsite targets to achieve disaster recovery."
+    success_criteria:
+      - "Create/restore a test snapshot successfully."
+
+  # ------------------------------------------------
+  # 8) High-performance serving (GPU)
+  # ------------------------------------------------
+  - id: platter.gpu-serving
+    name: "GPU Serving Lab"
+    description: "OpenAI-compatible GPU serving with observability."
+    includes:
       - combo.perf-serving
-    rolls: []
+      - combo.monitoring-basic
+    optional:
+      - hosomaki.litellm      # unify multi-provider routing
+      - hanko.authentik       # auth in front of endpoints
+    provides:
+      - cap.llm-api
+      - cap.gpu-infer
+      - cap.metrics
+      - cap.dashboards
+    target_audience: solo-dev
+    difficulty: advanced
+    estimated_setup_time_min: 15
+    baseline_hardware: { cpu_cores: 8, ram_gb: 16, vram_gb: 16, storage_gb: 80 }
+    ui_endpoints:
+      - "Grafana"
+    compliance_targets: []
+    warnings:
+      - "Requires recent NVIDIA drivers and CUDA runtime."
+    success_criteria:
+      - "Serve a model and respond to an OpenAI-format request."
+    notes: "If both vLLM and TGI are enabled, UI will show a warning."
 
-  - id: platter.tamago-dev
-    name: "Tamago Platter (Dev)"
-    description: "Dev tools ready to roll."
-    combos:
-      - combo.dev-feast
-    rolls: []
-
-  - id: platter.omakase
-    name: "Omakase Platter (All-In)"
-    description: "The full chef’s choice — everything enabled."
-    combos:
-      - combo.voice-loop
+  # ------------------------------------------------
+  # 9) Full-stack AI lab (batteries included)
+  # ------------------------------------------------
+  - id: platter.full-lab
+    name: "Full AI Lab"
+    description: "Kitchen-sink stack: dev, RAG, observability, security."
+    includes:
+      - combo.dev-tools
       - combo.knowledge-bento
-      - combo.creative-studio
-      - combo.observability-starter
-      - combo.dev-feast
+      - combo.monitoring-advanced
       - combo.security-set
-      - combo.perf-serving
-      - combo.data-lake-mini
-    rolls: []
+      - combo.backup-strategy
+      - hosomaki.caddy
+    optional:
+      - combo.agent-lab
+      - platter.gpu-serving          # nested platter reference not allowed by all tools; see note
+    provides:
+      - cap.ide
+      - cap.notebooks
+      - cap.docs-site
+      - cap.rag-ui
+      - cap.vector-db
+      - cap.llm-api
+      - cap.metrics
+      - cap.dashboards
+      - cap.logs
+      - cap.telemetry-collector
+      - cap.sso
+      - cap.secrets
+      - cap.passwords
+      - cap.object-store
+      - cap.backups
+      - cap.reverse-proxy
+    target_audience: team
+    difficulty: advanced
+    estimated_setup_time_min: 35
+    baseline_hardware: { cpu_cores: 12, ram_gb: 32, vram_gb: 0, storage_gb: 120 }
+    ui_endpoints:
+      - "AnythingLLM"
+      - "Authentik / Infisical / Vaultwarden"
+      - "VS Code Server / JupyterLab"
+      - "Grafana (metrics/logs/tracing panels)"
+      - "Homepage/docs"
+    compliance_targets:
+      - "SSO-protected admin surfaces"
+      - "Regular backups (offsite recommended)"
+      - "Observability for auditability"
+    warnings:
+      - "Heavier footprint; ensure adequate CPU/RAM and disk."
+    success_criteria:
+      - "Index and query documents via RAG UI."
+      - "SSO works for all admin UIs."
+      - "Logs and metrics visible; traces appear for at least one app."
+    notes: >
+      Some tooling doesn’t support nesting platters; if so, expand
+      `platter.gpu-serving` into its combo(s) before resolution.

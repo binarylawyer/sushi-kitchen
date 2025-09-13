@@ -1,0 +1,87 @@
+platters:
+  - id: platter.hosomaki-core
+    name: "Hosomaki Platter (Core)"
+    description: "Baseline developer stack."
+    combos:
+      - combo.dev-feast
+      - combo.observability-starter
+    rolls:
+      - hosomaki.ollama
+      - hosomaki.litellm
+      - hosomaki.n8n
+      - hosomaki.supabase
+      - hosomaki.redis
+
+  - id: platter.futomaki-knowledge
+    name: "Futomaki Platter (Knowledge)"
+    description: "Complete RAG environment."
+    combos:
+      - combo.knowledge-bento
+      - combo.observability-starter
+    rolls: []
+
+  - id: platter.temaki-voice
+    name: "Temaki Platter (Voice)"
+    description: "Voice interaction end-to-end."
+    combos:
+      - combo.voice-loop
+    rolls: []
+
+  - id: platter.uramaki-creative
+    name: "Uramaki Platter (Creative)"
+    description: "Creative generation and media tooling."
+    combos:
+      - combo.creative-studio
+    rolls: []
+
+  - id: platter.dragon-ops
+    name: "Dragon Platter (Ops)"
+    description: "All the observability pieces."
+    combos:
+      - combo.observability-starter
+    rolls:
+      - dragon.loki
+      - dragon.promtail
+
+  - id: platter.shoyu-data
+    name: "Shoyu Platter (Data)"
+    description: "Storage + backup + DB tools."
+    combos:
+      - combo.data-lake-mini
+    rolls:
+      - shoyu.restic
+
+  - id: platter.hanko-security
+    name: "Hanko Platter (Security)"
+    description: "SSO + secrets + password management."
+    combos:
+      - combo.security-set
+    rolls: []
+
+  - id: platter.gunkanmaki-performance
+    name: "Gunkanmaki Platter (Performance)"
+    description: "GPU-ready LLM serving."
+    combos:
+      - combo.perf-serving
+    rolls: []
+
+  - id: platter.tamago-dev
+    name: "Tamago Platter (Dev)"
+    description: "Dev tools ready to roll."
+    combos:
+      - combo.dev-feast
+    rolls: []
+
+  - id: platter.omakase
+    name: "Omakase Platter (All-In)"
+    description: "The full chef’s choice — everything enabled."
+    combos:
+      - combo.voice-loop
+      - combo.knowledge-bento
+      - combo.creative-studio
+      - combo.observability-starter
+      - combo.dev-feast
+      - combo.security-set
+      - combo.perf-serving
+      - combo.data-lake-mini
+    rolls: []
