@@ -1,0 +1,824 @@
+---
+alwaysApply: true
+---
+
+# Tech Stack — Single Source of Truth (SSOT)
+
+This file enumerates every roll, bowl/specialty, app, and curated mode used by Sushi Kitchen.
+- **Consumers:** menu generator, site pages, Caddy/ingress templates, CI lint, and Cursor agents.
+- **Contract:** Each entry is a YAML block with stable `id` (kebab-case), optional Markdown description, and machine-readable fields.
+- **Exposure rule:** Public UIs/APIs are only reachable through the edge proxy (Caddy/Cloudflare) with auth when `security.auth_required: true`.
+
+## Schema (reference)
+
+```yaml
+kind: roll|app|mode
+id: kebab-id
+name: Human Name
+tagline: short line
+description_md: |
+  longer markdown
+status: stable|beta|experimental|deprecated
+roll: <roll-id>                 # only for kind: app
+depends_on: [ids...]            # app/service prerequisites
+ports:                          # container-internal ports (for docs only)
+  - internal: 3000
+    path: /                     # default path
+routes:                         # how the edge should expose it
+  - public: true|false
+    ingress: /path
+    upstream: http://svc:port   # OPTIONAL: if you generate config directly
+security:
+  auth_required: true|false
+  public_exposure: behind_caddy_only|internal_only
+  notes: [ ... ]
+docs:
+  homepage: /apps/<id>          # site route
+  anchors: [setup, usage, limits]
+badges: [ ... ]                 # small labels for UI
+order: 1                        # for rolls/modes sorting
+includes:                       # for kind: mode (curated sets)
+  rolls: [ ... ]
+  apps:  [ ... ]
+```
+
+---
+# Rolls (Port's Sushi)
+kind: roll
+id: hosomaki
+name: Hosomaki
+tagline: Core orchestration & inference
+order: 1
+status: stable
+description_md: |
+  The everyday core: automation, model gateway, and local inference.
+  Routes for APIs are unified under the edge proxy.
+---
+kind: roll
+id: futomaki
+name: Futomaki
+tagline: Databases & knowledge stores
+order: 2
+status: stable
+description_md: |
+  Relational, vector, graph, and object storage—picked per workload.
+---
+kind: roll
+id: nigiri
+name: Nigiri
+tagline: Speech & interaction
+order: 3
+status: stable
+description_md: |
+  ASR + TTS for voice in/out. Low-latency by default.
+---
+kind: roll
+id: uramaki
+name: Uramaki
+tagline: Visual & media generation
+order: 4
+status: stable
+description_md: |
+  Image generation workflows and media sync utilities.
+---
+kind: roll
+id: ramen
+name: Ramen
+tagline: Video & motion (edit, generate, analyze)
+order: 5
+status: beta
+description_md: |
+  Programmatic video pipelines: transcode, composite, generate, and analyze.
+  Designed for automation-first workflows and headless operation.
+
+kind: roll
+id: chirashi
+name: Chirashi
+tagline: Data science & compute
+order: 6
+status: beta
+description_md: |
+  Notebooks, dashboards, and distributed compute options.
+---
+kind: roll
+id: temaki
+name: Temaki
+tagline: Builder & DIY tools
+order: 7
+status: stable
+description_md: |
+  IDE, app scaffolding, low/no-code builders for rapid iteration.
+---
+kind: roll
+id: inari
+name: Inari
+tagline: Observability & telemetry
+order: 8
+status: stable
+description_md: |
+  System metrics, AI traces, logs. No PII in logs by default.
+---
+kind: roll
+id: gunkanmaki
+name: Gunkanmaki
+tagline: Security, identity & protection
+order: 9
+status: stable
+description_md: |
+  SSO/IdP, secrets, password vault. Edge-first auth posture.
+---
+kind: roll
+id: sashimi
+name: Sashimi
+tagline: API & docs tools
+order: 10
+status: stable
+description_md: |
+  Explore and read APIs in the running system.
+---
+kind: roll
+id: otsumami
+name: Otsumami
+tagline: Optional utilities & side tools
+order: 11
+status: experimental
+description_md: |
+  Small helpers that are useful but not required.
+# Curated Modes (Starboard’s “Feasts”)
+---
+kind: mode
+id: omakase
+name: Omakase Mode
+status: stable
+order: 1
+includes:
+  rolls: ["hosomaki","futomaki","temaki","inari","sashimi"]
+  apps:  ["n8n","litellm","ollama","anythingllm","qdrant","supabase","redis","neo4j","minio","grafana","prometheus","langfuse","authentik","infisical","vs-code-server","redoc","swagger-ui"]
+notes_md: |
+  Stable defaults for most users; focuses on simplicity and security.
+---
+kind: mode
+id: kaiseki
+name: Kaiseki Mode
+status: beta
+order: 2
+includes:
+  rolls: ["hosomaki","futomaki","chirashi","ramen","inari","gunkanmaki","sashimi"]
+  apps:  ["vllm","temporal","weaviate","mlflow","metabase","windmill","keycloak","otel-collector","loki","promtail","remotion","ffmpeg","scanned"]
+notes_md: |
+  Premium/high-performance substitutions and extras for heavier, multi-user workloads.
+# Apps
+# Hosomaki (Core & Inference)
+---
+kind: app
+id: n8n
+name: n8n
+roll: hosomaki
+tagline: Workflow orchestration & automation
+description_md: |
+  Orchestrate stack actions, cron jobs, webhooks, and agent flows.
+ports: [{ internal: 5678, path: / }]
+routes: [{ public: true, ingress: /automate, upstream: http://n8n:5678 }]
+depends_on: []
+security: { auth_required: true, public_exposure: behind_caddy_only }
+docs: { homepage: /apps/n8n, anchors: [setup, webhooks, auth] }
+status: stable
+badges: [automation]
+---
+kind: app
+id: litellm
+name: LiteLLM
+roll: hosomaki
+tagline: OpenAI-compatible gateway for local & cloud models
+description_md: |
+  One `/v1` endpoint routing to Ollama, vLLM, or cloud providers (e.g., OpenRouter).
+ports: [{ internal: 3000, path: /v1 }]
+routes: [{ public: true, ingress: /api/llm, upstream: http://litellm:3000 }]
+depends_on: [ollama]
+security:
+  auth_required: true
+  public_exposure: behind_caddy_only
+  notes: ["Rotate provider keys monthly; mask tokens in logs."]
+docs: { homepage: /apps/litellm, anchors: [setup, routing, limits] }
+status: stable
+badges: [gateway, api]
+---
+kind: app
+id: ollama
+name: Ollama
+roll: hosomaki
+tagline: Local LLM inference
+description_md: |
+  Local models with shared host model cache. Use via LiteLLM or direct.
+ports: [{ internal: 11434, path: / }]
+routes: [{ public: false, ingress: /internal/ollama, upstream: http://ollama:11434 }]
+depends_on: []
+security: { auth_required: false, public_exposure: internal_only }
+docs: { homepage: /apps/ollama, anchors: [models, gpu, volumes] }
+status: stable
+badges: [local]
+---
+kind: app
+id: anythingllm
+name: AnythingLLM
+roll: hosomaki
+tagline: RAG-first chat interface
+description_md: |
+  Bring your docs, build workspaces, and chat with citations.
+ports: [{ internal: 3001, path: / }]
+routes: [{ public: true, ingress: /apps/anythingllm, upstream: http://anythingllm:3001 }]
+depends_on: [qdrant, litellm]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+docs: { homepage: /apps/anythingllm, anchors: [setup, workspaces, limits] }
+status: stable
+badges: [rag, chat]
+---
+kind: app
+id: vllm
+name: vLLM
+roll: hosomaki
+tagline: High-throughput inference server
+description_md: |
+  Optimized for concurrent requests; route via LiteLLM when needed.
+ports: [{ internal: 8000, path: / }]
+routes: [{ public: false, ingress: /internal/vllm, upstream: http://vllm:8000 }]
+depends_on: []
+security: { auth_required: false, public_exposure: internal_only }
+docs: { homepage: /apps/vllm, anchors: [models, performance, limits] }
+status: beta
+badges: [performance]
+---
+kind: app
+id: tgi
+name: TGI
+roll: hosomaki
+tagline: Text Generation Inference (optional)
+description_md: "Alternative inference backend for compatible models."
+ports: [{ internal: 8080, path: / }]
+routes: [{ public: false, ingress: /internal/tgi, upstream: http://tgi:8080 }]
+depends_on: []
+security: { auth_required: false, public_exposure: internal_only }
+status: experimental
+---
+kind: app
+id: triton
+name: Triton
+roll: hosomaki
+tagline: NVIDIA Triton inference server (optional)
+description_md: "High-performance inference for multiple backends."
+ports: [{ internal: 8001, path: /v2 }]
+routes: [{ public: false, ingress: /internal/triton, upstream: http://triton:8001 }]
+depends_on: []
+security: { auth_required: false, public_exposure: internal_only }
+status: experimental
+---
+kind: app
+id: temporal
+name: Temporal
+roll: hosomaki
+tagline: Durable workflow orchestration (optional)
+description_md: "Long-running, fault-tolerant workflows complementing n8n."
+ports: [{ internal: 7233, path: / }]
+routes: [{ public: false }]
+depends_on: []
+security: { auth_required: false, public_exposure: internal_only }
+status: beta
+# Futomaki (Databases, Knowledge Storage & Management)
+---
+kind: app
+id: supabase
+name: Supabase
+roll: futomaki
+tagline: Postgres + Auth + Storage
+description_md: |
+  Primary relational store (pgvector enabled). Use for metadata and app data.
+ports: []
+routes: [{ public: false }]
+depends_on: []
+security: { auth_required: true, public_exposure: internal_only }
+docs: { homepage: /apps/supabase, anchors: [db, auth, storage] }
+status: stable
+badges: [sql]
+---
+kind: app
+id: postgres
+name: PostgreSQL
+roll: futomaki
+tagline: Postgres base with pgvector
+description_md: "Standalone Postgres when Supabase isn’t used."
+routes: [{ public: false }]
+depends_on: []
+security: { auth_required: true, public_exposure: internal_only }
+status: stable
+---
+kind: app
+id: redis
+name: Redis
+roll: futomaki
+tagline: Cache & queues
+description_md: "Caching, Pub/Sub, and simple queues for workflows and apps."
+routes: [{ public: false }]
+depends_on: []
+security: { auth_required: false, public_exposure: internal_only }
+status: stable
+badges: [cache, queue]
+---
+kind: app
+id: qdrant
+name: Qdrant
+roll: futomaki
+tagline: Vector database (primary)
+description_md: "High-performance vector search for embeddings."
+ports: [{ internal: 6333, path: / }]
+routes: [{ public: false, ingress: /internal/qdrant, upstream: http://qdrant:6333 }]
+depends_on: []
+security: { auth_required: false, public_exposure: internal_only }
+docs: { homepage: /apps/qdrant, anchors: [collections, backups, limits] }
+status: stable
+badges: [vector]
+---
+kind: app
+id: weaviate
+name: Weaviate
+roll: futomaki
+tagline: Vector DB (optional)
+routes: [{ public: false }]
+depends_on: []
+security: { auth_required: false, public_exposure: internal_only }
+status: beta
+---
+kind: app
+id: chroma
+name: Chroma
+roll: futomaki
+tagline: Lightweight vector store (optional)
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: experimental
+---
+kind: app
+id: neo4j
+name: Neo4j
+roll: futomaki
+tagline: Graph database (GraphRAG)
+routes: [{ public: false }]
+depends_on: []
+security: { auth_required: true, public_exposure: internal_only }
+docs: { homepage: /apps/neo4j, anchors: [model, cypher, backups] }
+status: stable
+badges: [graph]
+---
+kind: app
+id: minio
+name: MinIO
+roll: futomaki
+tagline: S3-compatible object storage
+routes: [{ public: false, ingress: /internal/minio, upstream: http://minio:9001 }]
+depends_on: []
+security: { auth_required: true, public_exposure: internal_only }
+status: stable
+---
+kind: app
+id: infinity
+name: Infinity
+roll: futomaki
+tagline: Vector/search store (optional)
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: experimental
+badges: [vector]
+---
+kind: app
+id: restic
+name: Restic
+roll: futomaki
+tagline: Encrypted backups
+routes: [{ public: false }]
+depends_on: [minio]
+security: { auth_required: true, public_exposure: internal_only }
+status: stable
+---
+kind: app
+id: pgadmin
+name: pgAdmin
+roll: futomaki
+tagline: Postgres admin UI
+routes: [{ public: true, ingress: /db/pgadmin, upstream: http://pgadmin:80 }]
+depends_on: [supabase]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: beta
+---
+kind: app
+id: redisinsight
+name: RedisInsight
+roll: futomaki
+tagline: Redis admin UI
+routes: [{ public: true, ingress: /db/redis, upstream: http://redisinsight:8001 }]
+depends_on: [redis]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: beta
+---
+kind: app
+id: rclone-browser
+name: Rclone Browser
+roll: futomaki
+tagline: Cloud sync UI (optional)
+routes: [{ public: true, ingress: /storage/rclone, upstream: http://rclone:5800 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: experimental
+# Nigiri (Speech & Interaction)
+---
+kind: app
+id: whisper
+name: Whisper ASR
+roll: nigiri
+tagline: Speech-to-text transcription
+routes: [{ public: false }]
+depends_on: []
+security: { auth_required: false, public_exposure: internal_only }
+status: stable
+---
+kind: app
+id: piper
+name: Piper TTS
+roll: nigiri
+tagline: Text-to-speech synthesis
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: stable
+---
+kind: app
+id: openvoice
+name: OpenVoice
+roll: nigiri
+tagline: Voice cloning (optional)
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: experimental
+# Uramaki (Visual & Media)
+---
+kind: app
+id: comfyui
+name: ComfyUI
+roll: uramaki
+tagline: Node-based image generation
+routes: [{ public: true, ingress: /apps/comfy, upstream: http://comfyui:8188 }]
+depends_on: [ollama]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: stable
+badges: [image]
+---
+kind: app
+id: automatic1111
+name: Automatic1111
+roll: uramaki
+tagline: Stable Diffusion WebUI (optional)
+routes: [{ public: true, ingress: /apps/a1111, upstream: http://automatic1111:7860 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: experimental
+---
+kind: app
+id: rclone
+name: rclone
+roll: uramaki
+tagline: Sync generated media to cloud
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: stable
+# Ramen (Video & Motion)
+---
+kind: app
+id: ffmpeg
+name: FFmpeg
+roll: ramen
+tagline: Core transcode & video tooling
+description_md: |
+  Headless media engine for encode/transcode, concat, filters, audio ops.
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: stable
+badges: [cli, media]
+
+---
+kind: app
+id: remotion
+name: Remotion
+roll: ramen
+tagline: React-driven video rendering
+description_md: |
+  Generate videos from React components. Supports server-side render & queueing.
+routes: [{ public: true, ingress: /video/remotion, upstream: http://remotion:3000 }]
+depends_on: [ffmpeg]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: beta
+badges: [render]
+
+---
+kind: app
+id: scanned
+name: Scanned
+roll: ramen
+tagline: Video analysis server (objects, scenes, OCR)
+description_md: |
+  API-first computer-vision service for shot/scene detection and tagging.
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: experimental
+badges: [cv, analysis]
+---
+# Chirashi (Data Science & Compute)
+---
+kind: app
+id: jupyterlab
+name: JupyterLab
+roll: chirashi
+tagline: Interactive notebooks
+routes: [{ public: true, ingress: /ds/jupyter, upstream: http://jupyter:8888 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: stable
+---
+kind: app
+id: panel
+name: Panel
+roll: chirashi
+tagline: Dashboarding from notebooks (optional)
+routes: [{ public: true, ingress: /ds/panel, upstream: http://panel:5006 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: experimental
+---
+kind: app
+id: dask
+name: Dask
+roll: chirashi
+tagline: Parallel computing (optional)
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: beta
+---
+kind: app
+id: mlflow
+name: MLflow
+roll: chirashi
+tagline: Experiment tracking & model registry
+routes: [{ public: true, ingress: /ml/mlflow, upstream: http://mlflow:5000 }]
+depends_on: [minio, supabase]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: beta
+---
+kind: app
+id: bentoml
+name: BentoML
+roll: chirashi
+tagline: Model serving framework (optional)
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: experimental
+---
+kind: app
+id: kubeflow
+name: Kubeflow
+roll: chirashi
+tagline: ML workflow orchestration (optional)
+routes: [{ public: false }]
+security: { auth_required: true, public_exposure: internal_only }
+status: experimental
+---
+kind: app
+id: metabase
+name: Metabase
+roll: chirashi
+tagline: Analytics & BI dashboards
+routes: [{ public: true, ingress: /ds/metabase, upstream: http://metabase:3000 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: stable
+# Temaki (Developer & Builder Tools)
+---
+kind: app
+id: vs-code-server
+name: VS Code Server
+roll: temaki
+tagline: Full IDE in your browser
+routes: [{ public: true, ingress: /dev/code, upstream: http://code:8080 }]
+security:
+  auth_required: true
+  public_exposure: behind_caddy_only
+  notes: ["Use random per-boot password or OIDC."]
+status: stable
+---
+kind: app
+id: gitea
+name: Gitea
+roll: temaki
+tagline: Self-hosted Git (optional)
+routes: [{ public: true, ingress: /dev/gitea, upstream: http://gitea:3000 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: experimental
+---
+kind: app
+id: sonarqube
+name: SonarQube
+roll: temaki
+tagline: Code quality analysis (optional)
+routes: [{ public: true, ingress: /dev/sonar, upstream: http://sonarqube:9000 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: experimental
+---
+kind: app
+id: openui
+name: OpenUI
+roll: temaki
+tagline: UI prototyping
+routes: [{ public: true, ingress: /dev/openui, upstream: http://openui:3000 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: beta
+---
+kind: app
+id: flowise
+name: Flowise
+roll: temaki
+tagline: Visual agent/flow builder
+routes: [{ public: true, ingress: /dev/flowise, upstream: http://flowise:3000 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: stable
+---
+kind: app
+id: dify
+name: Dify
+roll: temaki
+tagline: Low-code AI app builder
+routes: [{ public: true, ingress: /dev/dify, upstream: http://dify:3000 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: beta
+---
+kind: app
+id: windmill
+name: Windmill
+roll: temaki
+tagline: High-performance workflows (alt to n8n)
+routes: [{ public: true, ingress: /automate/windmill, upstream: http://windmill:8000 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: beta
+badges: [fast]
+# Inari (Observability & Telemetry)
+---
+kind: app
+id: prometheus
+name: Prometheus
+roll: inari
+tagline: Metrics collection
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: stable
+---
+kind: app
+id: grafana
+name: Grafana
+roll: inari
+tagline: Dashboards & visualization
+routes: [{ public: true, ingress: /monitoring, upstream: http://grafana:3000 }]
+depends_on: [prometheus]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: stable
+---
+kind: app
+id: langfuse
+name: Langfuse
+roll: inari
+tagline: LLM observability
+routes: [{ public: true, ingress: /ai/langfuse, upstream: http://langfuse:3000 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: stable
+---
+kind: app
+id: cadvisor
+name: cAdvisor
+roll: inari
+tagline: Container resource metrics
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: stable
+---
+kind: app
+id: node-exporter
+name: Node Exporter
+roll: inari
+tagline: Host metrics
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: stable
+---
+kind: app
+id: loki
+name: Loki
+roll: inari
+tagline: Log aggregation (optional)
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: beta
+---
+kind: app
+id: promtail
+name: Promtail
+roll: inari
+tagline: Log collection agent
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: beta
+---
+kind: app
+id: otel-collector
+name: OpenTelemetry Collector
+roll: inari
+tagline: Unified telemetry pipeline (optional)
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: beta
+# Gunkanmaki (Security, Identity & Protection)
+---
+kind: app
+id: authentik
+name: Authentik
+roll: gunkanmaki
+tagline: Identity provider & SSO
+routes: [{ public: true, ingress: /auth, upstream: http://authentik:9000 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: stable
+---
+kind: app
+id: keycloak
+name: Keycloak
+roll: gunkanmaki
+tagline: Enterprise identity (optional)
+routes: [{ public: true, ingress: /auth/keycloak, upstream: http://keycloak:8080 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: beta
+---
+kind: app
+id: vaultwarden
+name: Vaultwarden
+roll: gunkanmaki
+tagline: Password manager
+routes: [{ public: true, ingress: /vault, upstream: http://vaultwarden:80 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: stable
+---
+kind: app
+id: infisical
+name: Infisical
+roll: gunkanmaki
+tagline: Secrets & config management
+routes: [{ public: true, ingress: /secrets, upstream: http://infisical:8080 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: stable
+# Sashimi (API & Docs)
+---
+kind: app
+id: docusaurus
+name: Docusaurus
+roll: sashimi
+tagline: Documentation site generator
+routes: [{ public: true, ingress: /docs, upstream: http://docusaurus:3000 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: beta
+---
+kind: app
+id: redoc
+name: Redoc
+roll: sashimi
+tagline: API documentation
+routes: [{ public: true, ingress: /docs/api, upstream: http://redoc:8080 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: stable
+---
+kind: app
+id: swagger-ui
+name: Swagger UI
+roll: sashimi
+tagline: Interactive API explorer
+routes: [{ public: true, ingress: /docs/swagger, upstream: http://swagger:8080 }]
+security: { auth_required: true, public_exposure: behind_caddy_only }
+status: stable
+#Otsumami (Optional / Misc)
+---
+kind: app
+id: utilities-pack
+name: Utilities Pack
+roll: otsumami
+tagline: Small helpers & connectors
+description_md: |
+  Placeholder “basket” for minor utilities. Keep `status: experimental` unless promoted.
+routes: [{ public: false }]
+security: { auth_required: false, public_exposure: internal_only }
+status: experimental
+# Deterministic “Always” Rules (consumed by generators)
+---
+kind: mode
+id: rules-always
+name: Deterministic Build Rules
+notes_md: |
+  • Only expose routes defined here; default everything else to internal-only.
+  • When `security.auth_required` is true, add edge auth (Authentik or basic) and rate limits.
+  • Never bind database/vector ports to the host; reach them only via `sushi-net`.
+  • All images must be pinned by tag+digest; secrets injected from Infisical (preferred) or `.env`.
+  • Menu and website cards pull `name`, `tagline`, `status`, `docs`, `routes.ingress`, and `badges` from this file.
+---
