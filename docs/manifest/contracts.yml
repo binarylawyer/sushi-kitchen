@@ -1,593 +1,915 @@
 # =====================================================================
-# 🍣 Sushi Kitchen — CONTRACTS (v2.3)
-# Purpose: Machine-readable logic for Rolls (capabilities, deps, images,
-#          ports, env, conflicts). Keep human copy in menu-manifest.md.
-#
-# WHY separate from menu-manifest.md?
-# - Prevents drift: ops details change often (images, ports, env).
-# - Clean UX: Menu stays readable; this file powers the resolver/CLI.
-#
-# HOW UIs/CLI use this:
-# - "requires" can reference capabilities (cap.*) or roll IDs.
-# - The resolver picks ONE provider per capability (according to priority).
-# - Ports here are "defaults" and can be overridden via env/overrides.
-#
-# Conventions:
-# - image tags: pin OR allow "latest" temporarily; prefer digests in CI.
-# - ports: host are suggested defaults; users may override.
-# - environment_vars: list the keys your compose expects.
-# - suggests: optional soft deps (nice to have).
-# - conflicts: use groups below for multi-service warnings.
+# 🍣 Sushi Kitchen — CONTRACTS (v1.0)
+# Purpose: Machine-readable technical contracts for all services
+# - Docker images, versions, ports, volumes, environment variables
+# - Dependencies, capabilities, and conflict resolution
+# - Resource requirements and scaling parameters
+# - Network isolation and security configurations
 # =====================================================================
 
-schema_version: "1.1"
+schema_version: "1.0"
+last_updated: "2025-09-16"
 
-# --------------------------------------------------
-# CAPABILITIES REGISTRY (single source of truth)
-# Describe what each cap means + default providers.
-# Providers listed here are *suggested* priorities.
-# --------------------------------------------------
+# ========================================================================
+# CAPABILITY DEFINITIONS
+# Capabilities represent functional interfaces that services provide/require
+# This enables automatic dependency resolution and compatibility checking
+# ========================================================================
+
 capabilities:
-  cap.postgres:            { description: "PostgreSQL with pgvector (DB)", providers: [hosomaki.supabase] }
-  cap.auth:                { description: "Authentication provider", providers: [hosomaki.supabase, hanko.authentik, hanko.keycloak] }
-  cap.realtime:            { description: "Realtime channels (WS)", providers: [hosomaki.supabase] }
+  # Storage Capabilities
+  vector_storage:
+    description: "Vector database for embeddings and similarity search"
+    providers: ["futomaki.qdrant", "futomaki.weaviate", "futomaki.chroma", "futomaki.pinecone"]
+    interface: "REST API with vector operations"
+    
+  graph_storage:
+    description: "Graph database for relationship and network data"
+    providers: ["futomaki.neo4j", "futomaki.memgraph", "futomaki.arangodb"]
+    interface: "Cypher/GraphQL query interface"
+    
+  relational_storage:
+    description: "SQL database for structured data"
+    providers: ["futomaki.postgresql", "futomaki.mysql"]
+    interface: "SQL query interface"
+    
+  object_storage:
+    description: "S3-compatible object storage for files and artifacts"
+    providers: ["futomaki.minio", "futomaki.supabase"]
+    interface: "S3 API compatibility"
+    
+  cache_storage:
+    description: "In-memory caching and session storage"
+    providers: ["futomaki.redis", "futomaki.valkey"]
+    interface: "Redis protocol"
 
-  cap.cache:               { description: "Keyed short-term cache", providers: [hosomaki.redis] }
-  cap.queue:               { description: "Background job queue", providers: [hosomaki.redis] }
+  # LLM & Inference Capabilities
+  local_llm_inference:
+    description: "Local large language model inference"
+    providers: ["hosomaki.ollama", "hosomaki.vllm", "hosomaki.tgi", "hosomaki.triton"]
+    interface: "OpenAI-compatible API"
+    
+  cloud_llm_gateway:
+    description: "Gateway to cloud LLM providers"
+    providers: ["hosomaki.litellm"]
+    interface: "Unified LLM API"
+    
+  embedding_generation:
+    description: "Text to vector embedding conversion"
+    providers: ["hosomaki.ollama", "uramaki.clip", "uramaki.blip2"]
+    interface: "Embedding API"
 
-  cap.llm-api:             { description: "OpenAI-compatible HTTP endpoint", providers: [hosomaki.litellm, gunkanmaki.vllm, gunkanmaki.tgi] }
-  cap.local-llm:           { description: "Local model runtime", providers: [hosomaki.ollama] }
-  cap.embeddings:          { description: "Embeddings service", providers: [futomaki.infinity] }
+  # Media Processing Capabilities
+  speech_to_text:
+    description: "Audio transcription and speech recognition"
+    providers: ["temaki.whisper", "temaki.faster-whisper"]
+    interface: "Audio file to text API"
+    
+  text_to_speech:
+    description: "Text to speech synthesis"
+    providers: ["temaki.coqui-tts", "temaki.espeak"]
+    interface: "Text to audio file API"
+    
+  image_generation:
+    description: "AI-powered image generation"
+    providers: ["uramaki.comfyui", "uramaki.automatic1111", "uramaki.invokeai"]
+    interface: "Prompt to image API"
+    
+  image_analysis:
+    description: "Computer vision and image understanding"
+    providers: ["uramaki.clip", "uramaki.blip2", "uramaki.yolo"]
+    interface: "Image analysis API"
 
-  cap.vector-db:           { description: "Vector database", providers: [futomaki.qdrant, futomaki.chroma, futomaki.weaviate] }
-  cap.graph-db:            { description: "Graph database", providers: [futomaki.neo4j, futomaki.memgraph, futomaki.arangodb] }
-  cap.document-db:         { description: "Document store", providers: [futomaki.arangodb] }
-  cap.kv-store:            { description: "Key/Value store", providers: [futomaki.arangodb] }
+  # Infrastructure Capabilities
+  workflow_orchestration:
+    description: "Visual workflow and automation builder"
+    providers: ["hosomaki.n8n", "hosomaki.temporal", "temaki.windmill"]
+    interface: "Workflow execution API"
+    
+  web_server:
+    description: "HTTP server and reverse proxy"
+    providers: ["hosomaki.caddy", "hosomaki.nginx", "hosomaki.traefik"]
+    interface: "HTTP/HTTPS serving"
+    
+  monitoring:
+    description: "Metrics collection and monitoring"
+    providers: ["inari.prometheus", "inari.grafana"]
+    interface: "Prometheus metrics API"
+    
+  authentication:
+    description: "Identity and access management"
+    providers: ["gunkanmaki.authentik", "gunkanmaki.keycloak"]
+    interface: "OIDC/SAML/OAuth2"
+    
+  secrets_management:
+    description: "Secure storage and management of secrets"
+    providers: ["gunkanmaki.infisical", "gunkanmaki.vaultwarden"]
+    interface: "Secrets API"
 
-  cap.workflow:            { description: "Workflow automation/orchestration", providers: [hosomaki.n8n] }
-  cap.chat-ui:             { description: "Chat user interface", providers: [temaki.open-webui, futomaki.anythingllm] }
-  cap.ui-gen:              { description: "UI generator (experimental)", providers: [temaki.openui] }
-  cap.asr:                 { description: "Automatic speech recognition", providers: [temaki.whisper] }
-  cap.tts:                 { description: "Text-to-speech", providers: [temaki.piper] }
-  cap.voice-clone:         { description: "Voice cloning", providers: [temaki.openvoice] }
+# ========================================================================
+# NETWORK PROFILES
+# Define network isolation patterns for different privacy/security needs
+# ========================================================================
 
-  cap.image-gen:           { description: "Image generation", providers: [uramaki.comfyui] }
-  cap.video-gen:           { description: "Programmatic video generation", providers: [uramaki.remotion] }
-  cap.media-tool:          { description: "Media CLI utilities", providers: [uramaki.ffmpeg] }
-  cap.video-analysis:      { description: "Video analysis utilities", providers: [uramaki.scanned] }
-  cap.image-tool:          { description: "Image manipulation toolkit", providers: [uramaki.imagemagick] }
-  cap.storage-sync:        { description: "Storage sync/bridge", providers: [uramaki.rclone] }
+network_profiles:
+  open_research:
+    description: "Single network for research and development"
+    networks:
+      sushi_net:
+        driver: bridge
+        ipam:
+          config:
+            - subnet: "172.20.0.0/16"
+    isolation_level: "none"
+    
+  business_confidential:
+    description: "Segmented networks for business use"
+    networks:
+      sushi_frontend:
+        driver: bridge
+        internal: false
+      sushi_backend:
+        driver: bridge
+        internal: true
+      sushi_data:
+        driver: bridge
+        internal: true
+    isolation_level: "moderate"
+    
+  legal_privilege:
+    description: "Maximum isolation for sensitive data"
+    networks:
+      sushi_public:
+        driver: bridge
+        internal: false
+      sushi_processing:
+        driver: bridge
+        internal: true
+      sushi_storage:
+        driver: bridge
+        internal: true
+      sushi_audit:
+        driver: bridge
+        internal: true
+    isolation_level: "maximum"
 
-  cap.metrics:             { description: "Metrics collection", providers: [dragon.prometheus] }
-  cap.dashboards:          { description: "Dashboards/visualization", providers: [dragon.grafana] }
-  cap.container-metrics:   { description: "Container resource metrics", providers: [dragon.cadvisor] }
-  cap.llm-observability:   { description: "LLM tracing & analytics", providers: [dragon.langfuse] }
-  cap.telemetry-collector: { description: "OpenTelemetry collector", providers: [dragon.otel-collector] }
-  cap.logs:                { description: "Log aggregation", providers: [dragon.loki] }
-  cap.log-shipper:         { description: "Log shipping agent", providers: [dragon.promtail] }
-  cap.code-quality:        { description: "Static analysis / code quality", providers: [dragon.sonarqube] }
-  cap.service-mesh:        { description: "Service mesh (K8s)", providers: [dragon.istio] }
-  cap.reverse-proxy:       { description: "Reverse proxy / routing", providers: [hosomaki.caddy, dragon.traefik] }
+# ========================================================================
+# SERVICE CONTRACTS
+# Complete technical specifications for each service
+# ========================================================================
 
-  cap.ide:                 { description: "Web IDE", providers: [tamago.vscode-server] }
-  cap.notebooks:           { description: "Notebook environment", providers: [tamago.jupyterlab] }
-  cap.dashboarding:        { description: "Lightweight dashboards", providers: [tamago.panel] }
-  cap.parallel-compute:    { description: "Parallel/distributed compute", providers: [tamago.dask] }
-  cap.docs-site:           { description: "Docs site generator", providers: [tamago.docusaurus] }
-  cap.analytics-db:        { description: "Analytical DB (OLAP)", providers: [tamago.duckdb] }
-  cap.embedded-db:         { description: "Embedded relational DB", providers: [tamago.sqlite] }
+services:
 
-  cap.experiment-tracking: { description: "ML experiment tracking", providers: [spider.mlflow] }
-  cap.distributed-train:   { description: "Distributed training", providers: [spider.ray] }
-  cap.distributed-serve:   { description: "Distributed serving", providers: [spider.ray] }
-  cap.model-serving:       { description: "Packaged model serving", providers: [spider.bentoml] }
-  cap.ml-pipelines:        { description: "ML pipeline orchestration", providers: [spider.kubeflow] }
-  cap.durable-workflows:   { description: "Durable workflow engine", providers: [spider.temporal] }
-
-  cap.object-store:        { description: "S3-compatible object storage", providers: [shoyu.minio] }
-  cap.backups:             { description: "Backup engine", providers: [shoyu.restic, shoyu.duplicati, shoyu.borgbackup] }
-  cap.db-admin:            { description: "DB admin UI", providers: [shoyu.pgadmin] }
-  cap.kv-admin:            { description: "KV/Redis admin UI", providers: [shoyu.redisinsight] }
-  cap.pg-backup:           { description: "Postgres backup tool", providers: [shoyu.pgbackrest] }
-
-  cap.sso:                 { description: "Single Sign-On / IdP", providers: [hanko.authentik, hanko.keycloak] }
-  cap.secrets:             { description: "Secrets manager", providers: [hanko.infisical, hanko.vault] }
-  cap.passwords:           { description: "Password manager", providers: [hanko.vaultwarden] }
-  cap.pki:                 { description: "PKI / certificates", providers: [hanko.vault] }
-  cap.git-secrets:         { description: "Git-based secrets encryption", providers: [hanko.sops] }
-  cap.k8s-secrets:         { description: "Kubernetes-native secrets", providers: [hanko.sealed-secrets] }
-
-  cap.gpu-infer:           { description: "GPU inference runtime", providers: [gunkanmaki.vllm, gunkanmaki.tgi, gunkanmaki.triton] }
-
-# ---------------------------------------------
-# GLOBAL DEFAULTS (used by generators/resolver)
-# ---------------------------------------------
-defaults:
-  network: sushi-net
-  image_pull_policy: "if-not-present"
-  # NOTE: host ports below are "suggested defaults".
-  # Users can override via env or compose overrides.
-
-# ---------------------------------------------
-# ROLLS — capabilities + operational metadata
-# - image : container image (prefer pinned tag or digest)
-# - ports : [{ container: <int>, host: <int> }]
-# - environment_vars : list of keys your compose expects
-# - requires/suggests/provides : see capabilities above
-# ---------------------------------------------
-rolls:
-
-  # ===== Hosomaki (Core) =====
-  hosomaki.supabase:
-    provides: [cap.postgres, cap.auth, cap.realtime]
-    image: "supabase/postgres:latest"           # TIP: pin digest in CI
-    ports: [{ container: 5432, host: 6543 }]    # avoid clobbering local 5432
-    environment_vars: [POSTGRES_PASSWORD, POSTGRES_DB]
-
-  hosomaki.redis:
-    provides: [cap.cache, cap.queue]
-    image: "redis:7-alpine"
-    ports: [{ container: 6379, host: 6379 }]
-    environment_vars: []
-
-  hosomaki.litellm:
-    provides: [cap.llm-api]
-    suggests: [hosomaki.redis]
-    image: "ghcr.io/berriai/litellm:1.0.0"
-    ports: [{ container: 4000, host: 3001 }]
-    environment_vars: [OPENAI_API_KEY, LITELLM_MASTER_KEY]
-
-  hosomaki.ollama:
-    provides: [cap.local-llm]
-    image: "ollama/ollama:0.1.44"
-    ports: [{ container: 11434, host: 3000 }]
-    environment_vars: [OLLAMA_MODELS]
+# ----------------------------------------------------------------------
+# HOSOMAKI - Core & Inference Services
+# ----------------------------------------------------------------------
 
   hosomaki.n8n:
-    requires: [cap.postgres]
-    suggests: [hosomaki.redis]
-    provides: [cap.workflow]
-    image: "n8nio/n8n:latest"
-    ports: [{ container: 5678, host: 3002 }]
-    environment_vars: [N8N_HOST, N8N_ENCRYPTION_KEY, DB_POSTGRESDB_HOST]
+    name: "n8n Workflow Automation"
+    docker:
+      image: "n8nio/n8n:latest"
+      platform: "linux/amd64"
+      profiles: ["hosomaki"]
+    ports:
+      - container: 5678
+        host_range: "5678"
+        protocol: "tcp"
+        description: "Web interface and API"
+    volumes:
+      - name: "n8n_data"
+        mount: "/home/node/.n8n"
+        type: "named"
+        backup_priority: "high"
+    environment:
+      GENERIC_TIMEZONE: "${TIMEZONE:-UTC}"
+      DB_TYPE: "postgresdb"
+      DB_POSTGRESDB_HOST: "postgresql"
+      DB_POSTGRESDB_PORT: "5432"
+      DB_POSTGRESDB_DATABASE: "${N8N_DB_NAME:-n8n}"
+      DB_POSTGRESDB_USER: "${N8N_DB_USER:-n8n}"
+      DB_POSTGRESDB_PASSWORD: "${N8N_DB_PASSWORD}"
+      N8N_ENCRYPTION_KEY: "${N8N_ENCRYPTION_KEY}"
+      WEBHOOK_URL: "https://${DOMAIN}/webhook/"
+    provides:
+      - workflow_orchestration
+    requires:
+      - relational_storage
+    suggests:
+      - web_server
+      - secrets_management
+    resource_requirements:
+      cpu_cores: 1
+      memory_mb: 512
+      storage_gb: 5
+    scaling:
+      min_replicas: 1
+      max_replicas: 3
+      scale_metric: "cpu_usage"
+    healthcheck:
+      endpoint: "/healthz"
+      interval: "30s"
+      timeout: "10s"
+      retries: 3
+    networks:
+      open_research: ["sushi_net"]
+      business_confidential: ["sushi_frontend", "sushi_backend"]
+      legal_privilege: ["sushi_public", "sushi_processing"]
+
+  hosomaki.ollama:
+    name: "Ollama Local LLM Server"
+    docker:
+      image: "ollama/ollama:latest"
+      platform: "linux/amd64"
+      profiles: ["hosomaki"]
+    ports:
+      - container: 11434
+        host_range: "11434"
+        protocol: "tcp"
+        description: "LLM inference API"
+    volumes:
+      - name: "ollama_data"
+        mount: "/root/.ollama"
+        type: "named"
+        backup_priority: "medium"
+    environment:
+      OLLAMA_HOST: "0.0.0.0"
+      OLLAMA_MODELS: "/root/.ollama/models"
+      OLLAMA_KEEP_ALIVE: "24h"
+      CUDA_VISIBLE_DEVICES: "${CUDA_VISIBLE_DEVICES:-all}"
+    provides:
+      - local_llm_inference
+      - embedding_generation
+    device_requests:
+      - driver: "nvidia"
+        count: "all"
+        capabilities: ["gpu"]
+    resource_requirements:
+      cpu_cores: 2
+      memory_mb: 4096
+      storage_gb: 50
+      gpu_memory_mb: 8192
+    scaling:
+      min_replicas: 1
+      max_replicas: 2
+      scale_metric: "gpu_memory"
+    healthcheck:
+      endpoint: "/api/tags"
+      interval: "30s"
+      timeout: "10s"
+      retries: 3
+    networks:
+      open_research: ["sushi_net"]
+      business_confidential: ["sushi_backend"]
+      legal_privilege: ["sushi_processing"]
+
+  hosomaki.litellm:
+    name: "LiteLLM Gateway"
+    docker:
+      image: "ghcr.io/berriai/litellm:main-latest"
+      platform: "linux/amd64"
+      profiles: ["hosomaki"]
+    ports:
+      - container: 4000
+        host_range: "4000"
+        protocol: "tcp"
+        description: "LLM proxy API"
+    volumes:
+      - name: "litellm_config"
+        mount: "/app/config"
+        type: "bind"
+        source: "./config/litellm"
+    environment:
+      LITELLM_MASTER_KEY: "${LITELLM_MASTER_KEY}"
+      DATABASE_URL: "${LITELLM_DATABASE_URL}"
+      STORE_MODEL_IN_DB: "True"
+    provides:
+      - cloud_llm_gateway
+    suggests:
+      - relational_storage
+      - cache_storage
+    resource_requirements:
+      cpu_cores: 1
+      memory_mb: 1024
+      storage_gb: 2
+    scaling:
+      min_replicas: 1
+      max_replicas: 5
+      scale_metric: "request_rate"
+    healthcheck:
+      endpoint: "/health"
+      interval: "30s"
+      timeout: "10s"
+      retries: 3
+    networks:
+      open_research: ["sushi_net"]
+      business_confidential: ["sushi_frontend", "sushi_backend"]
+      legal_privilege: ["sushi_public", "sushi_processing"]
+
+  hosomaki.anythingllm:
+    name: "AnythingLLM RAG Interface"
+    docker:
+      image: "mintplexlabs/anythingllm:latest"
+      platform: "linux/amd64"
+      profiles: ["hosomaki"]
+    ports:
+      - container: 3001
+        host_range: "3001"
+        protocol: "tcp"
+        description: "Web interface"
+    volumes:
+      - name: "anythingllm_storage"
+        mount: "/app/server/storage"
+        type: "named"
+        backup_priority: "high"
+      - name: "anythingllm_hotdir"
+        mount: "/app/collector/hotdir"
+        type: "named"
+    environment:
+      STORAGE_DIR: "/app/server/storage"
+      JWT_SECRET: "${ANYTHINGLLM_JWT_SECRET}"
+      LLM_PROVIDER: "ollama"
+      OLLAMA_BASE_PATH: "http://ollama:11434"
+      EMBEDDING_ENGINE: "ollama"
+      VECTOR_DB: "qdrant"
+      QDRANT_ENDPOINT: "http://qdrant:6333"
+    provides:
+      - rag_interface
+    requires:
+      - local_llm_inference
+      - vector_storage
+    suggests:
+      - embedding_generation
+    resource_requirements:
+      cpu_cores: 1
+      memory_mb: 2048
+      storage_gb: 10
+    scaling:
+      min_replicas: 1
+      max_replicas: 3
+      scale_metric: "active_sessions"
+    healthcheck:
+      endpoint: "/api/system"
+      interval: "30s"
+      timeout: "10s"
+      retries: 3
+    networks:
+      open_research: ["sushi_net"]
+      business_confidential: ["sushi_frontend", "sushi_backend"]
+      legal_privilege: ["sushi_public", "sushi_processing"]
 
   hosomaki.caddy:
-    provides: [cap.reverse-proxy]
-    image: "caddy:2-alpine"
-    ports: [{ container: 80, host: 8080 }, { container: 443, host: 8443 }]
-    environment_vars: []
+    name: "Caddy Web Server"
+    docker:
+      image: "caddy:2-alpine"
+      platform: "linux/amd64"
+      profiles: ["hosomaki"]
+    ports:
+      - container: 80
+        host_range: "80"
+        protocol: "tcp"
+        description: "HTTP"
+      - container: 443
+        host_range: "443"
+        protocol: "tcp"
+        description: "HTTPS"
+      - container: 2019
+        host_range: "2019"
+        protocol: "tcp"
+        description: "Admin API"
+    volumes:
+      - name: "caddy_data"
+        mount: "/data"
+        type: "named"
+        backup_priority: "medium"
+      - name: "caddy_config"
+        mount: "/config"
+        type: "named"
+      - name: "caddy_caddyfile"
+        mount: "/etc/caddy/Caddyfile"
+        type: "bind"
+        source: "./config/caddy/Caddyfile"
+    environment:
+      DOMAIN: "${DOMAIN}"
+      EMAIL: "${SSL_EMAIL}"
+    provides:
+      - web_server
+    resource_requirements:
+      cpu_cores: 0.5
+      memory_mb: 256
+      storage_gb: 1
+    scaling:
+      min_replicas: 1
+      max_replicas: 3
+      scale_metric: "connection_count"
+    healthcheck:
+      endpoint: "/health"
+      interval: "30s"
+      timeout: "5s"
+      retries: 3
+    networks:
+      open_research: ["sushi_net"]
+      business_confidential: ["sushi_frontend"]
+      legal_privilege: ["sushi_public"]
 
-  hosomaki.portainer:
-    provides: []   # pure UI helper; no cap needed
-    image: "portainer/portainer-ce:latest"
-    ports: [{ container: 9000, host: 9000 }]
-    environment_vars: []
+# ----------------------------------------------------------------------
+# FUTOMAKI - Knowledge & Storage Services  
+# ----------------------------------------------------------------------
 
-  # ===== Temaki (Voice/Chat) =====
-  temaki.open-webui:
-    requires: [cap.llm-api]
-    suggests: [hosomaki.litellm]
-    provides: [cap.chat-ui]
-    image: "ghcr.io/open-webui/open-webui:latest"
-    ports: [{ container: 8080, host: 3021 }]
-    environment_vars: [OPENAI_API_BASE_URL, OPENAI_API_KEY]
+  futomaki.qdrant:
+    name: "Qdrant Vector Database"
+    docker:
+      image: "qdrant/qdrant:latest"
+      platform: "linux/amd64"
+      profiles: ["futomaki"]
+    ports:
+      - container: 6333
+        host_range: "6333"
+        protocol: "tcp"
+        description: "REST API"
+      - container: 6334
+        host_range: "6334"
+        protocol: "tcp"
+        description: "gRPC API"
+    volumes:
+      - name: "qdrant_storage"
+        mount: "/qdrant/storage"
+        type: "named"
+        backup_priority: "critical"
+    environment:
+      QDRANT__SERVICE__HTTP_PORT: "6333"
+      QDRANT__SERVICE__GRPC_PORT: "6334"
+      QDRANT__LOG_LEVEL: "INFO"
+    provides:
+      - vector_storage
+    resource_requirements:
+      cpu_cores: 2
+      memory_mb: 4096
+      storage_gb: 100
+    scaling:
+      min_replicas: 1
+      max_replicas: 3
+      scale_metric: "memory_usage"
+    healthcheck:
+      endpoint: "/health"
+      interval: "30s"
+      timeout: "10s"
+      retries: 3
+    networks:
+      open_research: ["sushi_net"]
+      business_confidential: ["sushi_backend", "sushi_data"]
+      legal_privilege: ["sushi_processing", "sushi_storage"]
+
+  futomaki.postgresql:
+    name: "PostgreSQL Database"
+    docker:
+      image: "postgres:15-alpine"
+      platform: "linux/amd64"
+      profiles: ["futomaki"]
+    ports:
+      - container: 5432
+        host_range: "5432"
+        protocol: "tcp"
+        description: "PostgreSQL"
+    volumes:
+      - name: "postgresql_data"
+        mount: "/var/lib/postgresql/data"
+        type: "named"
+        backup_priority: "critical"
+    environment:
+      POSTGRES_DB: "${POSTGRES_DB:-sushi}"
+      POSTGRES_USER: "${POSTGRES_USER:-sushi}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    provides:
+      - relational_storage
+    resource_requirements:
+      cpu_cores: 1
+      memory_mb: 2048
+      storage_gb: 50
+    scaling:
+      min_replicas: 1
+      max_replicas: 1
+      scale_metric: "none"
+    healthcheck:
+      command: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sushi}"]
+      interval: "30s"
+      timeout: "10s"
+      retries: 3
+    networks:
+      open_research: ["sushi_net"]
+      business_confidential: ["sushi_data"]
+      legal_privilege: ["sushi_storage"]
+
+  futomaki.redis:
+    name: "Redis Cache"
+    docker:
+      image: "redis:7-alpine"
+      platform: "linux/amd64"
+      profiles: ["futomaki"]
+    ports:
+      - container: 6379
+        host_range: "6379"
+        protocol: "tcp"
+        description: "Redis"
+    volumes:
+      - name: "redis_data"
+        mount: "/data"
+        type: "named"
+        backup_priority: "low"
+    environment:
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD}"]
+    provides:
+      - cache_storage
+    resource_requirements:
+      cpu_cores: 0.5
+      memory_mb: 1024
+      storage_gb: 5
+    scaling:
+      min_replicas: 1
+      max_replicas: 2
+      scale_metric: "memory_usage"
+    healthcheck:
+      command: ["CMD", "redis-cli", "ping"]
+      interval: "30s"
+      timeout: "3s"
+      retries: 3
+    networks:
+      open_research: ["sushi_net"]
+      business_confidential: ["sushi_backend", "sushi_data"]
+      legal_privilege: ["sushi_processing", "sushi_storage"]
+
+  futomaki.minio:
+    name: "MinIO Object Storage"
+    docker:
+      image: "minio/minio:latest"
+      platform: "linux/amd64"
+      profiles: ["futomaki"]
+    ports:
+      - container: 9000
+        host_range: "9000"
+        protocol: "tcp"
+        description: "S3 API"
+      - container: 9001
+        host_range: "9001"
+        protocol: "tcp"
+        description: "Console"
+    volumes:
+      - name: "minio_data"
+        mount: "/data"
+        type: "named"
+        backup_priority: "high"
+    environment:
+      MINIO_ROOT_USER: "${MINIO_ROOT_USER:-admin}"
+      MINIO_ROOT_PASSWORD: "${MINIO_ROOT_PASSWORD}"
+      MINIO_DOMAIN: "${DOMAIN}"
+    command: ["server", "/data", "--console-address", ":9001"]
+    provides:
+      - object_storage
+    resource_requirements:
+      cpu_cores: 1
+      memory_mb: 1024
+      storage_gb: 200
+    scaling:
+      min_replicas: 1
+      max_replicas: 3
+      scale_metric: "storage_usage"
+    healthcheck:
+      command: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: "30s"
+      timeout: "20s"
+      retries: 3
+    networks:
+      open_research: ["sushi_net"]
+      business_confidential: ["sushi_backend", "sushi_data"]
+      legal_privilege: ["sushi_storage"]
+
+# ----------------------------------------------------------------------
+# TEMAKI - Voice & Audio Services
+# ----------------------------------------------------------------------
 
   temaki.whisper:
-    provides: [cap.asr]
-    image: "onerahmet/openai-whisper-asr-webservice:latest"
-    ports: [{ container: 9000, host: 3022 }]
-    environment_vars: [ASR_MODEL, WHISPER_BEAM_SIZE]
-
-  temaki.piper:
-    provides: [cap.tts]
-    image: "rhasspy/piper:latest"
-    ports: [{ container: 10200, host: 3023 }]
-    environment_vars: [PIPER_VOICE]
-
-  temaki.openvoice:
-    suggests: [temaki.piper]
-    provides: [cap.voice-clone]
-    image: "ghcr.io/myshell-ai/openvoice:latest"
-    ports: [{ container: 7860, host: 3024 }]
-    environment_vars: []
-
-  temaki.openui:
-    provides: [cap.ui-gen]
-    image: "ghcr.io/wandb/openui:latest"
-    ports: [{ container: 5173, host: 3025 }]
-    environment_vars: []
-
-  temaki.adorable-clone:
-    provides: [cap.chat-ui]        # lightweight alternative UI
-    image: "sushi-kitchen/adorable-clone:latest"
-    ports: [{ container: 3000, host: 3026 }]
-    environment_vars: []
-
-  # ===== Futomaki (RAG/DBs) =====
-  futomaki.qdrant:
-    provides: [cap.vector-db]
-    image: "qdrant/qdrant:latest"
-    ports: [{ container: 6333, host: 3010 }]
-    environment_vars: [QDRANT__STORAGE__PATH]
-
-  futomaki.chroma:
-    provides: [cap.vector-db]
-    image: "ghcr.io/chroma-core/chroma:latest"
-    ports: [{ container: 8000, host: 3011 }]
-    environment_vars: []
-
-  futomaki.weaviate:
-    provides: [cap.vector-db]
-    image: "semitechnologies/weaviate:latest"
-    ports: [{ container: 8080, host: 3012 }]
-    environment_vars: [QUERY_DEFAULTS_LIMIT, AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED]
-
-  futomaki.neo4j:
-    provides: [cap.graph-db]
-    image: "neo4j:5"
+    name: "Whisper STT Service"
+    docker:
+      image: "onerahmet/openai-whisper-asr-webservice:latest"
+      platform: "linux/amd64"
+      profiles: ["temaki"]
     ports:
-      - { container: 7474, host: 3013 }  # HTTP
-      - { container: 7687, host: 3014 }  # Bolt
-    environment_vars: [NEO4J_AUTH]
+      - container: 9000
+        host_range: "9010"
+        protocol: "tcp"
+        description: "Whisper API"
+    environment:
+      ASR_MODEL: "base"
+      ASR_ENGINE: "openai_whisper"
+    device_requests:
+      - driver: "nvidia"
+        count: "all"
+        capabilities: ["gpu"]
+    provides:
+      - speech_to_text
+    resource_requirements:
+      cpu_cores: 2
+      memory_mb: 4096
+      storage_gb: 10
+      gpu_memory_mb: 4096
+    scaling:
+      min_replicas: 1
+      max_replicas: 2
+      scale_metric: "gpu_utilization"
+    healthcheck:
+      endpoint: "/health"
+      interval: "30s"
+      timeout: "10s"
+      retries: 3
+    networks:
+      open_research: ["sushi_net"]
+      business_confidential: ["sushi_backend"]
+      legal_privilege: ["sushi_processing"]
 
-  futomaki.memgraph:
-    provides: [cap.graph-db]
-    image: "memgraph/memgraph:latest"
-    ports: [{ container: 7687, host: 3015 }]
-    environment_vars: []
+  temaki.coqui-tts:
+    name: "Coqui TTS Service"
+    docker:
+      image: "coqui/tts:latest"
+      platform: "linux/amd64"
+      profiles: ["temaki"]
+    ports:
+      - container: 5002
+        host_range: "5002"
+        protocol: "tcp"
+        description: "TTS API"
+    volumes:
+      - name: "coqui_models"
+        mount: "/root/.local/share/tts"
+        type: "named"
+        backup_priority: "medium"
+    provides:
+      - text_to_speech
+    resource_requirements:
+      cpu_cores: 2
+      memory_mb: 2048
+      storage_gb: 15
+    scaling:
+      min_replicas: 1
+      max_replicas: 2
+      scale_metric: "cpu_usage"
+    networks:
+      open_research: ["sushi_net"]
+      business_confidential: ["sushi_backend"]
+      legal_privilege: ["sushi_processing"]
 
-  futomaki.arangodb:
-    provides: [cap.graph-db, cap.document-db, cap.kv-store]
-    image: "arangodb/arangodb:latest"
-    ports: [{ container: 8529, host: 3016 }]
-    environment_vars: [ARANGO_ROOT_PASSWORD]
+# ----------------------------------------------------------------------
+# URAMAKI - Visual & Creative Services
+# ----------------------------------------------------------------------
 
-  futomaki.infinity:
-    provides: [cap.embeddings]
-    image: "michaelf34/infinity:latest"
-    ports: [{ container: 7997, host: 3017 }]
-    environment_vars: [MODEL_NAME]
-
-  futomaki.anythingllm:
-    requires: [cap.llm-api, cap.vector-db]
-    suggests: [cap.embeddings]
-    provides: [cap.rag-ui]
-    image: "mintplexlabs/anythingllm:latest"
-    ports: [{ container: 3001, host: 3018 }]
-    environment_vars: [EMBEDDINGS_BASE_URL, OPENAI_API_KEY]
-
-  futomaki.flowise:
-    provides: [cap.agent-builder]
-    image: "flowiseai/flowise:latest"
-    ports: [{ container: 3000, host: 3019 }]
-    environment_vars: [FLOWISE_USERNAME, FLOWISE_PASSWORD]
-
-  futomaki.dify:
-    provides: [cap.agent-orchestrator]
-    image: "langgenius/dify-api:latest"
-    ports: [{ container: 5001, host: 30120 }]
-    environment_vars: [DIFY_ENCRYPTION_KEY]
-
-  # ===== Uramaki (Visual/Media) =====
   uramaki.comfyui:
-    provides: [cap.image-gen]
-    image: "yanwk/comfyui-boot:latest"
-    ports: [{ container: 8188, host: 3030 }]
-    environment_vars: [COMFYUI_MODELS_PATH]
-
-  uramaki.ffmpeg:
-    provides: [cap.media-tool]
-    image: "jrottenberg/ffmpeg:latest"
-    ports: []
-    environment_vars: []
-
-  uramaki.remotion:
-    provides: [cap.video-gen]
-    image: "remotion/remotion:latest"
-    ports: [{ container: 3000, host: 3031 }]
-    environment_vars: []
-
-  uramaki.scanned:
-    provides: [cap.video-analysis]
-    image: "ghcr.io/scanned/scanned:latest"
-    ports: [{ container: 8000, host: 3032 }]
-    environment_vars: []
-
-  uramaki.rclone:
-    provides: [cap.storage-sync]
-    image: "rclone/rclone:latest"
-    ports: []
-    environment_vars: [RCLONE_CONFIG]
-
-  uramaki.imagemagick:
-    provides: [cap.image-tool]
-    image: "dpokidov/imagemagick:latest"
-    ports: []
-    environment_vars: []
-
-  # ===== Dragon Roll (Observability) =====
-  dragon.prometheus:
-    provides: [cap.metrics]
-    image: "prom/prometheus:latest"
-    ports: [{ container: 9090, host: 3040 }]
-    environment_vars: []
-
-  dragon.grafana:
-    provides: [cap.dashboards]
-    image: "grafana/grafana:latest"
-    ports: [{ container: 3000, host: 3041 }]
-    environment_vars: [GF_SECURITY_ADMIN_USER, GF_SECURITY_ADMIN_PASSWORD]
-
-  dragon.cadvisor:
-    provides: [cap.container-metrics]
-    image: "gcr.io/cadvisor/cadvisor:latest"
-    ports: [{ container: 8080, host: 3042 }]
-    environment_vars: []
-
-  dragon.langfuse:
-    provides: [cap.llm-observability]
-    image: "langfuse/langfuse:latest"
-    ports: [{ container: 3000, host: 3043 }]
-    environment_vars: [DATABASE_URL]
-
-  dragon.otel-collector:
-    provides: [cap.telemetry-collector]
-    image: "otel/opentelemetry-collector:latest"
+    name: "ComfyUI Image Generation"
+    docker:
+      image: "yanwk/comfyui-boot:latest"
+      platform: "linux/amd64"
+      profiles: ["uramaki"]
     ports:
-      - { container: 4317, host: 3044 }  # OTLP gRPC
-      - { container: 4318, host: 3045 }  # OTLP HTTP
-    environment_vars: []
+      - container: 8188
+        host_range: "8188"
+        protocol: "tcp"
+        description: "ComfyUI Interface"
+    volumes:
+      - name: "comfyui_data"
+        mount: "/data"
+        type: "named"
+        backup_priority: "medium"
+    environment:
+      CLI_ARGS: "--listen --port 8188"
+    device_requests:
+      - driver: "nvidia"
+        count: "all"
+        capabilities: ["gpu"]
+    provides:
+      - image_generation
+    resource_requirements:
+      cpu_cores: 4
+      memory_mb: 8192
+      storage_gb: 100
+      gpu_memory_mb: 12288
+    scaling:
+      min_replicas: 1
+      max_replicas: 2
+      scale_metric: "gpu_memory"
+    healthcheck:
+      endpoint: "/system_stats"
+      interval: "60s"
+      timeout: "10s"
+      retries: 3
+    networks:
+      open_research: ["sushi_net"]
+      business_confidential: ["sushi_backend"]
+      legal_privilege: ["sushi_processing"]
 
-  dragon.loki:
-    provides: [cap.logs]
-    image: "grafana/loki:latest"
-    ports: [{ container: 3100, host: 3046 }]
-    environment_vars: []
+# ----------------------------------------------------------------------
+# INARI - Observability Services
+# ----------------------------------------------------------------------
 
-  dragon.promtail:
-    requires: [dragon.loki]
-    provides: [cap.log-shipper]
-    image: "grafana/promtail:latest"
-    ports: []
-    environment_vars: [LOKI_URL]
-
-  dragon.sonarqube:
-    provides: [cap.code-quality]
-    image: "sonarqube:lts-community"
-    ports: [{ container: 9000, host: 3047 }]
-    environment_vars: [SONARQUBE_JDBC_URL]
-
-  dragon.istio:
-    provides: [cap.service-mesh]
-    image: "istio/pilot:latest"       # NOTE: K8s-only; placeholder for roadmap
-    ports: []
-    environment_vars: []
-    # TIP: mark as K8s-only in UI.
-
-  dragon.traefik:
-    provides: [cap.reverse-proxy]
-    image: "traefik:latest"
+  inari.prometheus:
+    name: "Prometheus Metrics"
+    docker:
+      image: "prom/prometheus:latest"
+      platform: "linux/amd64"
+      profiles: ["inari"]
     ports:
-      - { container: 80, host: 8081 }
-      - { container: 443, host: 8444 }
-    environment_vars: []
+      - container: 9090
+        host_range: "9090"
+        protocol: "tcp"
+        description: "Prometheus UI"
+    volumes:
+      - name: "prometheus_data"
+        mount: "/prometheus"
+        type: "named"
+        backup_priority: "medium"
+      - name: "prometheus_config"
+        mount: "/etc/prometheus/prometheus.yml"
+        type: "bind"
+        source: "./config/prometheus/prometheus.yml"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/etc/prometheus/console_libraries"
+      - "--web.console.templates=/etc/prometheus/consoles"
+      - "--storage.tsdb.retention.time=200h"
+      - "--web.enable-lifecycle"
+    provides:
+      - monitoring
+    resource_requirements:
+      cpu_cores: 1
+      memory_mb: 2048
+      storage_gb: 50
+    scaling:
+      min_replicas: 1
+      max_replicas: 1
+      scale_metric: "none"
+    networks:
+      open_research: ["sushi_net"]
+      business_confidential: ["sushi_backend"]
+      legal_privilege: ["sushi_audit"]
 
-  # ===== Tamago (Dev Tools) =====
-  tamago.vscode-server:
-    provides: [cap.ide]
-    image: "codercom/code-server:latest"
-    ports: [{ container: 8080, host: 3050 }]
-    environment_vars: [PASSWORD]
-
-  tamago.jupyterlab:
-    provides: [cap.notebooks]
-    image: "jupyter/datascience-notebook:latest"
-    ports: [{ container: 8888, host: 3051 }]
-    environment_vars: [JUPYTER_TOKEN]
-
-  tamago.panel:
-    provides: [cap.dashboarding]
-    image: "pyviz/panel:latest"
-    ports: [{ container: 80, host: 3052 }]
-    environment_vars: []
-
-  tamago.dask:
-    provides: [cap.parallel-compute]
-    image: "daskdev/dask:latest"
+  inari.grafana:
+    name: "Grafana Dashboards"
+    docker:
+      image: "grafana/grafana:latest"
+      platform: "linux/amd64"
+      profiles: ["inari"]
     ports:
-      - { container: 8786, host: 3053 }  # scheduler
-      - { container: 8787, host: 3054 }  # dashboard
-    environment_vars: []
+      - container: 3000
+        host_range: "3000"
+        protocol: "tcp"
+        description: "Grafana UI"
+    volumes:
+      - name: "grafana_data"
+        mount: "/var/lib/grafana"
+        type: "named"
+        backup_priority: "medium"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_ADMIN_PASSWORD}"
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    requires:
+      - monitoring
+    provides:
+      - dashboard_visualization
+    resource_requirements:
+      cpu_cores: 1
+      memory_mb: 1024
+      storage_gb: 10
+    scaling:
+      min_replicas: 1
+      max_replicas: 2
+      scale_metric: "active_users"
+    networks:
+      open_research: ["sushi_net"]
+      business_confidential: ["sushi_frontend", "sushi_backend"]
+      legal_privilege: ["sushi_public", "sushi_audit"]
 
-  tamago.docusaurus:
-    provides: [cap.docs-site]
-    image: "node:18-alpine"             # Node base; your site image may differ
-    ports: [{ container: 3000, host: 3055 }]
-    environment_vars: []
+# ----------------------------------------------------------------------
+# GUNKANMAKI - Security Services
+# ----------------------------------------------------------------------
 
-  tamago.duckdb:
-    provides: [cap.analytics-db]
-    image: "duckdb/duckdb:latest"
-    ports: []
-    environment_vars: []
-
-  tamago.sqlite:
-    provides: [cap.embedded-db]
-    image: "alpine/sqlite:latest"
-    ports: []
-    environment_vars: []
-
-  # ===== Spider Roll (MLOps) =====
-  spider.mlflow:
-    provides: [cap.experiment-tracking]
-    image: "ghcr.io/mlflow/mlflow:latest"    # prefer maintained MLflow image
-    ports: [{ container: 5000, host: 3061 }]
-    environment_vars: [BACKEND_STORE_URI, ARTIFACT_ROOT]
-
-  spider.ray:
-    provides: [cap.distributed-train, cap.distributed-serve]
-    image: "rayproject/ray:latest"
+  gunkanmaki.authentik:
+    name: "Authentik Identity Provider"
+    docker:
+      image: "ghcr.io/goauthentik/authentik:latest"
+      platform: "linux/amd64"
+      profiles: ["gunkanmaki"]
     ports:
-      - { container: 8265, host: 3062 }  # dashboard
-      - { container: 6379, host: 3063 }  # redis (ray internal)
-    environment_vars: []
+      - container: 9000
+        host_range: "9020"
+        protocol: "tcp"
+        description: "Web interface"
+      - container: 9443
+        host_range: "9443"
+        protocol: "tcp"
+        description: "HTTPS interface"
+    volumes:
+      - name: "authentik_media"
+        mount: "/media"
+        type: "named"
+        backup_priority: "high"
+      - name: "authentik_templates"
+        mount: "/templates"
+        type: "named"
+    environment:
+      AUTHENTIK_SECRET_KEY: "${AUTHENTIK_SECRET_KEY}"
+      AUTHENTIK_BOOTSTRAP_PASSWORD: "${AUTHENTIK_BOOTSTRAP_PASSWORD}"
+      AUTHENTIK_BOOTSTRAP_TOKEN: "${AUTHENTIK_BOOTSTRAP_TOKEN}"
+      AUTHENTIK_POSTGRESQL__HOST: "postgresql"
+      AUTHENTIK_POSTGRESQL__NAME: "${AUTHENTIK_DB_NAME:-authentik}"
+      AUTHENTIK_POSTGRESQL__USER: "${AUTHENTIK_DB_USER:-authentik}"
+      AUTHENTIK_POSTGRESQL__PASSWORD: "${AUTHENTIK_DB_PASSWORD}"
+      AUTHENTIK_REDIS__HOST: "redis"
+      AUTHENTIK_REDIS__PASSWORD: "${REDIS_PASSWORD}"
+    requires:
+      - relational_storage
+      - cache_storage
+    provides:
+      - authentication
+    resource_requirements:
+      cpu_cores: 1
+      memory_mb: 2048
+      storage_gb: 5
+    scaling:
+      min_replicas: 1
+      max_replicas: 3
+      scale_metric: "active_sessions"
+    networks:
+      open_research: ["sushi_net"]
+      business_confidential: ["sushi_frontend", "sushi_backend"]
+      legal_privilege: ["sushi_public", "sushi_processing"]
 
-  spider.bentoml:
-    provides: [cap.model-serving]
-    image: "bentoml/bentoml:latest"
-    ports: [{ container: 3000, host: 3064 }]
-    environment_vars: []
+# ========================================================================
+# DEPENDENCY RESOLUTION RULES
+# Define how services should be automatically resolved and configured
+# ========================================================================
 
-  spider.kubeflow:
-    provides: [cap.ml-pipelines]
-    image: "kubeflownotebookswg/jupyter-scipy:latest"  # K8s-focused; roadmap
-    ports: []
-    environment_vars: []
+dependency_resolution:
+  auto_resolve_providers: true
+  prefer_lightweight: true
+  
+  # Default providers for common capabilities
+  default_providers:
+    vector_storage: "futomaki.qdrant"
+    relational_storage: "futomaki.postgresql"
+    cache_storage: "futomaki.redis"
+    object_storage: "futomaki.minio"
+    local_llm_inference: "hosomaki.ollama"
+    web_server: "hosomaki.caddy"
+    monitoring: "inari.prometheus"
+    authentication: "gunkanmaki.authentik"
 
-  spider.temporal:
-    provides: [cap.durable-workflows]
-    image: "temporalio/temporal:latest"
-    ports:
-      - { container: 7233, host: 3065 }  # Temporal Frontend
-    environment_vars: []
+  # Conflict resolution
+  conflicts:
+    - services: ["futomaki.postgresql", "futomaki.mysql"]
+      reason: "Multiple SQL databases not recommended"
+      resolution: "Choose one based on application requirements"
+    - services: ["futomaki.redis", "futomaki.valkey"]
+      reason: "Multiple cache stores unnecessary"
+      resolution: "Use Redis for broader compatibility"
 
-  # ===== Shoyu (Storage/Backups) =====
-  shoyu.minio:
-    provides: [cap.object-store]
-    image: "minio/minio:latest"
-    ports: [{ container: 9000, host: 3070 }]
-    environment_vars: [MINIO_ROOT_USER, MINIO_ROOT_PASSWORD]
+  # Resource scaling rules
+  scaling_rules:
+    gpu_services:
+      rule: "Limit to available GPU memory"
+      services: ["hosomaki.ollama", "hosomaki.vllm", "uramaki.comfyui", "temaki.whisper"]
+    storage_services:
+      rule: "Monitor disk usage closely"
+      services: ["futomaki.qdrant", "futomaki.postgresql", "futomaki.minio"]
 
-  shoyu.restic:
-    requires: [cap.object-store]
-    provides: [cap.backups]
-    image: "restic/restic:latest"
-    ports: []
-    environment_vars: [RESTIC_REPOSITORY, RESTIC_PASSWORD]
+# ========================================================================
+# ENVIRONMENT CONFIGURATION TEMPLATES
+# Pre-configured environment variable templates for common scenarios
+# ========================================================================
 
-  shoyu.duplicati:
-    provides: [cap.backups]
-    image: "duplicati/duplicati:latest"
-    ports: [{ container: 8200, host: 3071 }]
-    environment_vars: []
-
-  shoyu.pgadmin:
-    requires: [cap.postgres]
-    provides: [cap.db-admin]
-    image: "dpage/pgadmin4:latest"
-    ports: [{ container: 80, host: 3072 }]
-    environment_vars: [PGADMIN_DEFAULT_EMAIL, PGADMIN_DEFAULT_PASSWORD]
-
-  shoyu.redisinsight:
-    requires: [cap.queue]   # or cap.cache
-    provides: [cap.kv-admin]
-    image: "redislabs/redisinsight:latest"
-    ports: [{ container: 8001, host: 3073 }]
-    environment_vars: []
-
-  shoyu.borgbackup:
-    provides: [cap.backups]
-    image: "borgbackup/borg:latest"
-    ports: []
-    environment_vars: []
-
-  shoyu.pgbackrest:
-    requires: [cap.postgres]
-    provides: [cap.pg-backup]
-    image: "pgbackrest/pgbackrest:latest"
-    ports: []
-    environment_vars: []
-
-  # ===== Hanko (Identity/Security) =====
-  hanko.authentik:
-    provides: [cap.sso]
-    image: "ghcr.io/goauthentik/server:latest"
-    ports: [{ container: 9000, host: 3080 }]
-    environment_vars: [AUTHENTIK_SECRET_KEY]
-
-  hanko.keycloak:
-    provides: [cap.sso]
-    image: "quay.io/keycloak/keycloak:latest"
-    ports: [{ container: 8080, host: 3081 }]
-    environment_vars: [KEYCLOAK_ADMIN, KEYCLOAK_ADMIN_PASSWORD]
-
-  hanko.infisical:
-    provides: [cap.secrets]
-    image: "infisical/infisical:latest"
-    ports: [{ container: 8080, host: 3082 }]
-    environment_vars: [ENCRYPTION_KEY]
-
-  hanko.vaultwarden:
-    provides: [cap.passwords]
-    image: "vaultwarden/server:latest"
-    ports: [{ container: 80, host: 3083 }]
-    environment_vars: []
-
-  hanko.vault:
-    provides: [cap.secrets, cap.pki]
-    image: "vault:latest"
-    ports: [{ container: 8200, host: 3084 }]
-    environment_vars: [VAULT_DEV_ROOT_TOKEN_ID]
-
-  hanko.sops:
-    provides: [cap.git-secrets]
-    image: "mozilla/sops:latest"
-    ports: []
-    environment_vars: []
-
-  hanko.sealed-secrets:
-    provides: [cap.k8s-secrets]
-    image: "bitnami/sealed-secrets-controller:latest"
-    ports: []
-    environment_vars: []
-
-  # ===== Gunkanmaki (Perf Inference) =====
-  gunkanmaki.vllm:
-    provides: [cap.llm-api, cap.gpu-infer]
-    image: "vllm/vllm-openai:latest"
-    ports: [{ container: 8000, host: 3090 }]
-    environment_vars: [VLLM_MODEL, VLLM_GPU_MEMORY_UTILIZATION]
-
-  gunkanmaki.tgi:
-    provides: [cap.llm-api, cap.gpu-infer]
-    image: "ghcr.io/huggingface/text-generation-inference:latest"
-    ports:
-      - { container: 80, host: 3091 }
-    environment_vars: [MODEL_ID, NUM_SHARD]
-
-  gunkanmaki.triton:
-    provides: [cap.gpu-infer]
-    image: "nvcr.io/nvidia/tritonserver:latest"
-    ports:
-      - { container: 8000, host: 3092 }   # HTTP
-      - { container: 8001, host: 3093 }   # gRPC
-      - { container: 8002, host: 3094 }   # Metrics
-    environment_vars: []
-    # NOTE: heavy + enterprise; ensure GPU drivers/runtime available.
-
-# -----------------------
-# CONFLICT GROUPS / RULES
-# Use "warn_user" for UX nudge rather than hard block, unless breaking.
-# -----------------------
-conflicts:
-  chat_ui_overlap:
-    description: "Multiple chat UIs may confuse users"
-    services: [temaki.open-webui, futomaki.anythingllm, temaki.adorable-clone]
-    resolution: "warn_user"
-
-  reverse_proxy_overlap:
-    description: "Multiple reverse proxies (Caddy/Traefik)"
-    services: [hosomaki.caddy, dragon.traefik]
-    resolution: "choose_one"
-
-# -----------------------
-# RESOLUTION HINTS (opt.)
-# Provide deterministic provider choices when multiple caps match.
-# -----------------------
-resolution_hints:
-  cap.llm-api: [hosomaki.litellm, gunkanmaki.vllm, gunkanmaki.tgi]
-  cap.vector-db: [futomaki.qdrant, futomaki.chroma, futomaki.weaviate]
-  cap.graph-db: [futomaki.neo4j, futomaki.memgraph, futomaki.arangodb]
-  cap.reverse-proxy: [hosomaki.caddy, dragon.traefik]
-
-# EOF
+environment_templates:
+  development:
+    description: "Development environment with relaxed security"
+    global_env:
+      LOG_LEVEL: "DEBUG"
+      DEBUG_MODE: "true"
+      SSL_VERIFY: "false"
+      DATA_RETENTION_DAYS: "7"
+    
+  production:
+    description: "Production environment with full security"
+    global_env:
+      LOG_LEVEL: "INFO"
+      DEBUG_MODE: "false"
+      SSL_VERIFY: "true"
+      DATA_RETENTION_DAYS: "365"
+      BACKUP_ENABLED: "true"
+      MONITORING_ENABLED: "true"
+    
+  compliance:
+    description: "Compliance-ready with audit logging"
+    global_env:
+      LOG_LEVEL: "INFO"
+      AUDIT_LOGGING: "true"
+      ENCRYPTION_AT_REST: "true"
+      DATA_RETENTION_DAYS: "2555"  # 7 years
+      PII_DETECTION: "true"
+      ANONYMIZATION: "true"
