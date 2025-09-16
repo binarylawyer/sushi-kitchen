@@ -1,27 +1,24 @@
 ---
 # ============================================================
-# 🍣 Sushi Kitchen — Menu Manifest (Human-facing catalog only)
-# Version: 2.3  (previous saved as 2.2 per your note)
+# 🍣 Sushi Kitchen — Menu Manifest (SSOT: human-facing catalog)
+# Version: 2.5  (supersedes 2.4)
 # Schema: front matter for website/homepage rendering.
 # IMPORTANT:
 #  - Keep ONLY presentational fields here (ids, names, notes, badges).
-#  - Move operational fields (docker_image, versions, ports, env, deps)
-#    to `docs/manifest/contracts.yml`.
-#  - Combos live in `docs/manifest/combos.yml`
-#  - Platters live in `docs/manifest/platters.yml`
-#  - Badge definitions (labels/tooltips) live in `docs/manifest/badges.yml`
-#    with SVGs in `assets/badges/`.
-# This separation stops drift and makes CI automation easy.
+#  - Operational fields (images/versions/ports/env/deps) live in:
+#      • docs/manifest/contracts.yml
+#      • docs/manifest/combos.yml
+#      • docs/manifest/platters.yml
+#  - Badge definitions (labels/tooltips/icons) live in:
+#      • docs/manifest/badges.yml   (+ SVGs in assets/badges/)
 # ============================================================
 
 title: "🍣 Sushi Kitchen Menu Manifest"
-version: "2.3"
-manifest_schema_version: "1.1"   # bumped because we split concerns formally
-last_updated: 2025-09-12
+version: "2.5"
+manifest_schema_version: "1.1"
+last_updated: 2025-09-16
 legend: "✅ recommended · ⚖️ optional"
 
-# Optional, non-operational repo-wide metadata that UIs may show.
-# (Safe to keep here because it’s not brittle like image tags.)
 deployment_targets:
   - docker-compose
   - kubernetes
@@ -32,465 +29,395 @@ privacy_profiles_supported:
   - temaki
   - inari
 
-# NOTE on badges:
-# Use badge KEYS only (e.g., popular, optional, gpu, gpu-optional, enterprise, heavy, experimental, k8s, future, ci).
-# The dictionary and icons are defined in:
-#   docs/manifest/badges.yml  +  assets/badges/*.svg
+# Badge keys reference (define details in badges.yml):
+# popular, optional, gpu, gpu-optional, enterprise, heavy, experimental, k8s, future, ci
 
-# NOTE on styles:
-# `color_theme` is fine here (purely UI). Any `port_range` previously used
-# is now assigned per-roll in contracts.yml so there are no collisions.
 styles:
 
   # ========================
-  # 1) Hosomaki — Foundation
+  # Hosomaki — Core & Inference
   # ========================
   - name: Hosomaki
-    description: "Thin rolls — the core foundation."
+    description: "Core orchestration & inference you reach for daily."
     color_theme: "#2C3E50"
     rolls:
+      - id: hosomaki.n8n
+        name: "n8n"
+        status: recommended
+        badges: [popular]
+        notes: "Workflow orchestration & automation."
+      - id: hosomaki.litellm
+        name: "LiteLLM"
+        status: recommended
+        badges: [popular]
+        notes: "Universal LLM gateway for local + cloud."
       - id: hosomaki.ollama
         name: "Ollama"
         status: recommended
         badges: [popular, gpu-optional]
         notes: "Local LLM engine with a huge community."
-      - id: hosomaki.litellm
-        name: "LiteLLM"
+      - id: hosomaki.anythingllm
+        name: "AnythingLLM"
         status: recommended
         badges: [popular]
-        notes: "Universal API gateway for local + cloud LLMs."
-      - id: hosomaki.n8n
-        name: "n8n"
+        notes: "RAG-first chat interface; quick start for teams."
+      - id: hosomaki.vllm
+        name: "vLLM"
         status: recommended
-        badges: [popular]
-        notes: "Workflow automation/orchestration brain."
-      - id: hosomaki.supabase
+        badges: [gpu, popular]
+        notes: "Production inference server; OpenAI/HF-compatible."
+      - id: hosomaki.tgi
+        name: "Text Generation Inference (TGI)"
+        status: optional
+        badges: [optional, gpu]
+        notes: "Optimized Hugging Face generation stack."
+      - id: hosomaki.triton
+        name: "NVIDIA Triton Inference Server"
+        status: optional
+        badges: [optional, gpu, enterprise, heavy]
+        notes: "Enterprise GPU inference for multi-framework serving."
+      - id: hosomaki.temporal
+        name: "Temporal"
+        status: optional
+        badges: [optional]
+        notes: "Durable workflow orchestration for critical jobs."
+
+  # ===========================================
+  # Futomaki — Databases, Knowledge & Storage
+  # ===========================================
+  - name: Futomaki
+    description: "The filling: databases, vector/graph stores, and storage."
+    color_theme: "#27AE60"
+    rolls:
+      - id: futomaki.supabase
         name: "Supabase"
         status: recommended
         badges: [popular]
-        notes: "Postgres + pgvector backend with auth & realtime."
-      - id: hosomaki.redis
+        notes: "Postgres-as-a-service with auth & realtime."
+      - id: futomaki.postgres
+        name: "PostgreSQL + pgvector"
+        status: recommended
+        badges: [popular]
+        notes: "Data foundation with vector similarity search."
+      - id: futomaki.redis
         name: "Redis"
         status: recommended
-        notes: "Cache & queue; speeds async tasks."
-      - id: hosomaki.caddy
-        name: "Caddy"
-        status: recommended
-        notes: "Modern reverse proxy with automatic HTTPS."
-      - id: hosomaki.portainer
-        name: "Portainer"
-        status: optional
-        badges: [optional]
-        notes: "Optional Docker GUI for homelab visibility."
-
-  # ===========================================
-  # 2) Futomaki — Knowledge & RAG (DBs/Graphs)
-  # ===========================================
-  - name: Futomaki
-    description: "Fat rolls — knowledge stores, RAG, and graphs."
-    color_theme: "#27AE60"
-    rolls:
+        notes: "Caching, queues, rate-limits; glue for async."
       - id: futomaki.qdrant
         name: "Qdrant"
         status: recommended
         badges: [popular]
-        notes: "High-performance vector database for RAG."
-      - id: futomaki.chroma
-        name: "Chroma"
-        status: recommended
-        notes: "Simple prototyping vector store."
+        notes: "High-performance vector DB for RAG."
       - id: futomaki.weaviate
         name: "Weaviate"
         status: optional
         badges: [optional, enterprise]
-        notes: "GraphQL-native vector DB; enterprise-leaning alternative."
+        notes: "GraphQL-native vector DB; enterprise-leaning."
+      - id: futomaki.chroma
+        name: "Chroma"
+        status: optional
+        badges: [optional]
+        notes: "Simple vector store for prototyping."
+      - id: futomaki.infinity
+        name: "Infinity (Embeddings)"
+        status: optional
+        badges: [optional]
+        notes: "Fast embedding server for sentence-transformers."
       - id: futomaki.neo4j
         name: "Neo4j"
         status: recommended
-        notes: "Graph database powerhouse — great for GraphRAG."
-      - id: futomaki.memgraph
-        name: "Memgraph"
-        status: optional
-        badges: [optional]
-        notes: "In-memory graph DB; niche alternative."
-      - id: futomaki.arangodb
-        name: "ArangoDB"
-        status: optional
-        badges: [optional, heavy]
-        notes: "Multi-model DB (graph+doc+KV); heavier footprint."
-      - id: futomaki.anythingllm
-        name: "AnythingLLM"
+        notes: "Graph database powerhouse (GraphRAG, knowledge graphs)."
+      - id: futomaki.minio
+        name: "MinIO"
         status: recommended
-        badges: [popular]
-        notes: "Turnkey RAG UI with strong community."
-      - id: futomaki.infinity
-        name: "Infinity (Embeddings)"
+        notes: "S3-compatible object storage for artifacts/media."
+      - id: futomaki.restic
+        name: "Restic"
         status: recommended
-        notes: "Fast embedding server for sentence transformers."
-      - id: futomaki.flowise
-        name: "Flowise"
+        notes: "Encrypted, deduplicated backups for peace of mind."
+      - id: futomaki.pgadmin
+        name: "pgAdmin"
+        status: recommended
+        notes: "Web UI for Postgres administration."
+      - id: futomaki.redisinsight
+        name: "RedisInsight"
         status: optional
         badges: [optional]
-        notes: "Visual LangChain builder; no-code agent graphs."
-      - id: futomaki.dify
-        name: "Dify"
+        notes: "GUI for Redis monitoring and queries."
+      - id: futomaki.rclone-browser
+        name: "Rclone Browser"
         status: optional
         badges: [optional]
-        notes: "LangSmith-style orchestration; OSS flavor."
+        notes: "GUI for rclone operations."
 
   # ==========================================
-  # 3) Temaki — Voice & Interaction (ASR/TTS)
+  # Nigiri — Speech & Interaction
   # ==========================================
-  - name: Temaki
-    description: "Hand rolls — voice, interaction, and conversation."
+  - name: Nigiri
+    description: "Clean, direct interaction: ASR, TTS, and chat UIs."
     color_theme: "#E74C3C"
     rolls:
-      - id: temaki.whisper
+      - id: nigiri.whisper
         name: "Whisper"
         status: recommended
         badges: [gpu-optional]
-        notes: "ASR with near human-level accuracy."
-      - id: temaki.piper
+        notes: "Near human-level ASR; local and server modes."
+      - id: nigiri.piper
         name: "Piper"
         status: recommended
-        notes: "Lightweight text-to-speech."
-      - id: temaki.openvoice
+        notes: "Lightweight, fast TTS."
+      - id: nigiri.openvoice
         name: "OpenVoice"
         status: optional
         badges: [optional, experimental]
-        notes: "Voice cloning; early-stage expectations."
-      - id: temaki.openui
-        name: "OpenUI"
-        status: optional
-        badges: [optional, experimental]
-        notes: "Experimental UI generator for conversational apps."
-      - id: temaki.open-webui
+        notes: "Voice cloning; early-stage—handle with care."
+      - id: nigiri.open-webui
         name: "Open WebUI"
-        status: recommended
-        badges: [popular]
-        notes: "Popular Ollama/LLM chat UI."
-      - id: temaki.adorable-clone
-        name: "Adorable.dev (clone)"
         status: optional
-        badges: [optional, experimental]
-        notes: "In-house playful UI alternative."
+        badges: [optional, popular]
+        notes: "Popular Ollama/LLM chat UI."
 
   # ================================================
-  # 4) Uramaki — Visual / Creative (Image/Video/IO)
+  # Uramaki — Visual & Media Generation/Processing
   # ================================================
   - name: Uramaki
-    description: "Inside-out rolls — creative, visual, and media."
+    description: "Inside-out creativity: image/video generation & tooling."
     color_theme: "#9B59B6"
     rolls:
       - id: uramaki.comfyui
         name: "ComfyUI"
         status: recommended
         badges: [popular, gpu]
-        notes: "Node-based Stable Diffusion pipelines; GPU recommended."
+        notes: "Node-based Stable Diffusion pipelines."
+      - id: uramaki.automatic1111
+        name: "Automatic1111"
+        status: optional
+        badges: [optional, gpu]
+        notes: "Stable Diffusion WebUI."
       - id: uramaki.ffmpeg
         name: "FFmpeg"
         status: recommended
         notes: "Swiss-army knife for audio/video processing."
-      - id: uramaki.remotion
-        name: "Remotion"
-        status: optional
-        badges: [optional]
-        notes: "Programmatic video generation."
-      - id: uramaki.scanned
-        name: "Scanned"
-        status: optional
-        badges: [optional, experimental]
-        notes: "Video analysis utilities; early stage."
-      - id: uramaki.rclone
-        name: "rclone"
-        status: recommended
-        notes: "Sync to S3/MinIO/GDrive; storage glue."
       - id: uramaki.imagemagick
         name: "ImageMagick"
         status: recommended
         notes: "Classic image manipulation toolkit."
+      - id: uramaki.rclone
+        name: "rclone"
+        status: recommended
+        notes: "Sync media/artifacts to S3/MinIO/GDrive."
+      - id: uramaki.remotion
+        name: "Remotion"
+        status: optional
+        badges: [optional]
+        notes: "Programmatic video creation."
 
-  # ============================================
-  # 5) Dragon Roll — Observability & Governance
-  # ============================================
-  - name: Dragon Roll
-    description: "Oversight — observability, logs, tracing, quality."
+  # =========================================
+  # Chirashi — Data Science & Compute
+  # =========================================
+  - name: Chirashi
+    description: "Exploratory bowls: notebooks, dashboards, compute."
+    color_theme: "#1ABC9C"
+    rolls:
+      - id: chirashi.jupyterlab
+        name: "JupyterLab"
+        status: recommended
+        notes: "Interactive notebooks for DS/AI."
+      - id: chirashi.panel
+        name: "Panel"
+        status: optional
+        badges: [optional]
+        notes: "Dashboard creation from notebooks."
+      - id: chirashi.dask
+        name: "Dask"
+        status: optional
+        badges: [optional, heavy]
+        notes: "Parallel computing framework."
+      - id: chirashi.mlflow
+        name: "MLflow"
+        status: recommended
+        notes: "Experiment tracking & model registry."
+      - id: chirashi.bentoml
+        name: "BentoML"
+        status: optional
+        badges: [optional]
+        notes: "Model serving framework."
+      - id: chirashi.kubeflow
+        name: "Kubeflow"
+        status: optional
+        badges: [optional, enterprise, k8s, future, heavy]
+        notes: "End-to-end ML workflows on K8s."
+      - id: chirashi.metabase
+        name: "Metabase"
+        status: optional
+        badges: [optional]
+        notes: "Analytics & dashboarding."
+
+  # ==================================
+  # Temaki — Developer / Builder Tools
+  # ==================================
+  - name: Temaki
+    description: "Hand-rolled builder tools and low-code frameworks."
+    color_theme: "#34495E"
+    rolls:
+      - id: temaki.vscode-server
+        name: "VS Code Server"
+        status: recommended
+        notes: "Full IDE in the browser."
+      - id: temaki.gitea
+        name: "Gitea"
+        status: optional
+        badges: [optional]
+        notes: "Self-hosted Git service with CI/CD."
+      - id: temaki.sonarqube
+        name: "SonarQube"
+        status: optional
+        badges: [optional, ci]
+        notes: "Code quality & vulnerability scanning."
+      - id: temaki.flowise
+        name: "Flowise"
+        status: optional
+        badges: [optional]
+        notes: "Visual flow/agent builder."
+      - id: temaki.dify
+        name: "Dify"
+        status: optional
+        badges: [optional]
+        notes: "Open-source assistant builder."
+      - id: temaki.windmill
+        name: "Windmill"
+        status: optional
+        badges: [optional]
+        notes: "Workflow/scheduling/ETL builder."
+      - id: temaki.openui
+        name: "OpenUI"
+        status: optional
+        badges: [optional, experimental]
+        notes: "Conversational UI prototyping."
+
+  # ==========================================
+  # Inari — Observability & Telemetry
+  # ==========================================
+  - name: Inari
+    description: "Seeing the whole kitchen: metrics, logs, traces, LLM QA."
     color_theme: "#F39C12"
     rolls:
-      - id: dragon.prometheus
+      - id: inari.prometheus
         name: "Prometheus"
         status: recommended
         notes: "Metrics collection standard."
-      - id: dragon.grafana
+      - id: inari.grafana
         name: "Grafana"
         status: recommended
         notes: "Dashboards and observability hub."
-      - id: dragon.cadvisor
-        name: "cAdvisor"
-        status: recommended
-        notes: "Container-level resource metrics."
-      - id: dragon.langfuse
+      - id: inari.langfuse
         name: "Langfuse"
         status: recommended
         notes: "LLM tracing/analytics."
-      - id: dragon.otel-collector
-        name: "OpenTelemetry Collector"
+      - id: inari.cadvisor
+        name: "cAdvisor"
         status: recommended
-        notes: "Unified telemetry ingestion."
-      - id: dragon.loki
+        notes: "Container-level resource metrics."
+      - id: inari.node-exporter
+        name: "Node Exporter"
+        status: recommended
+        notes: "Host/system metrics exporter."
+      - id: inari.loki
         name: "Loki"
         status: optional
         badges: [optional]
         notes: "Log aggregation (Grafana stack)."
-      - id: dragon.promtail
+      - id: inari.promtail
         name: "Promtail"
         status: optional
         badges: [optional]
         notes: "Log shipper; pairs with Loki."
-      - id: dragon.sonarqube
-        name: "SonarQube"
-        status: optional
-        badges: [optional, ci]
-        notes: "Code quality/vulnerability scanning (dev/CI focus)."
-      - id: dragon.istio
-        name: "Istio"
-        status: optional
-        badges: [optional, enterprise, k8s, future]
-        notes: "Service mesh; K8s/enterprise roadmap."
-      - id: dragon.traefik
-        name: "Traefik"
-        status: optional
-        badges: [optional, enterprise, future]
-        notes: "Alt reverse proxy; enterprise futures."
-
-  # ==================================
-  # 6) Tamago — Developer Tooling
-  # ==================================
-  - name: Tamago
-    description: "Egg — developer tools, simple yet skilled."
-    color_theme: "#1ABC9C"
-    rolls:
-      - id: tamago.vscode-server
-        name: "VS Code Server"
-        status: recommended
-        notes: "Web IDE in the browser."
-      - id: tamago.jupyterlab
-        name: "JupyterLab"
-        status: recommended
-        notes: "Notebook environment for DS/AI."
-      - id: tamago.panel
-        name: "Panel"
+      - id: inari.otel-collector
+        name: "OpenTelemetry Collector"
         status: optional
         badges: [optional]
-        notes: "Lightweight dashboarding for data apps."
-      - id: tamago.dask
-        name: "Dask"
+        notes: "Unified telemetry ingestion (traces/metrics/logs)."
+
+  # ==========================================
+  # Gunkanmaki — Security, Identity & Protection
+  # ==========================================
+  - name: Gunkanmaki
+    description: "Armored vessels: identity, secrets, and access."
+    color_theme: "#FF4500"
+    rolls:
+      - id: gunkanmaki.authentik
+        name: "Authentik"
+        status: recommended
+        badges: [popular]
+        notes: "Lightweight SSO/IdP."
+      - id: gunkanmaki.keycloak
+        name: "Keycloak"
         status: optional
-        badges: [optional, heavy]
-        notes: "Parallel computing; heavier footprint."
-      - id: tamago.docusaurus
+        badges: [optional, enterprise, heavy]
+        notes: "Battle-tested enterprise IdP."
+      - id: gunkanmaki.vaultwarden
+        name: "Vaultwarden"
+        status: recommended
+        notes: "Self-hosted Bitwarden-compatible passwords."
+      - id: gunkanmaki.infisical
+        name: "Infisical"
+        status: recommended
+        notes: "Secrets/config manager for modern stacks."
+
+  # ==========================================
+  # Sashimi — API & Documentation
+  # ==========================================
+  - name: Sashimi
+    description: "Clean slices: docs sites and API explorers."
+    color_theme: "#708090"
+    rolls:
+      - id: sashimi.docusaurus
         name: "Docusaurus"
         status: recommended
-        notes: "Docs site generator."
-      - id: tamago.duckdb
+        notes: "Documentation site generator."
+      - id: sashimi.swaggerui
+        name: "Swagger UI"
+        status: recommended
+        notes: "Interactive API explorer/tester."
+      - id: sashimi.redoc
+        name: "Redoc"
+        status: recommended
+        notes: "Static API documentation generator."
+
+  # ==========================================
+  # Otsumami — Optional Side Utilities
+  # ==========================================
+  - name: Otsumami
+    description: "Snacks & niceties used occasionally but not required."
+    color_theme: "#8B4513"
+    rolls:
+      - id: otsumami.duckdb
         name: "DuckDB"
         status: optional
         badges: [optional, popular]
-        notes: "Fast analytics DB — ‘SQLite for OLAP’."
-      - id: tamago.sqlite
+        notes: "‘SQLite for OLAP’—fast local analytics."
+      - id: otsumami.sqlite
         name: "SQLite"
         status: optional
         badges: [optional]
         notes: "Ubiquitous embedded relational DB."
 
-  # ==========================================
-  # 7) Spider Roll — MLOps & Experimentation
-  # ==========================================
-  - name: Spider Roll
-    description: "Intricate — MLOps, experiments, orchestration."
-    color_theme: "#34495E"
-    rolls:
-      - id: spider.mlflow
-        name: "MLflow"
-        status: recommended
-        notes: "Track experiments, metrics, and artifacts."
-      - id: spider.ray
-        name: "Ray"
-        status: optional
-        badges: [optional, heavy]
-        notes: "Distributed training/serving; heavy but powerful."
-      - id: spider.bentoml
-        name: "BentoML"
-        status: optional
-        badges: [optional]
-        notes: "Model serving/deployment toolkit."
-      - id: spider.kubeflow
-        name: "Kubeflow"
-        status: optional
-        badges: [optional, enterprise, k8s, future, heavy]
-        notes: "End-to-end ML pipelines; enterprise/K8s roadmap."
-      - id: spider.temporal
-        name: "Temporal"
-        status: optional
-        badges: [optional]
-        notes: "Durable workflow orchestration."
-
-  # =========================================
-  # 8) Shoyu — Data Lifecycle & Management
-  # =========================================
-  - name: Shoyu
-    description: "Soy sauce — storage, backup, data lifecycle."
-    color_theme: "#8B4513"
-    rolls:
-      - id: shoyu.minio
-        name: "MinIO"
-        status: recommended
-        notes: "S3-compatible object storage."
-      - id: shoyu.restic
-        name: "Restic"
-        status: recommended
-        notes: "Encrypted, deduplicated backups."
-      - id: shoyu.duplicati
-        name: "Duplicati"
-        status: optional
-        badges: [optional]
-        notes: "GUI backup; simpler flows."
-      - id: shoyu.pgadmin
-        name: "pgAdmin"
-        status: recommended
-        notes: "Web UI for Postgres."
-      - id: shoyu.redisinsight
-        name: "RedisInsight"
-        status: optional
-        badges: [optional]
-        notes: "GUI for Redis monitoring/queries."
-      - id: shoyu.borgbackup
-        name: "BorgBackup"
-        status: optional
-        badges: [optional]
-        notes: "Efficient dedup backups."
-      - id: shoyu.pgbackrest
-        name: "pgBackRest"
-        status: optional
-        badges: [optional, enterprise]
-        notes: "Enterprise-grade Postgres backup."
-
-  # ==========================================
-  # 9) Hanko — Security / Identity / Secrets
-  # ==========================================
-  - name: Hanko
-    description: "The seal — auth, identity, and secrets."
-    color_theme: "#2F4F4F"
-    rolls:
-      - id: hanko.authentik
-        name: "Authentik"
-        status: recommended
-        badges: [popular]
-        notes: "Lightweight SSO/IdP."
-      - id: hanko.keycloak
-        name: "Keycloak"
-        status: optional
-        badges: [optional, enterprise, heavy]
-        notes: "Battle-tested enterprise IdP; heavier footprint."
-      - id: hanko.infisical
-        name: "Infisical"
-        status: recommended
-        notes: "Secrets manager for modern stacks."
-      - id: hanko.vaultwarden
-        name: "Vaultwarden"
-        status: recommended
-        notes: "Self-hosted Bitwarden-compatible password manager."
-      - id: hanko.vault
-        name: "HashiCorp Vault"
-        status: optional
-        badges: [optional, enterprise, heavy]
-        notes: "Enterprise secrets + PKI."
-      - id: hanko.sops
-        name: "SOPS"
-        status: recommended
-        notes: "Git-friendly secrets encryption (age/GPG)."
-      - id: hanko.sealed-secrets
-        name: "Sealed Secrets"
-        status: optional
-        badges: [optional, k8s, future]
-        notes: "K8s-native secrets; roadmap."
-
-  # ==============================================
-  # 10) Gunkanmaki — High-Performance Inference
-  # ==============================================
-  - name: Gunkanmaki
-    description: "Battleship rolls — high-performance inference."
-    color_theme: "#FF4500"
-    rolls:
-      - id: gunkanmaki.vllm
-        name: "vLLM"
-        status: recommended
-        badges: [popular, gpu]
-        notes: "Fast LLM serving with OpenAI/HF compat."
-      - id: gunkanmaki.tgi
-        name: "Text Generation Inference (TGI)"
-        status: recommended
-        badges: [gpu]
-        notes: "Optimized HuggingFace serving stack."
-      - id: gunkanmaki.triton
-        name: "NVIDIA Triton Server"
-        status: optional
-        badges: [optional, enterprise, gpu, heavy]
-        notes: "Enterprise GPU inference server."
-
-  # ==========================================
-  # 11) Makimono — Collaboration & API Docs
-  # ==========================================
-  - name: Makimono
-    description: "Scroll rolls — collaboration and API docs."
-    color_theme: "#708090"
-    rolls:
-      - id: makimono.gitea
-        name: "Gitea"
-        status: recommended
-        notes: "Lightweight Git hosting with CI/CD."
-      - id: makimono.homepage
-        name: "Homepage"
-        status: recommended
-        notes: "Dashboard for services — the kitchen counter."
-      - id: makimono.redoc
-        name: "Redoc"
-        status: recommended
-        notes: "Static API documentation generator."
-      - id: makimono.swaggerui
-        name: "SwaggerUI"
-        status: recommended
-        notes: "Interactive API explorer/tester."
+enterprise_and_deployment:
+  omakase_mode: "Automatic optimal stack / curated combo."
+  kaiseki_mode: "Premium curated / high-performance alternatives."
+  exports: ["Kubernetes/Helm", "Docker Swarm", "Ansible", "Bare-metal"]
 ---
 
-# 🍱 Sushi Kitchen Menu
+# 🍱 Sushi Kitchen Menu (human-facing)
 
-This page is the **human-friendly catalog** (Styles → Rolls).  
-- **Contracts (deps/images/versions/ports/env)** live in `docs/manifest/contracts.yml`.  
-- **Combos** live in `docs/manifest/combos.yml`.  
-- **Platters** live in `docs/manifest/platters.yml`.  
-- **Badge dictionary** lives in `docs/manifest/badges.yml` (icons in `assets/badges/`).  
+This is the **catalog** (Styles → Rolls).  
+- **Contracts (deps/images/versions/ports/env)** → `docs/manifest/contracts.yml`  
+- **Combos** → `docs/manifest/combos.yml`  
+- **Platters** → `docs/manifest/platters.yml`  
+- **Badges** → `docs/manifest/badges.yml` (icons in `assets/badges/`)  
 
-> Why this split? It prevents drift: copy stays readable, while the resolver/CLI and CI pin images/versions and allocate ports safely.
+Meet our chefs: **Port** and **Starboard**.  
+- **Port’s sushi** = core foundation you’ll use daily (Hosomaki, Futomaki, Uramaki, Nigiri, Temaki, Gunkanmaki, Sashimi).  
+- **Starboard’s bowls/specialties** = exploratory, observability, and feasts (Chirashi, Inari, Otsumami, plus Omakase/Kaiseki).  
 
-## 🎯 **Current Status: We're at Phase 0, not Phase 3**
-
-We need to work on **Phase 1** first - creating the generator. Here's what we need to do:
-
-## 🚀 **Let's Start with Step 1: Create the Generator**
-
-I'll create a Python script that can read the manifest files and generate compose configurations. Here's what we need:
-
-```bash
-<code_block_to_apply_changes_from>
-```
-
-**Would you like me to:**
-
-1. **Create the generator script** that reads your manifest files and outputs compose configurations?
-2. **Start by converting one existing compose file** (like `docker-compose.base.yml`) into a template?
-3. **Create a simple test** with one platter (like `platter.starter`) to validate the approach?
-
-Which approach would you prefer to start with? I recommend starting with **option 1** - creating the generator script, because once we have that working, we can easily convert the existing files and test with different platters.
-
-The generator will be the foundation that makes everything else possible!
+> “Every roll has its place; every bowl adds richness.”
