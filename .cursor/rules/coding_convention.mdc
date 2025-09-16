@@ -26,3 +26,26 @@ packages/
   infra/         # compose, caddy, k8s overlays
   libs/          # shared TS libs (sdk, utils)
   py/            # python packages (rag, evals)
+TDD & “Atomic” rules
+Write a failing test first for any behavior that crosses boundaries (parsers, adapters, pricing, routing).
+Keep PRs <= 300 LOC net; 1 concern per PR; green CI required.
+Snapshot tests for generated config (menu.json, Caddy snippets).
+Style (TS)
+Prefer pure functions; dependency injection over singletons.
+Zod for runtime validation of inputs/outputs.
+never throw raw errors; use Result<T, E> or error classes with codes.
+Style (Python)
+Type hints mandatory (from __future__ import annotations).
+Dataclasses or Pydantic for structured data.
+CLI via typer.
+Env & secrets
+All secrets in Infisical; .env only for local dev stubs.
+No secret prints in logs. Mask tokens at source.
+Logging & telemetry
+OpenTelemetry for traces; Langfuse for LLM events.
+Log structure: {level, ts, service, op, user?, req_id, msg, details?}.
+Definition of Done (per change)
+Tests passing
+Lint/format clean
+Docs updated (relevant .mdc/README pages)
+If routes added: edge rules + security.* verified
