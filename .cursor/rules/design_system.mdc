@@ -1,73 +1,406 @@
 ---
-description:
-globs:
 alwaysApply: true
 ---
 
 # Design System — Sushi Kitchen
 
-This file defines the visual language and UI building blocks used across the web app, docs, and dashboards. Generators and linters should read these tokens to keep UI consistent.
+A small, opinionated design system for the docs site + dashboard UIs built on **Tailwind**, **shadcn/ui**, and **lucide-react**. Ties directly to SSOT fields in `tech_stack.mdc` (names, taglines, badges, routes).
+
+---
+
+## Principles
+1. **Legible by default** — strong contrast, accessible sizes, predictable layouts.
+2. **Edge-first clarity** — apps show auth + exposure status up front.
+3. **Composable** — one flexible card, one table, one form system.
+4. **Batteries-included** — sensible defaults; minimal props for 80% cases.
+5. **SSOT-driven** — UI pulls names, taglines, badges, docs routes from `tech_stack.mdc`.
+
+---
 
 ## Tokens
 
-```yaml
-tokens:
-  color:
-    primary: "#0D9488"     # teal-600
-    secondary: "#1E293B"   # slate-800
-    accent: "#F59E0B"      # amber-500
-    success: "#10B981"
-    warning: "#F59E0B"
-    danger:  "#EF4444"
-    info:    "#3B82F6"
-    surface:
-      base:  "#0B1220"
-      card:  "#111827"
-      muted: "#374151"
-  typography:
-    font_family_sans: "Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'"
-    scale: [12, 14, 16, 18, 20, 24, 28, 32]
-    line_height: 1.5
-    weight:
-      regular: 400
-      medium: 500
-      semibold: 600
-      bold: 700
-  radius:
-    sm: "8px"
-    md: "12px"
-    lg: "16px"
-    xl: "20px"
-  spacing:
-    xs: 4
-    sm: 8
-    md: 12
-    lg: 16
-    xl: 24
-    "2xl": 32
-  shadow:
-    card: "0 8px 24px rgba(0,0,0,0.2)"
-    inset: "inset 0 1px 0 rgba(255,255,255,0.03)"
-Layout principles
-Grid first: 12-column responsive grid, 24px gutters.
-Cards everywhere: soft corners, dark surface, subtle shadow, strong contrast text.
-Motion sparingly: use for emphasis (route changes, async loads, success states).
-Components (contracts)
-components:
-  AppCard:
-    fields: [title, tagline, status, badges, link, icon]
-    badge_palette:
-      stable: success
-      beta: warning
-      experimental: info
-  RouteChip:
-    fields: [ingress, public, auth_required]
-  Stat:
-    fields: [label, value, delta, delta_kind]  # delta_kind: up|down|flat
+### Color (CSS variables)
+```css
+:root {
+  /* Base */
+  --bg: 255 255 255;
+  --fg: 17 24 39;         /* slate-900 */
+  --muted: 100 116 139;   /* slate-500 */
+  --divider: 226 232 240; /* slate-200 */
+
+  /* Brand */
+  --brand: 14 165 233;    /* sky-500 */
+  --brand-ink: 2 132 199; /* sky-600 */
+
+  /* Status */
+  --ok: 34 197 94;        /* green-500 */
+  --warn: 245 158 11;     /* amber-500 */
+  --danger: 239 68 68;    /* red-500 */
+  --beta: 99 102 241;     /* indigo-500 */
+  --exp: 59 130 246;      /* blue-500 */
+
+  /* Surfaces */
+  --card: 248 250 252;    /* slate-50 */
+  --elev: 241 245 249;    /* slate-100 */
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: 2 6 23;         /* slate-950 */
+    --fg: 241 245 249;    /* slate-100 */
+    --muted: 148 163 184; /* slate-400 */
+    --divider: 30 41 59;  /* slate-800 */
+    --card: 10 15 25;     /* custom dark card */
+    --elev: 15 23 42;
+  }
+}
+Type scale
+css
+Copy code
+:root {
+  --step--1: 0.875rem;  /* 14 */
+  --step-0:  1rem;      /* 16 */
+  --step-1:  1.125rem;  /* 18 */
+  --step-2:  1.25rem;   /* 20 */
+  --step-3:  1.5rem;    /* 24 */
+  --step-4:  1.875rem;  /* 30 */
+  --step-5:  2.25rem;   /* 36 */
+}
+Spacing & Radius
+Spacing: 2, 3, 4, 6, 8, 10 (Tailwind p-2 … p-10).
+
+Radius: rounded-xl for surfaces, rounded-2xl for hero/feature cards.
+
+Shadow: shadow-sm (list), shadow-md (cards), shadow-lg (modals).
+
+Iconography (lucide)
+Roll → icon
+
+Hosomaki (core): cog
+
+Futomaki (db): database
+
+Nigiri (speech): mic
+
+Uramaki (images): image
+
+Ramen (video): film
+
+Chirashi (data science): beaker
+
+Temaki (builder): wrench
+
+Inari (observability): activity
+
+Gunkanmaki (security): shield
+
+Sashimi (API/docs): file-text
+
+Otsumami (utils): sparkles
+
+App status → dot color
+
+stable: --ok
+
+beta: --beta
+
+experimental: --exp
+
+deprecated: --danger
+
+Badges (maps to tech_stack.mdc badges array)
+Token → label → style
+
+automation → Automation → subtle brand
+
+gateway → Gateway → subtle indigo
+
+api → API → outline slate
+
+rag → RAG → outline brand
+
+chat → Chat → subtle slate
+
+local → Local → subtle emerald
+
+performance → Performance → outline violet
+
+image → Image → subtle fuchsia
+
+media → Media → subtle sky
+
+render → Render → outline sky
+
+analysis → Analysis → outline cyan
+
+vector → Vector → outline stone
+
+graph → Graph → outline amber
+
+sql → SQL → outline slate
+
+cache → Cache → outline emerald
+
+queue → Queue → outline teal
+
+fast → Fast → filled emerald
+
+Shapes: rounded-full chips (text-xs, px-2.5, py-1, gap-1 with icon optional).
+
+Layout
+Page grid
+1440 max width, centered.
+
+12-col CSS grid; gutters gap-6.
+
+Left sidebar (nav) w-[280px]; content fills rest.
+
+Card grid
+Responsive: grid-cols-1 sm:grid-cols-2 xl:grid-cols-3.
+
+Card padding p-5, gap 4, rounded-xl, shadow-md, bg-[rgb(var(--card))].
+
+Components
+App Card (SSOT-driven)
+Data source: tech_stack.mdc → { name, tagline, status, docs.homepage, routes.ingress, badges }.
+
+Structure
+
+Top row: icon (by roll) + name + status dot.
+
+Middle: tagline (two-line clamp).
+
+Badges row.
+
+Footer actions:
+
+Open (if routes[0].public === true) → routes[0].ingress
+
+Docs → docs.homepage
+
+Auth required chip if security.auth_required.
+
 Accessibility
-WCAG AA minimum. Contrast ≥ 4.5 for body text.
-Focus states visible and keyboard nav complete.
-Reduced motion respects prefers-reduced-motion.
-Branding quick-refs
-Tone: helpful, precise, a little playful.
-Imagery: “workbench for builders”, not corporate stock.
+
+Entire card focusable (role="group"), keyboard open on Enter.
+
+aria-describedby links to tagline paragraph id.
+
+Empty state
+
+“No apps in this roll yet” with CTA to docs.
+
+Tables
+Minimal dense table for lists (metrics, routes).
+
+Sticky header, text-sm, zebra on hover only.
+
+Sort affordance via icon; column min widths.
+
+Forms
+shadcn/ui Form, Input, Select, Textarea.
+
+Labels always visible; helper text below; error text red with icon.
+
+Validation: zod schema + inline error mapping.
+
+Modals/Sheets
+Use sparingly (confirmations, details).
+
+Close on Esc, backdrop click optional per context.
+
+Toasts
+Short verbs: “Saved”, “Updated”, “Rotated”.
+
+Never reveal secrets; link to details page if needed.
+
+Markdown (Docs)
+Headings map to type scale (h1: step-5 … h4: step-2).
+
+Code blocks: shiki/rehype, copy button.
+
+Admonitions: Note, Tip, Caution, Danger (color-coded).
+
+Motion
+Durations: 150–250ms UI, 400ms page transitions.
+
+Easing: ease-out for enter, ease-in for exit.
+
+Framer Motion on hero/feature rows; subtle only.
+
+Responsiveness
+Mobile first; nav collapses to sheet.
+
+Cards stack; actions become icon-only with tooltips at sm.
+
+Dark Mode
+Auto via prefers-color-scheme; switch in header.
+
+Ensure status/badge colors meet 4.5:1 on dark.
+
+Content Style
+Voice: concise, practical. Avoid metaphor inside controls; keep sushi metaphors in headlines/section intros only.
+
+Use the kitchen names (Hosomaki/Ramen/…) consistently with their one-sentence definition from SSOT:
+
+Hosomaki: core orchestration & inference
+
+Futomaki: databases & knowledge stores
+
+Nigiri: speech & interaction
+
+Uramaki: visual & media (images)
+
+Ramen: video & motion (edit, generate, analyze)
+
+Chirashi: data science & compute
+
+Temaki: builder & DIY tools
+
+Inari: observability & telemetry
+
+Gunkanmaki: security & identity
+
+Sashimi: API & docs
+
+Otsumami: optional utilities
+
+Exposure & Security UI
+If security.public_exposure === internal_only → show lock icon + “Internal”.
+
+If auth_required === true and routes.public === true → “Protected (edge auth)”.
+
+Tooltips explain Caddy/Cloudflare + Authentik flow succinctly.
+
+Route Mapping (from SSOT)
+When an app exposes a primary public route:
+
+Button Open → routes.find(r => r.public)?.ingress
+
+If no public route, disable Open and show “Internal only”.
+
+docs.homepage always mapped to Docs link.
+
+Status Chips
+stable: “Stable”
+
+beta: “Beta”
+
+experimental: “Experimental”
+
+deprecated: “Deprecated”
+Include as aria-label="Status: Beta" for screen readers.
+
+Data Viz (Metabase/Grafana embeds)
+Respect brand background; no inline bright reds unless critical.
+
+Legends outside charts on desktop; inside on mobile.
+
+Code Snippets
+App Card (React + Tailwind)
+tsx
+Copy code
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Shield, Film, Database, Mic, Image as Img, Beaker, Wrench, Activity, FileText, Sparkles, Cog } from "lucide-react";
+
+type RollId = "hosomaki"|"futomaki"|"nigiri"|"uramaki"|"ramen"|"chirashi"|"temaki"|"inari"|"gunkanmaki"|"sashimi"|"otsumami";
+
+const rollIcon: Record<RollId, any> = {
+  hosomaki: Cog, futomaki: Database, nigiri: Mic, uramaki: Img, ramen: Film,
+  chirashi: Beaker, temaki: Wrench, inari: Activity, gunkanmaki: Shield,
+  sashimi: FileText, otsumami: Sparkles
+};
+
+export function AppCard({
+  roll, name, tagline, status, badges, docs, routes, security
+}: {
+  roll: RollId;
+  name: string;
+  tagline: string;
+  status: "stable"|"beta"|"experimental"|"deprecated";
+  badges: string[];
+  docs?: { homepage?: string };
+  routes?: { public: boolean; ingress: string }[];
+  security?: { auth_required?: boolean; public_exposure?: "behind_caddy_only"|"internal_only" };
+}) {
+  const Icon = rollIcon[roll];
+  const publicRoute = routes?.find(r => r.public);
+
+  return (
+    <Card className="bg-[rgb(var(--card))] shadow-md rounded-xl border border-[rgb(var(--divider))]/50">
+      <CardContent className="p-5">
+        <div className="flex items-center gap-3">
+          <Icon className="h-5 w-5 text-[rgb(var(--brand-ink))]" aria-hidden />
+          <h3 className="text-base font-semibold text-[rgb(var(--fg))]">{name}</h3>
+          <span
+            aria-label={`Status: ${status}`}
+            className="ml-auto inline-block h-2.5 w-2.5 rounded-full"
+            style={{
+              backgroundColor:
+                status === "stable" ? `rgb(var(--ok))` :
+                status === "beta" ? `rgb(var(--beta))` :
+                status === "experimental" ? `rgb(var(--exp))` :
+                `rgb(var(--danger))`
+            }}
+          />
+        </div>
+        <p className="mt-2 text-sm text-[rgb(var(--muted))] line-clamp-2">{tagline}</p>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          {badges?.map(b => (
+            <Badge key={b} variant="secondary" className="rounded-full">
+              {b}
+            </Badge>
+          ))}
+        </div>
+
+        {security?.auth_required && (
+          <div className="mt-3 text-xs text-[rgb(var(--muted))]">
+            🔒 Protected at the edge
+          </div>
+        )}
+      </CardContent>
+
+      <CardFooter className="p-5 pt-0 flex gap-3">
+        <Button asChild disabled={!publicRoute}>
+          <a href={publicRoute?.ingress || "#"} aria-disabled={!publicRoute}>Open</a>
+        </Button>
+        {docs?.homepage && (
+          <Button asChild variant="outline">
+            <a href={docs.homepage}>Docs</a>
+          </Button>
+        )}
+      </CardFooter>
+    </Card>
+  );
+}
+QA Checklist (per PR)
+ Color contrast ≥ 4.5:1 (text/icons on bg).
+
+ Keyboard reachable; focus rings visible.
+
+ Status/badge mapping correct from SSOT.
+
+ Public vs internal route handling correct.
+
+ Dark mode screens verified.
+
+ Copy checked for clarity (no secret values).
+
+Do / Don’t
+Do
+
+Pull labels/links from tech_stack.mdc.
+
+Keep cards short; use Docs for deep info.
+
+Mark preview/experimental clearly.
+
+Don’t
+
+Hardcode app names/routes.
+
+Leak ports or internal hostnames in the UI.
+
+Use metaphors inside control labels.

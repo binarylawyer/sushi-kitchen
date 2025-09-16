@@ -1,22 +1,16 @@
 
----
-
-## `.cursor/rules/coding_convention.mdc`
-```md
----
-alwaysApply: true
----
-
 # Coding Convention — Sushi Kitchen
 
-## Language & tooling
+## Languages & Tooling
+- **TypeScript** for apps/CLIs; **Python** for data, agents, and ops glue.
+- **Modules:** ESM everywhere.
+- **TS config:** `"strict": true`, `"noImplicitAny": true`, `"exactOptionalPropertyTypes": true`, `"noUncheckedIndexedAccess": true`.
+- **Linters/formatters:** `eslint + prettier` (TS), `ruff + black` (Py).
+- **Type checking (Py):** `mypy` encouraged for library code.
+- **Commits:** Conventional Commits.  
+- **Package managers:** `pnpm` (JS/TS), `uv` or `pip-tools` (Py) — pick one per repo and stick to it.
 
-- **TypeScript** for app + CLIs; **Python** for data/agents.
-- **ESM** everywhere, strict TS config, `noImplicitAny: true`.
-- **ruff + black** (Python), **eslint + prettier** (TS).
-- **Conventional Commits** + **atomic PRs**.
-
-## Project structure (high level)
+## Project Structure (high level)
 
 ```yaml
 packages/
@@ -24,28 +18,119 @@ packages/
   api/           # BFF / edge adapters
   workers/       # queues, cron, n8n hooks
   infra/         # compose, caddy, k8s overlays
-  libs/          # shared TS libs (sdk, utils)
-  py/            # python packages (rag, evals)
-TDD & “Atomic” rules
-Write a failing test first for any behavior that crosses boundaries (parsers, adapters, pricing, routing).
-Keep PRs <= 300 LOC net; 1 concern per PR; green CI required.
-Snapshot tests for generated config (menu.json, Caddy snippets).
-Style (TS)
-Prefer pure functions; dependency injection over singletons.
-Zod for runtime validation of inputs/outputs.
-never throw raw errors; use Result<T, E> or error classes with codes.
-Style (Python)
-Type hints mandatory (from __future__ import annotations).
-Dataclasses or Pydantic for structured data.
-CLI via typer.
-Env & secrets
-All secrets in Infisical; .env only for local dev stubs.
-No secret prints in logs. Mask tokens at source.
-Logging & telemetry
-OpenTelemetry for traces; Langfuse for LLM events.
-Log structure: {level, ts, service, op, user?, req_id, msg, details?}.
-Definition of Done (per change)
-Tests passing
-Lint/format clean
-Docs updated (relevant .mdc/README pages)
-If routes added: edge rules + security.* verified
+  libs/          # shared TS libs (sdk, utils, schema)
+  py/            # python packages (rag, evals, tasks)
+```
+
+Testing Strategy (TDD + layers)
+TDD: Write a failing test first for behavior that crosses boundaries (parsers, adapters, pricing, routing).
+
+Unit: Pure functions and small modules (TS: vitest/jest; Py: pytest).
+
+Integration: Adapters and service clients (hit local test containers or fakes).
+
+E2E: Compose/K8s workflow runs (golden paths).
+
+Snapshots: For generated artifacts (e.g., menu.json, Caddy snippets).
+
+Coverage goal: keep meaningful tests; no hard % gate, but new code must be exercised.
+
+Atomic PR Workflow
+One concern per PR, ≤ 300 LOC net (guideline).
+
+CI green (lint, typecheck, tests) before review.
+
+Merge strategy: Squash & merge with Conventional Commit title.
+
+Reviews: ≥ 1 maintainer review for any non-docs change.
+
+Frontend (Next.js / React)
+Framework: Next.js (App Router, RSC by default).
+
+Components: React functional components with hooks; no class components.
+
+Styling: Tailwind CSS as default. Co-locate styles.
+
+UI kit: shadcn/ui when helpful; icons via lucide-react.
+
+State: Keep local with React state; for server/cache state use React Query.
+
+Use Zustand (or Context) sparingly for shared client state; justify in PR.
+
+Forms/validation: react-hook-form + zod schemas (shared in libs/schema).
+
+Data fetching: Prefer server actions/RSC where possible; fall back to API routes.
+
+Accessibility: ARIA where applicable; no interactive without keyboard support.
+
+Performance: Image/Font optimization; avoid client components unless needed.
+
+Backend / API (TypeScript)
+Style: Pure functions where possible; dependency injection over singletons.
+
+Validation: zod for all IO boundaries (request/response, env).
+
+Errors: Do not throw raw. Use Result<T, E> or typed error classes with stable code.
+
+HTTP: Consistent error shapes { code, message, details? }.
+
+Idempotency: Required for side-effecting POSTs where feasible.
+
+Python Style
+Types: Mandatory type hints (from __future__ import annotations).
+
+Data models: Dataclasses or Pydantic (choose per package and stick with it).
+
+CLI: typer for command-line tools.
+
+Tests: pytest with tmp paths/fixtures; fast unit tests by default.
+
+Lint: ruff (format + lint) and black for consistency.
+
+Env & Secrets
+Source of truth: Infisical. .env only for local stubs (never committed).
+
+Config: Centralize schema in libs/config (zod). Reject process start if invalid.
+
+Logs: Never print secrets. Mask tokens at source and in error serializers.
+
+Logging & Telemetry
+Traces: OpenTelemetry; propagate trace IDs across services.
+
+LLM events: Langfuse for prompts, completions, and evaluations.
+
+## Structured logs
+
+```json
+{ "level": "info|warn|error", "ts": "<iso8601>", "service": "<id>",
+  "op": "<operation>", "req_id": "<uuid?>", "user": "<uid?>",
+  "msg": "<summary>", "details": { ... } }
+```
+
+PII policy: No PII in logs. Redact at boundary; verify in code review.
+
+Definition of Done (each change)
+Tests pass (unit/integration relevant to change).
+
+Lint + typecheck clean.
+
+Docs updated (relevant .mdc/README/pages).
+
+If routes are added/changed: edge rules + security.* verified.
+
+Review approved; CHANGELOG entry if user-facing.
+
+Performance & Reliability
+Budgets: Avoid adding client JS > necessary; defer heavy modules.
+
+Resilience: Timeouts/retries with jitter for all network calls.
+
+Background work: Queue via n8n/Workers; keep HTTP handlers fast.
+
+CI & Releases
+CI: lint → typecheck → tests → build (PR); publish on tagged main.
+
+Versioning: SemVer via Conventional Commit types; automated changelog.
+CI: lint → typecheck → tests → build (PR); publish on tagged main.
+
+Versioning: SemVer via Conventional Commit types; automated changelog.
