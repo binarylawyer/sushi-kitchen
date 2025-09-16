@@ -48,7 +48,11 @@ create table if not exists render_job (
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
+
 Qdrant
+
+```yaml
 Collections:
 docs_default — embeddings of doc_asset chunks
 Payload: { doc_id, page, source, sha256, metadata }
+```

@@ -1,0 +1,43 @@
+---
+alwaysApply: true
+---
+
+# Rules Index — Sushi Kitchen (Read Me First)
+
+This index provides a map of all Cursor Rules in this repository, their purpose, and their dependencies.
+
+-   **00-index.mdc**: Provides a map of rules, dependencies, and responsibilities.
+-   **10-ssot-structure.mdc**: Defines the Single Source of Truth (SSOT) contract and invariants for the Sushi Kitchen project.
+-   **20-docs-sync.mdc**: Contains rules for generating and synchronizing documentation, ensuring consistency between SSOT and human-readable docs.
+-   **30-design_system.mdc**: Outlines the UI design system, including tokens, components, status/badges, and edge user experience guidelines.
+-   **40-coding_convention.mdc**: Specifies coding standards, language usage, tooling, formatting, and the Pull Request (PR) workflow.
+-   **50-api-spec.mdc**: Details the API surface conventions and OpenAPI specifications for services.
+-   **60-db-schema.mdc**: Provides guidance on database schema design, naming conventions, and data modeling.
+-   **70-personas_and_journeys.mdc**: Describes target user personas and their journeys within the Sushi Kitchen platform.
+-   **80-project_overview.mdc**: Presents a high-level project overview, including elevator pitch, goals, architecture, and roadmap.
+-   **90-tech_stack.mdc**: The primary SSOT for all applications, rolls, modes, routes, and badge metadata. This file drives UI generation and Caddy configuration.
+
+## Compatibility Matrix (Who Consumes What)
+
+Understanding how our rules and data sources interact is key to a harmonious kitchen!
+
+| Consumer / Rule File          | Consumes / Relies On                                                              | Responsibilities                                                                   |
+| :---------------------------- | :-------------------------------------------------------------------------------- | :--------------------------------------------------------------------------------- |
+| `00-index.mdc`                | All other rules files                                                             | Map of rules, dependencies, and responsibilities                                   |
+| `10-ssot-structure.mdc`       | (None directly, defines structure)                                                | Enforce SSOT contracts (e.g., `id` uniqueness, `kind` requirements)                |
+| `20-docs-sync.mdc`            | `docs/manifest/menu-manifest.md`, `90-tech_stack.mdc`                           | Generate/sync human-readable docs from SSOT                                        |
+| `30-design_system.mdc`        | `90-tech_stack.mdc` (for names, taglines, status, badges, routes)                 | Define UI guidelines, ensure visual consistency with SSOT data                     |
+| `40-coding_convention.mdc`    | (None directly)                                                                   | Enforce code quality, style, and PR workflow                                       |
+| `50-api-spec.mdc`             | `90-tech_stack.mdc` (for exposed routes, security)                                | Define API contract and interaction patterns                                       |
+| `60-db-schema.mdc`            | (None directly, defines schema)                                                   | Define database schema and data integrity rules                                    |
+| `70-personas_and_journeys.mdc`| (None directly, defines users/flows)                                              | Guide feature development based on user needs                                      |
+| `80-project_overview.mdc`     | `90-tech_stack.mdc` (for architectural components)                                | Provide high-level understanding of the project                                    |
+| `90-tech_stack.mdc`           | (None directly, primary SSOT)                                                     | **Primary SSOT** for all apps, rolls, modes, routes, security, badges, versions    |
+| **UI (Next.js web)**          | `30-design_system.mdc`, `90-tech_stack.mdc` (names, status, badges, routes)     | Render app cards, menu, documentation dynamically                                  |
+| **Caddy/Ingress Config**      | `90-tech_stack.mdc` (routes, security.public_exposure, auth_required)             | Generate secure edge routing configuration                                         |
+| **Compose Generators**        | `90-tech_stack.mdc`, `docs/manifest/combos.yml`, `docs/manifest/platters.yml`   | Generate Docker Compose files from manifests                                       |
+| **CI Linting**                | `10-ssot-structure.mdc`, `90-tech_stack.mdc`, `docs/manifest/*`                   | Validate SSOT adherence, schema integrity, and security rules                      |
+
+---
+
+*This index ensures all our chefs (rules) know their role and how they contribute to the grand Sushi Kitchen experience!* 🍣👨‍🍳

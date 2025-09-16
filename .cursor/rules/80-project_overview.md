@@ -1,8 +1,6 @@
 
 ---
 
-## `.cursor/rules/project_overview.md`
-```md
 # Project Overview — Sushi Kitchen
 
 ## Elevator pitch

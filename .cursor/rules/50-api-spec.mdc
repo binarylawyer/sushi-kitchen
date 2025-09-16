@@ -1,8 +1,6 @@
 
 ---
 
-## `.cursor/rules/api.spec.md`
-```md
 # API Specification — Sushi Kitchen (OpenAPI 3.1)
 
 ```yaml
