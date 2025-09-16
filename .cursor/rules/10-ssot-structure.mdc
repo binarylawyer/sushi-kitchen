@@ -1,0 +1,24 @@
+---
+alwaysApply: true
+---
+
+# SSOT structure & invariants
+
+- The file `tech_stack.mdc` is the **single source of truth** for rolls, apps, and curated modes.
+- Each block is valid YAML frontmatter separated by `---`.
+- For `kind: roll|app|mode`, require:
+  - `id` is kebab-case; globally unique.
+  - `roll` is required only for `kind: app` and must reference an existing roll id.
+  - `routes[*].public = true` implies:
+    - `security.auth_required = true`
+    - `security.public_exposure = "behind_caddy_only"`.
+
+## Lint rules (auto-fix when possible)
+- Insert a missing `---` separator between YAML blocks.
+- Remove `ports` for CLI-only services (e.g., ffmpeg) if `internal` is `0` or omitted.
+- Ensure each block has a `status` field.
+
+## Output artifacts (for generators/agents)
+- `build/menu.json` — normalized list for UI
+- `build/caddy-routes.json` — edge ingress hints
+- `build/apps-index.json` — docs sitemap
