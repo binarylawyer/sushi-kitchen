@@ -90,7 +90,7 @@ status: beta
 description_md: |
   Programmatic video pipelines: transcode, composite, generate, and analyze.
   Designed for automation-first workflows and headless operation.
-
+---
 kind: roll
 id: chirashi
 name: Chirashi
@@ -495,7 +495,6 @@ tagline: Core transcode & video tooling
 description_md: |
   Headless media engine for encode/transcode, concat, filters, audio ops.
   Pairs well with Remotion (render) and Whisper/OpenVoice (audio workflows).
-ports: [{ internal: 0, path: / }]  # CLI-only container; no HTTP port
 routes: [{ public: false }]
 security: { auth_required: false, public_exposure: internal_only }
 status: stable
@@ -534,6 +533,7 @@ security: { auth_required: false, public_exposure: internal_only }
 status: experimental
 badges: [media, analysis]
 docs: { homepage: /apps/scanned, anchors: [api, models, limits] }
+---
 # Chirashi (Data Science & Compute)
 ---
 kind: app
