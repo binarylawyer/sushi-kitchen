@@ -1,0 +1,28 @@
+
+---
+
+## `.cursor/rules/coding_convention.mdc`
+```md
+---
+alwaysApply: true
+---
+
+# Coding Convention — Sushi Kitchen
+
+## Language & tooling
+
+- **TypeScript** for app + CLIs; **Python** for data/agents.
+- **ESM** everywhere, strict TS config, `noImplicitAny: true`.
+- **ruff + black** (Python), **eslint + prettier** (TS).
+- **Conventional Commits** + **atomic PRs**.
+
+## Project structure (high level)
+
+```yaml
+packages/
+  web/           # Next.js app (docs + dashboard)
+  api/           # BFF / edge adapters
+  workers/       # queues, cron, n8n hooks
+  infra/         # compose, caddy, k8s overlays
+  libs/          # shared TS libs (sdk, utils)
+  py/            # python packages (rag, evals)
