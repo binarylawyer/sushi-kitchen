@@ -1,0 +1,73 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+# Design System — Sushi Kitchen
+
+This file defines the visual language and UI building blocks used across the web app, docs, and dashboards. Generators and linters should read these tokens to keep UI consistent.
+
+## Tokens
+
+```yaml
+tokens:
+  color:
+    primary: "#0D9488"     # teal-600
+    secondary: "#1E293B"   # slate-800
+    accent: "#F59E0B"      # amber-500
+    success: "#10B981"
+    warning: "#F59E0B"
+    danger:  "#EF4444"
+    info:    "#3B82F6"
+    surface:
+      base:  "#0B1220"
+      card:  "#111827"
+      muted: "#374151"
+  typography:
+    font_family_sans: "Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'"
+    scale: [12, 14, 16, 18, 20, 24, 28, 32]
+    line_height: 1.5
+    weight:
+      regular: 400
+      medium: 500
+      semibold: 600
+      bold: 700
+  radius:
+    sm: "8px"
+    md: "12px"
+    lg: "16px"
+    xl: "20px"
+  spacing:
+    xs: 4
+    sm: 8
+    md: 12
+    lg: 16
+    xl: 24
+    "2xl": 32
+  shadow:
+    card: "0 8px 24px rgba(0,0,0,0.2)"
+    inset: "inset 0 1px 0 rgba(255,255,255,0.03)"
+Layout principles
+Grid first: 12-column responsive grid, 24px gutters.
+Cards everywhere: soft corners, dark surface, subtle shadow, strong contrast text.
+Motion sparingly: use for emphasis (route changes, async loads, success states).
+Components (contracts)
+components:
+  AppCard:
+    fields: [title, tagline, status, badges, link, icon]
+    badge_palette:
+      stable: success
+      beta: warning
+      experimental: info
+  RouteChip:
+    fields: [ingress, public, auth_required]
+  Stat:
+    fields: [label, value, delta, delta_kind]  # delta_kind: up|down|flat
+Accessibility
+WCAG AA minimum. Contrast ≥ 4.5 for body text.
+Focus states visible and keyboard nav complete.
+Reduced motion respects prefers-reduced-motion.
+Branding quick-refs
+Tone: helpful, precise, a little playful.
+Imagery: “workbench for builders”, not corporate stock.

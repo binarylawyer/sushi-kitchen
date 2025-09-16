@@ -1,0 +1,98 @@
+
+---
+
+## `.cursor/rules/api.spec.md`
+```md
+# API Specification — Sushi Kitchen (OpenAPI 3.1)
+
+```yaml
+openapi: 3.1.0
+info:
+  title: Sushi Kitchen API
+  version: 0.1.0
+servers:
+  - url: https://{host}
+    variables:
+      host:
+        default: example.local
+components:
+  securitySchemes:
+    bearer:
+      type: http
+      scheme: bearer
+  schemas:
+    RenderRequest:
+      type: object
+      required: [compositionId, props]
+      properties:
+        compositionId: { type: string }
+        props: { type: object, additionalProperties: true }
+    RenderResponse:
+      type: object
+      properties:
+        jobId: { type: string, format: uuid }
+        status: { type: string, enum: [queued, running, done, error] }
+        resultUrl: { type: string, nullable: true }
+    RAGQuery:
+      type: object
+      required: [query]
+      properties:
+        query: { type: string }
+        top_k: { type: integer, default: 5 }
+security: [{ bearer: [] }]
+paths:
+  /api/llm/v1/chat/completions:
+    post:
+      summary: OpenAI-compatible chat endpoint (via LiteLLM)
+      operationId: chatCompletions
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object }
+      responses:
+        "200":
+          description: Model response (stream/non-stream)
+  /api/rag/query:
+    post:
+      summary: Semantic search over indexed documents
+      operationId: ragQuery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RAGQuery" }
+      responses:
+        "200":
+          description: Top-K matches with metadata
+  /api/render/remotion:
+    post:
+      summary: Queue a Remotion render
+      operationId: queueRemotion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RenderRequest" }
+      responses:
+        "202":
+          description: Job accepted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RenderResponse" }
+  /api/render/jobs/{id}:
+    get:
+      summary: Get render job status/result
+      operationId: getRenderJob
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Job status
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RenderResponse" }
