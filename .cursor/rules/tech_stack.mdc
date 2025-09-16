@@ -494,10 +494,13 @@ roll: ramen
 tagline: Core transcode & video tooling
 description_md: |
   Headless media engine for encode/transcode, concat, filters, audio ops.
+  Pairs well with Remotion (render) and Whisper/OpenVoice (audio workflows).
+ports: [{ internal: 0, path: / }]  # CLI-only container; no HTTP port
 routes: [{ public: false }]
 security: { auth_required: false, public_exposure: internal_only }
 status: stable
-badges: [cli, media]
+badges: [media, cli]
+docs: { homepage: /apps/ffmpeg, anchors: [usage, filters, batch] }
 
 ---
 kind: app
@@ -507,11 +510,14 @@ roll: ramen
 tagline: React-driven video rendering
 description_md: |
   Generate videos from React components. Supports server-side render & queueing.
-routes: [{ public: true, ingress: /video/remotion, upstream: http://remotion:3000 }]
+  Common patterns: render-to-S3 (MinIO), audio mix (FFmpeg), voice via OpenVoice.
+ports: [{ internal: 3000, path: / }]
+routes: [{ public: true, ingress: /apps/remotion, upstream: http://remotion:3000 }]
 depends_on: [ffmpeg]
 security: { auth_required: true, public_exposure: behind_caddy_only }
 status: beta
-badges: [render]
+badges: [media, render]
+docs: { homepage: /apps/remotion, anchors: [setup, rendering, queues] }
 
 ---
 kind: app
@@ -520,12 +526,14 @@ name: Scanned
 roll: ramen
 tagline: Video analysis server (objects, scenes, OCR)
 description_md: |
-  API-first computer-vision service for shot/scene detection and tagging.
+  API-first computer-vision service for shot/scene detection, tagging, and OCR.
+  Useful before/after generation pipelines; integrates with Metabase for analytics.
+ports: [{ internal: 8080, path: / }]
 routes: [{ public: false }]
 security: { auth_required: false, public_exposure: internal_only }
 status: experimental
-badges: [cv, analysis]
----
+badges: [media, analysis]
+docs: { homepage: /apps/scanned, anchors: [api, models, limits] }
 # Chirashi (Data Science & Compute)
 ---
 kind: app
