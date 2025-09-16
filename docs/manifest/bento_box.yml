@@ -1,0 +1,188 @@
+# =====================================================================
+# Sushi Kitchen — BENTO BOXES (v2.4)
+# Purpose: Complete solutions with 5+ services that create full functional capabilities
+# Schema: front matter for website/homepage rendering
+# =====================================================================
+
+schema_version: "1.1"
+
+bento_boxes:
+  - id: bento.ai-agent-foundation
+    name: "AI Agent Foundation"
+    description: "A complete local AI infrastructure that provides everything needed to build and deploy intelligent agents without relying on cloud services. This bento box creates a self-contained ecosystem where Ollama serves local language models, n8n orchestrates complex multi-step workflows, Supabase provides a robust database foundation with built-in authentication and vector storage, Open WebUI offers an intuitive chat interface for interacting with your agents, and Caddy handles all the networking and SSL termination automatically. Together, these services solve the fundamental challenge of creating production-ready AI agents that can operate entirely within your own infrastructure while maintaining professional-grade reliability and security. The combination is specifically designed for teams and individuals who want to experiment with agent architectures without the complexity of enterprise-scale deployments."
+    includes:
+      - hosomaki.ollama
+      - hosomaki.n8n
+      - futomaki.supabase
+      - nigiri.open-webui
+      - hosomaki.caddy
+    optional: []
+    provides:
+      - cap.llm-api
+      - cap.workflow
+      - cap.database
+      - cap.chat-ui
+      - cap.reverse-proxy
+    category: agents
+    difficulty: intermediate
+    estimated_setup_time_min: 25
+    resource_estimate:
+      cpu_cores: 6
+      ram_gb: 12
+      vram_gb: 0
+    warnings:
+      - "Supabase requires careful configuration of authentication and database settings"
+      - "Plan your domain structure before deploying with Caddy"
+    success_criteria:
+      - "Chat with a local model through Open WebUI"
+      - "Create and execute a simple n8n workflow"
+      - "Store and retrieve data from Supabase"
+      - "All services accessible through Caddy reverse proxy"
+    notes: "Perfect foundation for agent development; inspired by popular local AI stacks but optimized for clarity"
+
+  - id: bento.knowledge-search-system
+    name: "Knowledge & Search System"
+    description: "An advanced knowledge management platform that combines multiple AI technologies to create a comprehensive information discovery and analysis system. Qdrant provides lightning-fast vector similarity search for semantic document discovery, while Neo4j maps complex relationships between concepts and entities in your knowledge base. Flowise offers a visual interface for building sophisticated AI chains that can query, analyze, and synthesize information across these data stores. Langfuse monitors and optimizes your AI workflows with detailed analytics and performance tracking, and SearXNG aggregates web search results from multiple sources while maintaining privacy. This combination addresses the growing need for intelligent knowledge systems that can understand context, discover hidden connections, and provide comprehensive answers by combining internal knowledge with external research capabilities."
+    includes:
+      - futomaki.qdrant
+      - futomaki.neo4j
+      - temaki.flowise
+      - inari.langfuse
+      - otsumami.searxng
+    optional:
+      - futomaki.infinity
+    provides:
+      - cap.vector-db
+      - cap.graph-db
+      - cap.agent-builder
+      - cap.llm-observability
+      - cap.web-search
+    category: knowledge
+    difficulty: advanced
+    estimated_setup_time_min: 35
+    resource_estimate:
+      cpu_cores: 8
+      ram_gb: 16
+      vram_gb: 0
+    warnings:
+      - "Neo4j requires sufficient memory allocation for large knowledge graphs"
+      - "SearXNG needs proper configuration to avoid rate limiting from search engines"
+    success_criteria:
+      - "Upload documents and perform semantic search in Qdrant"
+      - "Create knowledge relationships in Neo4j and query them"
+      - "Build a multi-step research workflow in Flowise"
+      - "Monitor AI operations and costs in Langfuse"
+      - "Aggregate search results from multiple sources via SearXNG"
+    notes: "Advanced setup for research teams and knowledge workers; requires understanding of vector and graph concepts"
+
+  - id: bento.content-creation-studio
+    name: "Content Creation Studio"
+    description: "A complete multimedia content production environment designed for creators who need to process video, audio, and images at scale. FFmpeg handles all video and audio processing tasks from format conversion to complex filtering and editing operations, while Whisper provides accurate speech-to-text transcription for creating captions, searchable transcripts, and content analysis. Piper offers high-quality text-to-speech for generating narration and voiceovers in multiple languages and voices. n8n orchestrates automated workflows that can process batches of content, generate thumbnails, create social media variants, and manage publishing pipelines. MinIO provides scalable object storage for organizing raw footage, processed outputs, and media assets with S3-compatible APIs that integrate with external services. This bento box solves the complex challenge of managing large-scale content production workflows while maintaining quality and efficiency throughout the creative process."
+    includes:
+      - uramaki.ffmpeg
+      - nigiri.whisper
+      - nigiri.piper
+      - hosomaki.n8n
+      - futomaki.minio
+    optional:
+      - uramaki.comfyui
+    provides:
+      - cap.media-tool
+      - cap.asr
+      - cap.tts
+      - cap.workflow
+      - cap.object-store
+    category: creative
+    difficulty: intermediate
+    estimated_setup_time_min: 20
+    resource_estimate:
+      cpu_cores: 6
+      ram_gb: 12
+      vram_gb: 4
+    warnings:
+      - "Video processing can consume significant CPU and storage resources"
+      - "ComfyUI models can exceed 10GB and require GPU for optimal performance"
+      - "Whisper larger models improve accuracy but increase processing time significantly"
+    success_criteria:
+      - "Convert video files between formats using FFmpeg"
+      - "Generate accurate transcripts from video audio using Whisper"
+      - "Create voice narration from text using Piper"
+      - "Set up automated content processing workflows in n8n"
+      - "Store and organize media assets in MinIO buckets"
+    notes: "Designed for content creators with external storage; assumes cloud or external drive for video files"
+
+  - id: bento.content-intelligence
+    name: "Content Intelligence"
+    description: "A sophisticated content analysis and organization platform that transforms unstructured media libraries into searchable, queryable knowledge systems. Whisper transcribes thousands of videos into accurate text representations, creating a foundation for content understanding and searchability. Supabase stores both the structured metadata and vector embeddings of transcripts, enabling complex queries across your entire content library. Qdrant provides semantic search capabilities that can find videos based on topics, themes, or concepts even when specific keywords aren't mentioned. Neo4j maps relationships between content pieces, identifying recurring themes, guest appearances, and topic evolution over time. AnythingLLM creates an interactive interface where you can ask natural language questions about your content archive and receive comprehensive answers that draw from across your entire library. This system addresses the critical challenge faced by prolific content creators who have valuable insights buried in thousands of hours of video but lack efficient ways to discover, analyze, and repurpose that intellectual capital."
+    includes:
+      - nigiri.whisper
+      - futomaki.supabase
+      - futomaki.qdrant
+      - futomaki.neo4j
+      - hosomaki.anythingllm
+      - hosomaki.n8n
+    optional:
+      - futomaki.infinity
+    provides:
+      - cap.asr
+      - cap.database
+      - cap.vector-db
+      - cap.graph-db
+      - cap.rag-ui
+      - cap.workflow
+    category: intelligence
+    difficulty: advanced
+    estimated_setup_time_min: 40
+    resource_estimate:
+      cpu_cores: 8
+      ram_gb: 20
+      vram_gb: 6
+    warnings:
+      - "Processing large video libraries requires substantial storage and processing time"
+      - "Vector embeddings for thousands of documents need significant RAM allocation"
+      - "Initial content ingestion pipeline may take days for large archives"
+    success_criteria:
+      - "Successfully transcribe multiple video formats and languages"
+      - "Query content semantically and find relevant videos by topic"
+      - "Visualize content relationships and theme evolution in Neo4j"
+      - "Ask complex questions about your content library through AnythingLLM"
+      - "Automate content ingestion and analysis workflows"
+    notes: "Designed for creators with extensive video archives; requires external storage for video files"
+
+  - id: bento.content-repurposing-engine
+    name: "Content Repurposing Engine"
+    description: "An automated content transformation platform that takes existing video content and intelligently repurposes it into multiple formats optimized for different platforms and audiences. FFmpeg handles all video processing operations including format conversion, aspect ratio adjustments for different social platforms, clip extraction, and quality optimization. ImageMagick processes thumbnails, social media graphics, and visual assets with automated resizing and format conversion for platform-specific requirements. n8n orchestrates sophisticated workflows that can analyze video content, identify key moments for clip creation, generate multiple aspect ratio versions (16:9 for YouTube, 9:16 for TikTok, 1:1 for Instagram), and create complete publishing packages. MinIO manages the storage and organization of all generated assets with automated cleanup and archiving policies. rclone provides seamless integration with cloud storage services and social media platforms for automated distribution. This bento box solves the time-consuming challenge of manually adapting content for multiple platforms, enabling creators to maintain consistent presence across all social channels while maximizing the value of their original content investments."
+    includes:
+      - uramaki.ffmpeg
+      - uramaki.imagemagick
+      - hosomaki.n8n
+      - futomaki.minio
+      - uramaki.rclone
+      - nigiri.whisper
+    optional:
+      - uramaki.comfyui
+    provides:
+      - cap.media-tool
+      - cap.image-tool
+      - cap.workflow
+      - cap.object-store
+      - cap.sync-tool
+      - cap.asr
+    category: repurposing
+    difficulty: intermediate
+    estimated_setup_time_min: 30
+    resource_estimate:
+      cpu_cores: 6
+      ram_gb: 16
+      vram_gb: 4
+    warnings:
+      - "Batch processing operations can consume significant computational resources"
+      - "Multiple format generation multiplies storage requirements substantially"
+      - "Cloud sync operations may incur bandwidth costs with large video files"
+    success_criteria:
+      - "Generate multiple aspect ratio versions of source videos automatically"
+      - "Create platform-specific thumbnails and graphics from video frames"
+      - "Set up automated workflows for content adaptation and distribution"
+      - "Sync processed content to cloud storage and social platforms"
+      - "Extract searchable transcripts for content analysis and SEO"
+    notes: "Optimized for high-volume content adaptation; requires planning for storage and bandwidth usage"

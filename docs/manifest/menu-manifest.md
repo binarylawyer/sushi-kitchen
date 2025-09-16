@@ -1,7 +1,7 @@
 ---
 # ============================================================
 # 🍣 Sushi Kitchen — Menu Manifest (SSOT: human-facing catalog)
-# Version: 2.5  (supersedes 2.4)
+# Version: 2.6  (supersedes 2.5)
 # Schema: front matter for website/homepage rendering.
 # IMPORTANT:
 #  - Keep ONLY presentational fields here (ids, names, notes, badges).
@@ -14,7 +14,7 @@
 # ============================================================
 
 title: "🍣 Sushi Kitchen Menu Manifest"
-version: "2.5"
+version: "2.6"
 manifest_schema_version: "1.1"
 last_updated: 2025-09-16
 legend: "✅ recommended · ⚖️ optional"
@@ -66,6 +66,11 @@ styles:
         status: recommended
         badges: [gpu, popular]
         notes: "Production inference server; OpenAI/HF-compatible."
+      - id: hosomaki.caddy
+        name: "Caddy"
+        status: recommended
+        badges: [popular]
+        notes: "Modern web server with automatic HTTPS & reverse proxy."
       - id: hosomaki.tgi
         name: "Text Generation Inference (TGI)"
         status: optional
@@ -395,12 +400,17 @@ styles:
         name: "DuckDB"
         status: optional
         badges: [optional, popular]
-        notes: "‘SQLite for OLAP’—fast local analytics."
+        notes: "'SQLite for OLAP'—fast local analytics."
       - id: otsumami.sqlite
         name: "SQLite"
         status: optional
         badges: [optional]
         notes: "Ubiquitous embedded relational DB."
+      - id: otsumami.searxng
+        name: "SearXNG"
+        status: optional
+        badges: [optional]
+        notes: "Privacy-focused search engine aggregator."
 
 enterprise_and_deployment:
   omakase_mode: "Automatic optimal stack / curated combo."
@@ -417,7 +427,7 @@ This is the **catalog** (Styles → Rolls).
 - **Badges** → `docs/manifest/badges.yml` (icons in `assets/badges/`)  
 
 Meet our chefs: **Port** and **Starboard**.  
-- **Port’s sushi** = core foundation you’ll use daily (Hosomaki, Futomaki, Uramaki, Nigiri, Temaki, Gunkanmaki, Sashimi).  
-- **Starboard’s bowls/specialties** = exploratory, observability, and feasts (Chirashi, Inari, Otsumami, plus Omakase/Kaiseki).  
+- **Port's sushi** = core foundation you'll use daily (Hosomaki, Futomaki, Uramaki, Nigiri, Temaki, Gunkanmaki, Sashimi).  
+- **Starboard's bowls/specialties** = exploratory, observability, and feasts (Chirashi, Inari, Otsumami, plus Omakase/Kaiseki).  
 
-> “Every roll has its place; every bowl adds richness.”
+> "Every roll has its place; every bowl adds richness."

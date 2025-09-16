@@ -1,236 +1,257 @@
 # =====================================================================
-# 🍣 Sushi Kitchen — COMBOS (v2.3)
-# Purpose: Curated bundles of rolls that "just work" together.
-# - Keep this human-friendly and stable.
-# - Do NOT put images/ports/env here (that's contracts.yml).
-# - The resolver will auto-add required providers (via contracts.yml).
+# Sushi Kitchen — COMBOS (v2.4)
+# Purpose: Simple, focused bundles of 2-4 rolls that solve specific problems
+# Schema: front matter for website/homepage rendering
 # =====================================================================
 
 schema_version: "1.1"
 
-# ---------------------------------------------------------------------
-# Field guide (for humans & machines)
-#   id:                       unique combo identifier
-#   name:                     display name
-#   description:              short, human-friendly summary
-#   includes:                 required roll IDs (from menu/contracts)
-#   optional:                 nice-to-have roll IDs (user can tick on)
-#   provides:                 high-level capabilities the combo enables
-#   category:                 UI grouping (dev, observability, rag, etc.)
-#   difficulty:               "easy" | "intermediate" | "advanced"
-#   estimated_setup_time_min: rough time to first green lights
-#   resource_estimate:        coarse guidance (overridden by contracts)
-#   warnings:                 human warnings (e.g., GPU, heavy)
-#   success_criteria:         quick checks to confirm it's working
-#   notes:                    extra guidance for docs/UI
-# ---------------------------------------------------------------------
-
 combos:
-
-  # ------------------------------------------------
-  # Developer experience: IDE + notebooks + docs
-  # ------------------------------------------------
-  - id: combo.dev-tools
-    name: "Dev Tools"
-    description: "VS Code + Jupyter + Docusaurus for a comfy dev bench."
-    includes: [tamago.vscode-server, tamago.jupyterlab, tamago.docusaurus]
+  - id: combo.chat-local
+    name: "Local Chat"
+    description: "The simplest possible setup for chatting with local AI models. This combo pairs Ollama's local LLM inference with Open WebUI's clean chat interface, creating a completely private ChatGPT-like experience that runs entirely on your machine. Ollama handles downloading and running models like Llama or Mistral, while Open WebUI provides the familiar conversational interface you're used to from cloud AI services. Perfect for getting started with local AI without any complexity - just download a model and start chatting."
+    includes:
+      - hosomaki.ollama
+      - nigiri.open-webui
     optional: []
-    provides: [cap.dev-env, cap.ide, cap.notebooks, cap.docs-site]
+    provides:
+      - cap.llm-api
+      - cap.chat-ui
+    category: chat
+    difficulty: easy
+    estimated_setup_time_min: 5
+    resource_estimate:
+      cpu_cores: 2
+      ram_gb: 4
+      vram_gb: 0
+    warnings: []
+    success_criteria:
+      - "Open WebUI loads and connects to Ollama successfully"
+      - "Download a model (like llama3.1) and have a conversation"
+    notes: "Ideal first combo for AI newcomers; add more services later as needs grow"
+
+  - id: combo.dev-workspace
+    name: "Dev Workspace"
+    description: "A complete development environment that runs in your browser, designed for AI and data science projects. VS Code Server provides a full IDE experience accessible from any device, while JupyterLab offers interactive notebooks perfect for data exploration and ML experimentation. Docusaurus rounds out the workspace by providing a modern documentation site generator that integrates beautifully with your code repositories. This combination solves the challenge of maintaining consistent development environments across different machines and team members, while providing the specialized tools needed for AI development workflows."
+    includes:
+      - temaki.vscode-server
+      - chirashi.jupyterlab
+      - sashimi.docusaurus
+    optional: []
+    provides:
+      - cap.dev-env
+      - cap.ide
+      - cap.notebooks
+      - cap.docs-site
     category: dev
     difficulty: easy
     estimated_setup_time_min: 8
-    resource_estimate: { cpu_cores: 2, ram_gb: 4, vram_gb: 0 }
+    resource_estimate:
+      cpu_cores: 2
+      ram_gb: 4
+      vram_gb: 0
     warnings: []
     success_criteria:
-      - "Open VS Code Server in the browser and connect."
-      - "Launch JupyterLab and run a Python cell."
-      - "Serve docs locally and view the homepage."
-    notes: "Great first combo for new users; pairs well with Observability."
+      - "Open VS Code Server in the browser and connect"
+      - "Launch JupyterLab and run a Python cell"
+      - "Serve docs locally and view the homepage"
+    notes: "Great first combo for developers; pairs well with monitoring and storage combos"
 
-  # ------------------------------------------------
-  # RAG starter: UI + vector DB + LLM API
-  # ------------------------------------------------
-  - id: combo.knowledge-bento
-    name: "Knowledge Bento"
-    description: "Turnkey RAG starter with a friendly UI."
-    includes: [futomaki.anythingllm, futomaki.qdrant, hosomaki.litellm]
-    optional: [futomaki.infinity]  # embeddings service is nice-to-have
-    provides: [cap.rag-ui, cap.vector-db, cap.llm-api]
+  - id: combo.knowledge-rag
+    name: "Knowledge RAG"
+    description: "A turnkey solution for building retrieval-augmented generation (RAG) systems that can chat with your documents. AnythingLLM provides an intuitive interface for uploading documents and asking questions, while Qdrant serves as the high-performance vector database that stores document embeddings for semantic search. LiteLLM acts as a universal gateway that can connect to both local models (via Ollama) and cloud APIs, giving you flexibility in model selection. This combo solves the fundamental challenge of making your private documents queryable through natural language, enabling you to build knowledge bases that can answer complex questions by understanding context and relationships across your entire document collection."
+    includes:
+      - hosomaki.anythingllm
+      - futomaki.qdrant
+      - hosomaki.litellm
+    optional:
+      - futomaki.infinity
+    provides:
+      - cap.rag-ui
+      - cap.vector-db
+      - cap.llm-api
     category: rag
     difficulty: intermediate
     estimated_setup_time_min: 12
-    resource_estimate: { cpu_cores: 4, ram_gb: 8, vram_gb: 0 }
+    resource_estimate:
+      cpu_cores: 4
+      ram_gb: 8
+      vram_gb: 0
     warnings: []
     success_criteria:
-      - "Index a small document and get a grounded answer."
-      - "Latency < 1s for short prompts."
-    notes: "If you already run vLLM/TGI, you can point LiteLLM at those."
+      - "Upload a document and get a grounded answer from AnythingLLM"
+      - "Vector search returns relevant chunks for queries"
+      - "Latency under 2 seconds for simple questions"
+    notes: "Add Infinity for faster embeddings; works with both local and cloud LLMs"
 
-  # ------------------------------------------------
-  # Agents / Low-code orchestration
-  # ------------------------------------------------
-  - id: combo.agent-lab
-    name: "Agent Lab"
-    description: "Low-code graph builders for agents and tools."
-    includes: [futomaki.flowise]       # baseline visual builder
-    optional: [futomaki.dify, hosomaki.litellm]
-    provides: [cap.agent-builder, cap.agent-orchestrator]
+  - id: combo.flow-builder
+    name: "Flow Builder"
+    description: "A visual, no-code platform for building AI agents and complex workflows without writing any code. Flowise provides an intuitive drag-and-drop interface for creating AI chains, while LiteLLM ensures you can connect to any language model seamlessly. This combo addresses the growing need for non-technical users to build sophisticated AI workflows, from simple chatbots to complex multi-step agents that can call APIs, process documents, and make decisions. The visual approach makes it easy to understand and debug AI workflows, while the underlying systems handle the complex orchestration and model management automatically."
+    includes:
+      - temaki.flowise
+      - hosomaki.litellm
+    optional:
+      - temaki.dify
+    provides:
+      - cap.agent-builder
+      - cap.llm-api
     category: agents
     difficulty: intermediate
     estimated_setup_time_min: 10
-    resource_estimate: { cpu_cores: 2, ram_gb: 4, vram_gb: 0 }
+    resource_estimate:
+      cpu_cores: 2
+      ram_gb: 4
+      vram_gb: 0
     warnings: []
     success_criteria:
-      - "Create a simple chain/flow and execute end-to-end."
-    notes: "LiteLLM optional if you want a unified LLM gateway."
+      - "Create a simple chain/flow in Flowise and execute it end-to-end"
+      - "Connect to an LLM through LiteLLM successfully"
+    notes: "Dify offers alternative flow-building approach; choose one that fits your style"
 
-  # ------------------------------------------------
-  # Voice: ASR -> LLM -> TTS loop
-  # ------------------------------------------------
-  - id: combo.voice-loop
-    name: "Voice Loop"
-    description: "Speech-in, speech-out with an orchestration brain."
-    includes: [temaki.whisper, temaki.piper, hosomaki.litellm, hosomaki.n8n]
-    optional: [temaki.openvoice]
-    provides: [cap.asr, cap.tts, cap.llm-api, cap.workflow]
-    category: voice
-    difficulty: intermediate
-    estimated_setup_time_min: 15
-    resource_estimate: { cpu_cores: 4, ram_gb: 8, vram_gb: 0 }
-    warnings:
-      - "GPU recommended for faster Whisper inference (gpu-optional)."
-    success_criteria:
-      - "Record a clip and receive a spoken response."
-    notes: "OpenVoice adds cloning; requires more compute and careful UX."
-
-  # ------------------------------------------------
-  # Creative: image/video generation & media tools
-  # ------------------------------------------------
-  - id: combo.creative-studio
-    name: "Creative Studio"
-    description: "Image/video generation with the essential media tools."
-    includes: [uramaki.comfyui, uramaki.ffmpeg, uramaki.rclone]
-    optional: [uramaki.remotion, uramaki.scanned]
-    provides: [cap.image-gen, cap.media-tool]
-    category: creative
-    difficulty: intermediate
-    estimated_setup_time_min: 14
-    resource_estimate: { cpu_cores: 6, ram_gb: 12, vram_gb: 8 }
-    warnings:
-      - "GPU strongly recommended for ComfyUI pipelines."
-    success_criteria:
-      - "Generate at least one image in ComfyUI end-to-end."
-    notes: "Add Remotion for programmatic video; Scanned for analysis."
-
-  # ------------------------------------------------
-  # Observability: basic (metrics + dashboards)
-  # ------------------------------------------------
-  - id: combo.monitoring-basic
-    name: "Monitoring (Basic)"
-    description: "Metrics + dashboards for insight into your stack."
-    includes: [dragon.prometheus, dragon.grafana, dragon.cadvisor]
+  - id: combo.monitor-basic
+    name: "Basic Monitoring"
+    description: "Essential monitoring infrastructure that provides insight into your AI stack's performance and health. Prometheus collects detailed metrics from all your services, Grafana transforms that data into beautiful, actionable dashboards, and cAdvisor specifically monitors Docker container resource usage. This combination solves the critical problem of understanding what's happening inside your AI systems - which services are consuming resources, how fast your models are responding, and whether everything is running smoothly. The setup provides the foundation for identifying bottlenecks, planning capacity, and troubleshooting issues before they become problems."
+    includes:
+      - inari.prometheus
+      - inari.grafana
+      - inari.cadvisor
     optional: []
-    provides: [cap.metrics, cap.dashboards, cap.container-metrics]
+    provides:
+      - cap.metrics
+      - cap.dashboards
+      - cap.container-metrics
     category: observability
     difficulty: easy
     estimated_setup_time_min: 7
-    resource_estimate: { cpu_cores: 2, ram_gb: 2, vram_gb: 0 }
+    resource_estimate:
+      cpu_cores: 2
+      ram_gb: 2
+      vram_gb: 0
     warnings: []
     success_criteria:
-      - "Grafana shows Prometheus datasource and cAdvisor dashboards."
-    notes: "Solid default for any platter."
+      - "Grafana shows Prometheus datasource connected"
+      - "Container metrics visible in dashboards"
+      - "Service health status indicators working"
+    notes: "Essential for any serious deployment; upgrade to advanced monitoring for production"
 
-  # ------------------------------------------------
-  # Observability: advanced (logs + tracing + LLM observability)
-  # ------------------------------------------------
-  - id: combo.monitoring-advanced
-    name: "Monitoring (Advanced)"
-    description: "Metrics, logs, tracing, and LLM analytics."
-    includes: [dragon.prometheus, dragon.grafana, dragon.cadvisor]
-    optional: [dragon.loki, dragon.promtail, dragon.otel-collector, dragon.langfuse]
-    provides: [cap.metrics, cap.dashboards, cap.logs, cap.telemetry-collector, cap.llm-observability]
-    category: observability
-    difficulty: intermediate
-    estimated_setup_time_min: 15
-    resource_estimate: { cpu_cores: 4, ram_gb: 6, vram_gb: 0 }
-    warnings: []
-    success_criteria:
-      - "Grafana logs panel shows Promtail→Loki flow."
-      - "OTel traces appear for at least one service."
-    notes: "Start basic; enable logs/tracing when you need deeper forensics."
-
-  # ------------------------------------------------
-  # Security basics: SSO + secrets + passwords
-  # ------------------------------------------------
-  - id: combo.security-set
-    name: "Security Set"
-    description: "SSO, app secrets, and password management."
-    includes: [hanko.authentik, hanko.infisical, hanko.vaultwarden]
-    optional: [hanko.vault]     # enterprise PKI + advanced secrets
-    provides: [cap.sso, cap.secrets, cap.passwords]
+  - id: combo.security-core
+    name: "Security Core"
+    description: "Fundamental security infrastructure that protects your AI services with enterprise-grade authentication and secrets management. Authentik provides single sign-on (SSO) capabilities, allowing users to access multiple services with one secure login, while Infisical manages application secrets, API keys, and configuration safely. Vaultwarden rounds out the setup by providing a self-hosted password manager for your team. This combo addresses the critical security challenges of AI deployments: ensuring only authorized users can access sensitive AI models and data, protecting API keys and configuration from exposure, and maintaining security best practices as your stack grows in complexity."
+    includes:
+      - gunkanmaki.authentik
+      - gunkanmaki.infisical
+      - gunkanmaki.vaultwarden
+    optional:
+      - gunkanmaki.keycloak
+    provides:
+      - cap.sso
+      - cap.secrets
+      - cap.passwords
     category: security
     difficulty: intermediate
     estimated_setup_time_min: 18
-    resource_estimate: { cpu_cores: 2, ram_gb: 4, vram_gb: 0 }
+    resource_estimate:
+      cpu_cores: 2
+      ram_gb: 4
+      vram_gb: 0
     warnings:
-      - "Plan your domain/issuer URLs before enabling SSO in apps."
+      - "Plan your domain/issuer URLs before enabling SSO in applications"
     success_criteria:
-      - "Login via Authentik and fetch a secret from Infisical."
-    notes: "HashiCorp Vault is powerful but heavier—offer as opt-in."
+      - "Login via Authentik and access protected services"
+      - "Store and retrieve a secret from Infisical"
+      - "Import passwords into Vaultwarden successfully"
+    notes: "Keycloak offers more features but requires more configuration; start with Authentik"
 
-  # ------------------------------------------------
-  # Storage + backup: object store + encrypted snapshots
-  # ------------------------------------------------
-  - id: combo.backup-strategy
-    name: "Backup Strategy"
-    description: "Object storage + encrypted backups for resilience."
-    includes: [shoyu.minio, shoyu.restic]
-    optional: [shoyu.duplicati, shoyu.borgbackup, shoyu.pgbackrest]
-    provides: [cap.object-store, cap.backups]
-    category: data
-    difficulty: intermediate
-    estimated_setup_time_min: 10
-    resource_estimate: { cpu_cores: 2, ram_gb: 4, vram_gb: 0 }
-    warnings:
-      - "Offsite target recommended for disaster recovery."
-    success_criteria:
-      - "A test snapshot can be created and restored."
-    notes: "pgBackRest is Postgres-specific; keep it optional."
-
-  # ------------------------------------------------
-  # Data lake mini: object store + DB admin
-  # ------------------------------------------------
-  - id: combo.data-lake-mini
-    name: "Data Lake Mini"
-    description: "Object storage and Postgres admin essentials."
-    includes: [shoyu.minio, shoyu.pgadmin]
+  - id: combo.storage-essentials
+    name: "Storage Essentials"
+    description: "Core data storage and management infrastructure that provides both object storage and database administration capabilities. MinIO creates an S3-compatible object store perfect for storing AI models, datasets, and generated content, while pgAdmin offers a powerful web interface for managing PostgreSQL databases. This combo solves the fundamental data management needs of AI applications: securely storing large files like models and datasets, organizing and backing up structured data, and providing easy access to database administration without requiring command-line expertise. The combination ensures you have both the bulk storage needed for AI assets and the database tooling required for application data."
+    includes:
+      - futomaki.minio
+      - futomaki.pgadmin
     optional: []
-    provides: [cap.object-store, cap.db-admin]
+    provides:
+      - cap.object-store
+      - cap.db-admin
     category: data
     difficulty: easy
     estimated_setup_time_min: 6
-    resource_estimate: { cpu_cores: 2, ram_gb: 2, vram_gb: 0 }
+    resource_estimate:
+      cpu_cores: 2
+      ram_gb: 2
+      vram_gb: 0
     warnings: []
     success_criteria:
-      - "Create a bucket in MinIO and connect pgAdmin to Postgres."
-    notes: "Pairs nicely with Knowledge Bento and Dev Tools."
+      - "Create a bucket in MinIO and upload a test file"
+      - "Connect pgAdmin to a PostgreSQL database successfully"
+    notes: "Perfect complement to RAG and development combos; scales well with usage"
 
-  # ------------------------------------------------
-  # High-performance serving: choose your engine
-  # ------------------------------------------------
-  - id: combo.perf-serving
-    name: "Performance Serving"
-    description: "OpenAI-compatible serving with GPU acceleration."
-    includes: [gunkanmaki.vllm]
-    optional: [gunkanmaki.tgi]   # alt engine; users can enable either or both
-    provides: [cap.llm-api, cap.gpu-infer]
+  - id: combo.inference-fast
+    name: "Fast Inference"
+    description: "Optimized AI model serving designed for production workloads that demand speed and efficiency. vLLM provides state-of-the-art inference optimization with features like continuous batching and PagedAttention, dramatically improving throughput for language models. This combo addresses the performance gap between development and production AI serving - while Ollama is perfect for experimentation, vLLM is engineered for scenarios where you need to serve many concurrent users with minimal latency. The setup includes OpenAI-compatible APIs, making it easy to switch existing applications from development to production serving without code changes."
+    includes:
+      - hosomaki.vllm
+    optional:
+      - hosomaki.tgi
+    provides:
+      - cap.llm-api
+      - cap.gpu-infer
     category: inference
     difficulty: advanced
     estimated_setup_time_min: 12
-    resource_estimate: { cpu_cores: 8, ram_gb: 16, vram_gb: 16 }
+    resource_estimate:
+      cpu_cores: 8
+      ram_gb: 16
+      vram_gb: 16
     warnings:
-      - "Requires recent NVIDIA drivers and working CUDA runtime."
-      - "Ensure model storage has enough space and fast IO."
+      - "Requires recent NVIDIA drivers and working CUDA runtime"
+      - "Ensure model storage has sufficient space and fast I/O"
     success_criteria:
-      - "Serve a model and respond to an OpenAI-format request < 200ms token."
-    notes: "If both vLLM and TGI are enabled, UI will warn about overlap."
+      - "Serve a model and respond to OpenAI-format requests under 200ms per token"
+      - "Handle multiple concurrent requests without degradation"
+    notes: "TGI offers alternative optimization approach; both provide significant speedup over basic serving"
+
+  - id: combo.media-basic
+    name: "Media Toolkit"
+    description: "Essential media processing capabilities for handling images, videos, and audio in AI workflows. FFmpeg serves as the Swiss Army knife for media conversion, supporting virtually every audio and video format while providing powerful filtering and transformation capabilities. ImageMagick complements this with comprehensive image processing, from simple resizing to complex manipulations and format conversions. This combo solves the common problem of preparing media assets for AI processing - converting videos to the right format for transcription, resizing images for model input, extracting audio tracks, and generating thumbnails. Together, these tools form the foundation for any AI application that works with multimedia content."
+    includes:
+      - uramaki.ffmpeg
+      - uramaki.imagemagick
+    optional: []
+    provides:
+      - cap.media-tool
+      - cap.image-tool
+    category: media
+    difficulty: easy
+    estimated_setup_time_min: 4
+    resource_estimate:
+      cpu_cores: 2
+      ram_gb: 2
+      vram_gb: 0
+    warnings: []
+    success_criteria:
+      - "Convert a video file to different format successfully"
+      - "Resize and convert images using ImageMagick"
+    notes: "Lightweight but powerful; essential for any media-focused AI workflows"
+
+  - id: combo.analytics-starter
+    name: "Analytics Starter"
+    description: "A complete platform for data analysis and machine learning experimentation that combines interactive computing with experiment tracking. JupyterLab provides the familiar notebook environment for data exploration, model development, and visualization, while MLflow tracks experiments, manages model versions, and facilitates collaboration between data scientists. This combo addresses the challenge of maintaining reproducible data science workflows - ensuring that experiments can be recreated, models can be properly versioned, and insights can be shared across teams. The combination provides both the interactive development environment needed for exploration and the systematic tracking required for production ML workflows."
+    includes:
+      - chirashi.jupyterlab
+      - chirashi.mlflow
+    optional: []
+    provides:
+      - cap.notebooks
+      - cap.experiment-tracking
+    category: analytics
+    difficulty: intermediate
+    estimated_setup_time_min: 8
+    resource_estimate:
+      cpu_cores: 3
+      ram_gb: 6
+      vram_gb: 0
+    warnings: []
+    success_criteria:
+      - "Run a notebook and track an experiment in MLflow"
+      - "View experiment results and model artifacts in MLflow UI"
+    notes: "Perfect for data science teams; integrates well with storage and monitoring combos"
