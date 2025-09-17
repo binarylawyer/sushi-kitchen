@@ -1,0 +1,392 @@
+{
+    "manifest_system": {
+      "name": "Sushi Kitchen Manifest System",
+      "version": "1.0.0",
+      "schema_version": "1.0",
+      "last_updated": "2025-09-16T22:45:00Z",
+      "description": "Comprehensive Docker Compose framework for AI infrastructure deployment with intelligent dependency resolution and resource management",
+      "repository": "https://github.com/yourusername/sushi-kitchen",
+      "documentation_url": "https://sushi-kitchen.dev/docs/manifest",
+      "license": "MIT"
+    },
+    
+    "architecture": {
+      "philosophy": "Four-document system separating human presentation from machine contracts",
+      "design_patterns": [
+        "capability-based dependency resolution",
+        "declarative infrastructure as code",
+        "privacy-by-design network isolation",
+        "resource-aware deployment automation"
+      ],
+      "core_concepts": {
+        "services": "Individual containerized AI/ML components organized by functionality",
+        "capabilities": "Abstract interfaces that services provide or require for dependency resolution",
+        "badges": "Visual vocabulary communicating service characteristics and requirements",
+        "combos": "Curated 2-4 service bundles solving specific use cases",
+        "bento_boxes": "Comprehensive 5-8 service environments for complete workflows",
+        "contracts": "Machine-readable technical specifications for Docker deployment",
+        "network_profiles": "Privacy-focused isolation patterns for different security requirements"
+      }
+    },
+  
+    "entry_points": {
+      "human_readable": {
+        "primary": "index.md",
+        "description": "Complete architectural guide and teaching resource",
+        "audience": "developers, architects, documentation readers"
+      },
+      "service_catalog": {
+        "primary": "core/menu-manifest.md",
+        "description": "Human-friendly catalog of all available services organized by function",
+        "audience": "end users, service selectors, documentation generators",
+        "service_count": 52,
+        "category_count": 11
+      },
+      "technical_contracts": {
+        "primary": "core/contracts.yml",
+        "description": "Machine-readable Docker configurations and dependency specifications",
+        "audience": "deployment automation, MCP servers, CI/CD systems",
+        "service_definitions": 25,
+        "capability_definitions": 15,
+        "network_profiles": 3
+      },
+      "visual_system": {
+        "primary": "core/badges.yml",
+        "description": "Badge definitions with styling, validation rules, and semantic meaning",
+        "audience": "UI generators, documentation systems, validation tools",
+        "badge_count": 18,
+        "category_count": 5
+      },
+      "curated_bundles": {
+        "combos": "core/combos.yml",
+        "bento_boxes": "core/bento_box.yml",
+        "description": "Pre-validated service combinations for common use cases",
+        "audience": "end users, quick start guides, recommendation engines",
+        "combo_count": 10,
+        "bento_count": 8
+      }
+    },
+  
+    "file_structure": {
+      "core_manifests": {
+        "location": "core/",
+        "files": [
+          {
+            "name": "menu-manifest.md",
+            "type": "markdown",
+            "purpose": "Human-readable service catalog",
+            "update_frequency": "weekly",
+            "dependencies": ["badges.yml"],
+            "generated_outputs": ["website navigation", "service selector UI"]
+          },
+          {
+            "name": "badges.yml", 
+            "type": "yaml",
+            "purpose": "Visual vocabulary and validation rules",
+            "update_frequency": "monthly",
+            "dependencies": [],
+            "generated_outputs": ["CSS classes", "UI components", "validation schemas"]
+          },
+          {
+            "name": "contracts.yml",
+            "type": "yaml", 
+            "purpose": "Technical deployment specifications",
+            "update_frequency": "weekly",
+            "dependencies": ["badges.yml"],
+            "generated_outputs": ["docker-compose.yml", "kubernetes manifests", "resource calculators"]
+          },
+          {
+            "name": "combos.yml",
+            "type": "yaml",
+            "purpose": "Simple 2-4 service combinations",
+            "update_frequency": "bi-weekly",
+            "dependencies": ["menu-manifest.md", "contracts.yml"],
+            "generated_outputs": ["quick start guides", "recommendation engine data"]
+          },
+          {
+            "name": "bento_box.yml",
+            "type": "yaml",
+            "purpose": "Comprehensive 5-8 service environments",
+            "update_frequency": "bi-weekly", 
+            "dependencies": ["menu-manifest.md", "contracts.yml"],
+            "generated_outputs": ["complete environment templates", "enterprise deployment guides"]
+          }
+        ]
+      },
+      "schemas": {
+        "location": "schemas/",
+        "purpose": "JSON Schema definitions for validation and IDE support",
+        "files": [
+          "badges.schema.json",
+          "contracts.schema.json", 
+          "combos.schema.json",
+          "bento_box.schema.json",
+          "menu-manifest.schema.json"
+        ],
+        "validation_tools": ["JSON Schema validators", "IDE extensions", "CI/CD pipelines"]
+      },
+      "templates": {
+        "location": "templates/",
+        "purpose": "Docker Compose generation templates and configuration presets",
+        "categories": ["base templates", "network profiles", "environment configs", "scaling templates"]
+      },
+      "examples": {
+        "location": "examples/",
+        "purpose": "Practical demonstrations and tutorials",
+        "structure": "one directory per example with complete documentation and generated files"
+      },
+      "assets": {
+        "location": "assets/",
+        "purpose": "Visual resources and static files",
+        "subdirectories": ["badges/", "diagrams/", "screenshots/"]
+      },
+      "generated": {
+        "location": "generated/",
+        "purpose": "Auto-generated files for optimization and caching",
+        "update_trigger": "any core manifest file change",
+        "files": [
+          "services-by-capability.json",
+          "dependency-graph.json", 
+          "resource-requirements.json",
+          "badge-combinations.json"
+        ]
+      }
+    },
+  
+    "statistics": {
+      "services": {
+        "total": 52,
+        "by_category": {
+          "hosomaki_foundation": 9,
+          "futomaki_knowledge": 8,
+          "temaki_voice": 6,
+          "uramaki_visual": 5,
+          "inari_observability": 8,
+          "chirashi_development": 4,
+          "gunkanmaki_security": 4,
+          "sashimi_documentation": 3,
+          "otsumami_utilities": 5
+        },
+        "by_status": {
+          "recommended": 31,
+          "optional": 21
+        },
+        "resource_intensive": {
+          "gpu_required": 8,
+          "gpu_optional": 12,
+          "heavy_memory": 15
+        }
+      },
+      "capabilities": {
+        "total": 15,
+        "categories": [
+          "storage_capabilities",
+          "inference_capabilities", 
+          "media_processing",
+          "infrastructure_services"
+        ]
+      },
+      "badges": {
+        "total": 18,
+        "by_category": {
+          "adoption": 2,
+          "requirements": 4,
+          "deployment": 4,
+          "lifecycle": 5,
+          "domain": 3
+        }
+      },
+      "combinations": {
+        "combos": 10,
+        "bento_boxes": 8,
+        "total_unique_combinations": 18
+      }
+    },
+  
+    "cross_references": {
+      "services_by_capability": {
+        "file": "generated/services-by-capability.json",
+        "description": "Services grouped by capabilities they provide",
+        "update_trigger": "contracts.yml changes",
+        "use_cases": ["dependency resolution", "alternative suggestions", "capability browsing"]
+      },
+      "dependency_graph": {
+        "file": "generated/dependency-graph.json", 
+        "description": "Complete service dependency relationships",
+        "update_trigger": "contracts.yml changes",
+        "use_cases": ["deployment planning", "conflict detection", "resource calculation"]
+      },
+      "resource_requirements": {
+        "file": "generated/resource-requirements.json",
+        "description": "Hardware requirements by service and combination",
+        "update_trigger": "contracts.yml changes", 
+        "use_cases": ["hardware planning", "cost estimation", "scaling decisions"]
+      },
+      "badge_combinations": {
+        "file": "generated/badge-combinations.json",
+        "description": "Valid and recommended badge combinations",
+        "update_trigger": "badges.yml changes",
+        "use_cases": ["service validation", "UI state management", "consistency checking"]
+      },
+      "network_topology": {
+        "file": "generated/network-topology.json",
+        "description": "Network isolation patterns and service placement",
+        "update_trigger": "contracts.yml changes",
+        "use_cases": ["security planning", "compliance validation", "network debugging"]
+      }
+    },
+  
+    "mcp_server_optimization": {
+      "description": "Specific optimizations for MCP server traversal and query efficiency",
+      "quick_lookups": {
+        "all_service_ids": "generated/service-ids.json",
+        "capability_providers": "generated/capability-providers.json",
+        "resource_totals": "generated/resource-totals.json"
+      },
+      "navigation_patterns": {
+        "service_detail_path": "core/contracts.yml -> services -> {service_id}",
+        "capability_lookup_path": "core/contracts.yml -> capabilities -> {capability_name}",
+        "badge_definition_path": "core/badges.yml -> badges -> {badge_id}",
+        "combo_detail_path": "core/combos.yml -> combos -> {combo_id}"
+      },
+      "common_queries": {
+        "find_services_by_capability": {
+          "method": "read generated/services-by-capability.json",
+          "complexity": "O(1) lookup"
+        },
+        "get_service_dependencies": {
+          "method": "read generated/dependency-graph.json -> {service_id}",
+          "complexity": "O(1) lookup"
+        },
+        "calculate_total_resources": {
+          "method": "read generated/resource-requirements.json -> sum for selection",
+          "complexity": "O(n) where n is selected services"
+        }
+      }
+    },
+  
+    "validation_rules": {
+      "file_consistency": {
+        "service_references": "All service IDs in combos/bento must exist in menu-manifest",
+        "badge_references": "All badges used must be defined in badges.yml",
+        "capability_references": "All capabilities used must be defined in contracts.yml"
+      },
+      "schema_compliance": {
+        "yaml_structure": "All YAML files must validate against their corresponding schemas",
+        "required_fields": "Core fields like name, description, docker image must be present",
+        "data_types": "Field types must match schema definitions"
+      },
+      "business_logic": {
+        "badge_combinations": "Badge combinations must follow rules in badges.yml",
+        "resource_minimums": "Services must specify minimum resource requirements",
+        "dependency_cycles": "No circular dependencies allowed in capability resolution"
+      }
+    },
+  
+    "automation_hooks": {
+      "file_watchers": {
+        "trigger_files": [
+          "core/menu-manifest.md",
+          "core/badges.yml", 
+          "core/contracts.yml",
+          "core/combos.yml",
+          "core/bento_box.yml"
+        ],
+        "actions": [
+          "regenerate cross-reference files",
+          "validate schema compliance", 
+          "update website content",
+          "rebuild documentation"
+        ]
+      },
+      "validation_pipeline": {
+        "schema_validation": "JSON Schema validation for all YAML files",
+        "cross_reference_validation": "Ensure all references point to existing entities",
+        "resource_calculation": "Verify resource requirements are realistic",
+        "badge_combination_validation": "Check badge combinations against rules"
+      }
+    },
+  
+    "website_integration": {
+      "static_generation": {
+        "content_sources": [
+          "index.md for documentation pages",
+          "menu-manifest.md for service catalog",
+          "examples/ for tutorials and guides"
+        ],
+        "dynamic_data": [
+          "contracts.yml for interactive service selectors",
+          "badges.yml for UI component styling",
+          "generated/ files for search and filtering"
+        ]
+      },
+      "interactive_features": {
+        "service_selector": {
+          "data_source": "core/contracts.yml + core/badges.yml",
+          "features": ["filtering by badges", "dependency resolution preview", "resource calculation"]
+        },
+        "dependency_visualizer": {
+          "data_source": "generated/dependency-graph.json",
+          "features": ["interactive graph", "path highlighting", "conflict detection"]
+        },
+        "resource_calculator": {
+          "data_source": "generated/resource-requirements.json",
+          "features": ["hardware planning", "cost estimation", "scaling simulation"]
+        }
+      }
+    },
+  
+    "extensibility": {
+      "adding_services": {
+        "required_files": ["menu-manifest.md", "contracts.yml"],
+        "optional_files": ["combos.yml or bento_box.yml if creating new combinations"],
+        "validation_steps": ["schema validation", "badge combination check", "capability consistency"]
+      },
+      "adding_capabilities": {
+        "definition_location": "contracts.yml -> capabilities section",
+        "required_fields": ["description", "providers", "interface"],
+        "impact_assessment": ["existing service compatibility", "dependency resolution changes"]
+      },
+      "adding_badges": {
+        "definition_location": "badges.yml -> badges section", 
+        "required_fields": ["label", "category", "color", "tooltip"],
+        "consistency_requirements": ["category alignment", "color scheme compliance", "validation rule updates"]
+      }
+    },
+  
+    "compliance_and_security": {
+      "data_classification": {
+        "public": ["menu-manifest.md", "badges.yml", "combos.yml", "examples/"],
+        "internal": ["contracts.yml", "generated/", "templates/"],
+        "sensitive": ["deployment-specific environment variables", "production credentials"]
+      },
+      "privacy_profiles": {
+        "open_research": "Single network, minimal isolation",
+        "business_confidential": "Segmented networks, moderate isolation", 
+        "legal_privilege": "Maximum isolation, audit logging enabled"
+      },
+      "audit_trail": {
+        "change_tracking": "Git history for all manifest files",
+        "deployment_logging": "Generated configurations logged with timestamps",
+        "access_patterns": "MCP server queries logged for security analysis"
+      }
+    },
+  
+    "performance_optimization": {
+      "file_size_limits": {
+        "individual_yaml_files": "< 1MB for reasonable parsing performance",
+        "generated_json_files": "< 5MB for fast web loading",
+        "asset_files": "< 100KB per badge SVG"
+      },
+      "caching_strategy": {
+        "generated_files": "Cache until source files change",
+        "schema_validation": "Cache validation results per file hash",
+        "dependency_resolution": "Cache resolution trees for common combinations"
+      },
+      "lazy_loading": {
+        "mcp_servers": "Load only requested sections of contracts.yml",
+        "web_interfaces": "Progressive loading of service details",
+        "documentation": "On-demand loading of example configurations"
+      }
+    }
+  }

@@ -1,0 +1,427 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://sushi-kitchen.dev/schemas/combos.schema.json",
+    "title": "Sushi Kitchen Combos Schema",
+    "description": "JSON Schema for validating combo definitions that bundle 2-4 services for specific use cases",
+    "version": "1.1.0",
+    
+    "type": "object",
+    "required": ["schema_version", "combos"],
+    "additionalProperties": false,
+    
+    "properties": {
+      "schema_version": {
+        "type": "string",
+        "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+        "description": "Version of the combos schema format being used"
+      },
+      
+      "combos": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 50,
+        "description": "Collection of curated service combinations",
+        "items": {
+          "$ref": "#/$defs/comboDefinition"
+        }
+      },
+      
+      "metadata": {
+        "type": "object",
+        "description": "Optional metadata about the combo collection",
+        "properties": {
+          "last_updated": {
+            "type": "string",
+            "format": "date"
+          },
+          "maintainer": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+(\\.\\d+)?$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    
+    "$defs": {
+      "comboDefinition": {
+        "type": "object",
+        "required": ["id", "name", "description", "includes", "provides", "category", "difficulty"],
+        "description": "Complete definition of a service combination for solving specific problems",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^combo\\.[a-z-]+$",
+            "description": "Unique identifier following combo.name-pattern convention"
+          },
+          
+          "name": {
+            "type": "string",
+            "minLength": 5,
+            "maxLength": 50,
+            "description": "Human-readable display name for the combo"
+          },
+          
+          "description": {
+            "type": "string",
+            "minLength": 100,
+            "maxLength": 1200,
+            "description": "Rich explanation of how services work together and what problems the combo solves"
+          },
+          
+          "includes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z]+\\.[a-z0-9-]+$"
+            },
+            "minItems": 1,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "description": "Required service IDs that form the combo"
+          },
+          
+          "optional": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z]+\\.[a-z0-9-]+$"
+            },
+            "maxItems": 3,
+            "uniqueItems": true,
+            "description": "Optional services that can enhance the combo"
+          },
+          
+          "provides": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^cap\\.[a-z-]+$"
+            },
+            "minItems": 1,
+            "maxItems": 8,
+            "uniqueItems": true,
+            "description": "Capabilities that the combo provides to users"
+          },
+          
+          "category": {
+            "type": "string",
+            "enum": [
+              "chat",
+              "dev", 
+              "rag",
+              "agents",
+              "observability",
+              "security",
+              "data",
+              "inference",
+              "media",
+              "analytics",
+              "workflow",
+              "creative",
+              "voice",
+              "storage"
+            ],
+            "description": "Primary category for organizing and filtering combos"
+          },
+          
+          "difficulty": {
+            "type": "string",
+            "enum": ["easy", "intermediate", "advanced", "expert"],
+            "description": "Technical complexity and setup difficulty level"
+          },
+          
+          "estimated_setup_time_min": {
+            "type": "integer",
+            "minimum": 3,
+            "maximum": 240,
+            "description": "Estimated time to get the combo working in minutes"
+          },
+          
+          "resource_estimate": {
+            "$ref": "#/$defs/resourceEstimate"
+          },
+          
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 200
+            },
+            "maxItems": 6,
+            "description": "Important warnings or considerations for users"
+          },
+          
+          "success_criteria": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 200
+            },
+            "minItems": 1,
+            "maxItems": 8,
+            "description": "Steps users can follow to verify the combo is working correctly"
+          },
+          
+          "notes": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 500,
+            "description": "Additional context, tips, or usage guidance"
+          },
+          
+          "use_cases": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 150
+            },
+            "maxItems": 5,
+            "uniqueItems": true,
+            "description": "Specific scenarios where this combo excels"
+          },
+          
+          "prerequisites": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 150
+            },
+            "maxItems": 5,
+            "description": "Requirements that must be met before deploying this combo"
+          },
+          
+          "related_combos": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^combo\\.[a-z-]+$"
+            },
+            "maxItems": 4,
+            "uniqueItems": true,
+            "description": "Other combos that complement or extend this one"
+          },
+          
+          "upgrade_path": {
+            "type": "object",
+            "description": "How users can expand beyond this combo",
+            "properties": {
+              "next_combo": {
+                "type": "string",
+                "pattern": "^(combo\\.[a-z-]+|bento\\.[a-z-]+)$",
+                "description": "Natural progression for users outgrowing this combo"
+              },
+              "additional_services": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z]+\\.[a-z0-9-]+$"
+                },
+                "maxItems": 5,
+                "uniqueItems": true,
+                "description": "Services commonly added to extend functionality"
+              },
+              "notes": {
+                "type": "string",
+                "maxLength": 300,
+                "description": "Upgrade considerations and guidance"
+              }
+            },
+            "additionalProperties": false
+          },
+          
+          "alternatives": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["combo_id", "reason"],
+              "properties": {
+                "combo_id": {
+                  "type": "string",
+                  "pattern": "^combo\\.[a-z-]+$"
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 15,
+                  "maxLength": 200,
+                  "description": "Why someone might choose this alternative"
+                }
+              },
+              "additionalProperties": false
+            },
+            "maxItems": 3,
+            "description": "Alternative combos that solve similar problems"
+          },
+          
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$",
+              "minLength": 2,
+              "maxLength": 20
+            },
+            "maxItems": 8,
+            "uniqueItems": true,
+            "description": "Search and filtering tags"
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "resourceEstimate": {
+        "type": "object",
+        "required": ["cpu_cores", "ram_gb", "vram_gb"],
+        "description": "Resource requirements for planning deployments",
+        "properties": {
+          "cpu_cores": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 32,
+            "description": "Estimated CPU cores needed"
+          },
+          
+          "ram_gb": {
+            "type": "number",
+            "minimum": 2,
+            "maximum": 128,
+            "description": "Estimated RAM in GB needed"
+          },
+          
+          "vram_gb": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 80,
+            "description": "GPU VRAM in GB needed (0 if no GPU required)"
+          },
+          
+          "storage_gb": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1000,
+            "description": "Additional storage requirements in GB"
+          },
+          
+          "network_intensive": {
+            "type": "boolean",
+            "description": "Whether this combo requires significant network bandwidth"
+          },
+          
+          "startup_time_estimate": {
+            "type": "string",
+            "enum": ["fast", "moderate", "slow"],
+            "description": "How quickly the combo becomes ready after starting"
+          },
+          
+          "notes": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Additional context about resource requirements"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    
+    "allOf": [
+      {
+        "description": "Ensure combo IDs are unique across the collection",
+        "properties": {
+          "combos": {
+            "type": "array",
+            "uniqueItems": true
+          }
+        }
+      },
+      {
+        "description": "Validate that optional services don't duplicate included services",
+        "properties": {
+          "combos": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "includes": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                },
+                "optional": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                }
+              },
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "optional": {
+                        "type": "array",
+                        "minItems": 1
+                      }
+                    }
+                  },
+                  "then": {
+                    "not": {
+                      "properties": {
+                        "includes": {
+                          "type": "array",
+                          "contains": {
+                            "enum": {"$data": "1/optional"}
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "description": "Validate reasonable resource requirements for difficulty levels",
+        "properties": {
+          "combos": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "difficulty": {
+                      "const": "easy"
+                    },
+                    "resource_estimate": {
+                      "properties": {
+                        "cpu_cores": {
+                          "maximum": 4
+                        },
+                        "ram_gb": {
+                          "maximum": 8
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "difficulty": {
+                      "enum": ["intermediate", "advanced", "expert"]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }

@@ -1,0 +1,254 @@
+# =====================================================================
+# 🍣 Sushi Kitchen — Base Docker Compose Template
+# Purpose: Foundation template that gets customized based on user selections
+# - This template provides the common structure for all deployments
+# - Service definitions get injected based on contracts.yml specifications
+# - Network and volume configurations adapt to selected privacy profile
+# - Environment variables populate from selected environment template
+# =====================================================================
+
+# Template Variables (replaced during generation):
+# ${SERVICES}           - Generated service definitions
+# ${NETWORKS}           - Network configuration based on privacy profile  
+# ${VOLUMES}            - Volume definitions for persistent storage
+# ${ENVIRONMENT_VARS}   - Global environment variables from template
+# ${COMPOSE_VERSION}    - Docker Compose file version
+# ${PROJECT_NAME}       - Generated project name based on selections
+
+version: '${COMPOSE_VERSION:-3.9}'
+
+# =====================================================================
+# METADATA AND LABELS
+# Generated automatically to help with identification and management
+# =====================================================================
+x-sushi-metadata: &sushi-metadata
+  labels:
+    - "sushi.kitchen.generated=true"
+    - "sushi.kitchen.version=${SUSHI_VERSION:-1.0.0}"
+    - "sushi.kitchen.generated-at=${GENERATION_TIMESTAMP}"
+    - "sushi.kitchen.privacy-profile=${PRIVACY_PROFILE}"
+    - "sushi.kitchen.combo-ids=${COMBO_IDS}"
+    - "sushi.kitchen.bento-ids=${BENTO_IDS}"
+    - "sushi.kitchen.service-count=${SERVICE_COUNT}"
+
+# =====================================================================
+# COMMON SERVICE CONFIGURATION ANCHORS
+# Reusable configuration blocks that promote consistency
+# =====================================================================
+x-common-logging: &common-logging
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "${LOG_MAX_SIZE:-10m}"
+      max-file: "${LOG_MAX_FILES:-3}"
+      labels: "sushi.kitchen.service,sushi.kitchen.style"
+
+x-common-restart: &common-restart
+  restart: "${RESTART_POLICY:-unless-stopped}"
+
+x-common-security: &common-security
+  security_opt:
+    - no-new-privileges:true
+  # Additional security options based on privacy profile
+  ${SECURITY_OPTS}
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 30s
+
+# =====================================================================
+# RESOURCE LIMIT TEMPLATES
+# Applied based on service resource requirements from contracts.yml
+# =====================================================================
+x-lightweight-limits: &lightweight-limits
+  deploy:
+    resources:
+      limits:
+        cpus: '${LIGHTWEIGHT_CPU_LIMIT:-1.0}'
+        memory: '${LIGHTWEIGHT_MEMORY_LIMIT:-1G}'
+      reservations:
+        cpus: '${LIGHTWEIGHT_CPU_RESERVATION:-0.25}'
+        memory: '${LIGHTWEIGHT_MEMORY_RESERVATION:-256M}'
+
+x-standard-limits: &standard-limits
+  deploy:
+    resources:
+      limits:
+        cpus: '${STANDARD_CPU_LIMIT:-2.0}'
+        memory: '${STANDARD_MEMORY_LIMIT:-4G}'
+      reservations:
+        cpus: '${STANDARD_CPU_RESERVATION:-0.5}'
+        memory: '${STANDARD_MEMORY_RESERVATION:-1G}'
+
+x-heavy-limits: &heavy-limits
+  deploy:
+    resources:
+      limits:
+        cpus: '${HEAVY_CPU_LIMIT:-8.0}'
+        memory: '${HEAVY_MEMORY_LIMIT:-16G}'
+      reservations:
+        cpus: '${HEAVY_CPU_RESERVATION:-2.0}'
+        memory: '${HEAVY_MEMORY_RESERVATION:-4G}'
+
+x-gpu-limits: &gpu-limits
+  deploy:
+    resources:
+      limits:
+        cpus: '${GPU_CPU_LIMIT:-4.0}'
+        memory: '${GPU_MEMORY_LIMIT:-8G}'
+      reservations:
+        cpus: '${GPU_CPU_RESERVATION:-1.0}'
+        memory: '${GPU_MEMORY_RESERVATION:-2G}'
+        generic_resources:
+          - discrete_resource_spec:
+              kind: 'NVIDIA-GPU'
+              value: ${GPU_COUNT:-1}
+
+# =====================================================================
+# SERVICES SECTION
+# This section gets populated with actual service definitions
+# based on user selections and contracts.yml specifications
+# =====================================================================
+services:
+  
+  # ----------------------------------------------------------------------
+  # Core Infrastructure Services (if selected)
+  # These services provide foundational capabilities for the platform
+  # ----------------------------------------------------------------------
+  ${CORE_SERVICES}
+  
+  # ----------------------------------------------------------------------
+  # Application Services (based on user selection)
+  # These are the AI/ML services that provide the actual functionality
+  # ----------------------------------------------------------------------
+  ${APPLICATION_SERVICES}
+  
+  # ----------------------------------------------------------------------
+  # Supporting Services (automatically added based on dependencies)
+  # These services are added automatically when required by other services
+  # ----------------------------------------------------------------------
+  ${SUPPORTING_SERVICES}
+  
+  # ----------------------------------------------------------------------
+  # Monitoring and Observability (if observability profile enabled)
+  # These services provide insight into system health and performance
+  # ----------------------------------------------------------------------
+  ${MONITORING_SERVICES}
+  
+  # ----------------------------------------------------------------------
+  # Security Services (based on privacy profile)
+  # These services provide authentication, authorization, and audit capabilities
+  # ----------------------------------------------------------------------
+  ${SECURITY_SERVICES}
+
+# =====================================================================
+# NETWORKS SECTION
+# Network configuration varies based on selected privacy profile
+# - open_research: Single bridge network for development
+# - business_confidential: Segmented networks for moderate isolation
+# - legal_privilege: Maximum isolation with audit networks
+# =====================================================================
+networks:
+  ${NETWORKS}
+
+# =====================================================================
+# VOLUMES SECTION
+# Persistent storage definitions for services that need to retain data
+# Volume configuration includes backup priorities and retention policies
+# =====================================================================
+volumes:
+  ${VOLUMES}
+
+# =====================================================================
+# CONFIGS SECTION (if using Docker configs)
+# External configuration files that can be mounted into containers
+# =====================================================================
+${CONFIGS_SECTION}
+
+# =====================================================================
+# SECRETS SECTION (if using Docker secrets)
+# Sensitive data that should be securely distributed to containers
+# =====================================================================
+${SECRETS_SECTION}
+
+# =====================================================================
+# EXTENSION FIELDS FOR GENERATED DEPLOYMENT INFORMATION
+# Additional metadata that helps with management and troubleshooting
+# =====================================================================
+x-sushi-deployment-info:
+  generation_timestamp: "${GENERATION_TIMESTAMP}"
+  selected_combos: ${SELECTED_COMBOS_JSON}
+  selected_bento_boxes: ${SELECTED_BENTO_BOXES_JSON}
+  privacy_profile: "${PRIVACY_PROFILE}"
+  environment_template: "${ENVIRONMENT_TEMPLATE}"
+  estimated_resources:
+    total_cpu_cores: ${TOTAL_CPU_ESTIMATE}
+    total_memory_gb: ${TOTAL_MEMORY_ESTIMATE}
+    total_storage_gb: ${TOTAL_STORAGE_ESTIMATE}
+    gpu_required: ${GPU_REQUIRED}
+    gpu_memory_gb: ${TOTAL_GPU_MEMORY_ESTIMATE}
+  
+  service_dependencies:
+    ${SERVICE_DEPENDENCY_GRAPH}
+  
+  capability_providers:
+    ${CAPABILITY_PROVIDER_MAP}
+  
+  # Health check endpoints for validation
+  health_check_endpoints:
+    ${HEALTH_CHECK_ENDPOINTS}
+  
+  # Port mappings for external access
+  external_ports:
+    ${EXTERNAL_PORT_MAPPINGS}
+  
+  # Backup priorities for volume management
+  backup_priorities:
+    ${BACKUP_PRIORITY_MAP}
+
+# =====================================================================
+# TEMPLATE PROCESSING NOTES
+# These comments explain how this template gets processed into final configs
+# =====================================================================
+
+# VARIABLE SUBSTITUTION PROCESS:
+# 1. Load user selections (combos, bento boxes, individual services)
+# 2. Resolve dependencies using contracts.yml capability system
+# 3. Apply privacy profile to determine network and security configuration
+# 4. Calculate resource requirements from service contracts
+# 5. Generate service definitions with proper Docker configurations
+# 6. Substitute all template variables with computed values
+# 7. Validate resulting compose file syntax and resource constraints
+
+# SERVICE GENERATION LOGIC:
+# - Each service gets its configuration from contracts.yml
+# - Port mappings use ranges to avoid conflicts
+# - Volume mounts include backup priority metadata
+# - Environment variables merge global and service-specific settings
+# - Health checks adapt to service-specific endpoints or commands
+# - Resource limits apply based on service resource requirements
+# - Network assignments follow privacy profile requirements
+
+# PRIVACY PROFILE IMPACT:
+# - open_research: Single 'sushi_net' network, minimal restrictions
+# - business_confidential: Frontend/backend/data network separation
+# - legal_privilege: Maximum isolation with audit logging network
+
+# ENVIRONMENT TEMPLATE INTEGRATION:
+# - development: Debug logging, relaxed security, fast iteration
+# - production: Optimized settings, monitoring, backup systems
+# - compliance: Audit logging, data retention, encryption requirements
+
+# VALIDATION AND ERROR HANDLING:
+# - Resource requirements checked against available hardware
+# - Port conflicts detected and resolved automatically
+# - Dependency cycles prevented by contracts.yml validation
+# - Invalid service combinations rejected with helpful error messages
+
+# EXTENSIBILITY HOOKS:
+# - Additional service types supported by extending contracts.yml
+# - New privacy profiles added by creating network profile templates
+# - Custom environment templates supported for specific deployment needs
+# - Monitoring and backup integrations configurable per deployment

@@ -1,0 +1,237 @@
+# =====================================================================
+# 🍣 Open Research Network Profile
+# Purpose: Single network configuration for research and development
+# Privacy Level: Minimal - suitable for non-sensitive data and experimentation
+# Use Cases: Local development, research projects, proof of concepts
+# =====================================================================
+
+# PHILOSOPHY:
+# The open research profile prioritizes simplicity and ease of development over
+# strict security isolation. All services can communicate freely, which makes
+# debugging easier and reduces networking complexity. This profile is perfect
+# for learning, experimentation, and situations where data sensitivity is low.
+
+# NETWORK TOPOLOGY:
+# All services connect to a single bridge network called 'sushi_net'.
+# This creates a flat network where any service can reach any other service
+# using standard Docker service discovery (service names as hostnames).
+
+networks:
+  sushi_net:
+    driver: bridge
+    driver_opts:
+      # Enable ICC (Inter-Container Communication) for maximum flexibility
+      com.docker.network.bridge.enable_icc: "true"
+      # Use default Docker bridge settings for simplicity
+      com.docker.network.bridge.enable_ip_masquerade: "true"
+    ipam:
+      driver: default
+      config:
+        # Use a clear, non-conflicting subnet range
+        - subnet: "172.20.0.0/16"
+          gateway: "172.20.0.1"
+          ip_range: "172.20.1.0/24"
+    labels:
+      - "sushi.kitchen.network.profile=open_research"
+      - "sushi.kitchen.network.isolation=minimal"
+      - "sushi.kitchen.network.purpose=development"
+
+# =====================================================================
+# SERVICE NETWORK ASSIGNMENTS
+# Template for how services connect to this network configuration
+# =====================================================================
+
+# All services get assigned to the single network:
+service_network_template:
+  networks:
+    - sushi_net
+
+# Network aliases can be used for service discovery optimization:
+network_aliases_template:
+  networks:
+    sushi_net:
+      aliases:
+        - "${SERVICE_STYLE}.${SERVICE_NAME}"  # e.g., hosomaki.ollama
+        - "${SERVICE_NAME}"                   # e.g., ollama
+
+# =====================================================================
+# SECURITY CONSIDERATIONS FOR OPEN RESEARCH
+# What this profile does and doesn't protect against
+# =====================================================================
+
+# WHAT IS PROTECTED:
+# - Container isolation: Services still run in separate containers
+# - Host isolation: Containers are isolated from the host system
+# - Resource limits: Services can't consume unlimited resources
+# - Process isolation: Each service runs in its own process space
+
+# WHAT IS NOT PROTECTED:
+# - Network segmentation: All services can reach each other
+# - Traffic encryption: Communications use plain HTTP unless configured
+# - Access controls: No automatic authentication between services
+# - Audit logging: No automatic network traffic logging
+
+# WHEN TO USE:
+# - Local development and testing
+# - Research projects with non-sensitive data
+# - Learning and experimentation
+# - Proof of concept deployments
+# - Single-user environments
+
+# WHEN NOT TO USE:
+# - Production deployments with sensitive data
+# - Multi-tenant environments
+# - Compliance-regulated environments
+# - Environments requiring audit trails
+# - Public-facing deployments without additional security layers
+
+# =====================================================================
+# MONITORING AND DEBUGGING AIDS
+# Additional configuration to help with development and troubleshooting
+# =====================================================================
+
+# Enable Docker's built-in DNS for easy service discovery:
+dns_configuration:
+  # Services can reach each other using simple hostnames
+  # Example: curl http://ollama:11434/api/tags
+  enable_service_discovery: true
+  # Custom DNS settings if needed for development
+  dns_servers:
+    - "172.20.0.1"  # Docker's internal DNS
+  dns_search:
+    - "sushi_net"
+
+# Development-friendly logging configuration:
+logging_configuration:
+  # More verbose logging for development debugging
+  driver: "json-file"
+  options:
+    max-size: "50m"      # Larger log files for debugging
+    max-file: "5"        # Keep more log files
+    labels: "sushi.service,sushi.style,sushi.network"
+
+# Port exposure strategy for development:
+port_exposure:
+  # In open research, we can be more liberal with port exposure
+  # since we're not worried about attack surface in development
+  expose_all_ports: true
+  # Use predictable port ranges for easier development
+  port_range_start: 3000
+  port_range_end: 9999
+  # Allow automatic port assignment with clear documentation
+  document_port_assignments: true
+
+# =====================================================================
+# DEVELOPMENT OPTIMIZATIONS
+# Settings that make development easier but shouldn't be used in production
+# =====================================================================
+
+# Hot reload and development settings:
+development_optimizations:
+  # Allow bind mounts for code hot-reloading
+  enable_bind_mounts: true
+  # Disable some security restrictions for easier debugging
+  allow_privileged_containers: false  # Still maintain basic security
+  # Enable container debugging tools
+  enable_debug_tools: true
+  # Shorter health check intervals for faster feedback
+  health_check_interval: "15s"
+  # More generous startup time for debugging
+  health_check_start_period: "60s"
+
+# Resource limits are relaxed for development:
+resource_strategy:
+  # Allow overcommit for development efficiency
+  memory_overcommit_factor: 1.5
+  # Generous CPU allocation for development responsiveness
+  cpu_overcommit_factor: 2.0
+  # Relaxed storage limits for logs and debugging
+  storage_monitoring: "advisory"  # Warn but don't enforce
+
+# =====================================================================
+# INTEGRATION WITH MANIFEST SYSTEM
+# How this profile integrates with the broader manifest architecture
+# =====================================================================
+
+# Badge implications:
+# Services with "security" or "compliance" badges may warn users
+# that additional configuration is needed beyond this network profile
+
+# Capability mapping:
+# All capabilities are available since there's no network segmentation
+# Services can provide and consume capabilities without network restrictions
+
+# Service discovery:
+# The flat network makes service discovery simple and predictable
+# Examples of how services find each other:
+# - Ollama at http://ollama:11434
+# - Qdrant at http://qdrant:6333  
+# - PostgreSQL at postgresql:5432
+# - Redis at redis:6379
+
+# Environment variable patterns:
+# Services can use simple hostnames in their configuration:
+# OLLAMA_BASE_URL=http://ollama:11434
+# QDRANT_URL=http://qdrant:6333
+# DATABASE_URL=postgresql://user:pass@postgresql:5432/dbname
+
+# Volume sharing:
+# Named volumes can be shared between services if needed for development
+# (though this should be done carefully even in development)
+
+# =====================================================================
+# VALIDATION AND TESTING
+# How to verify this network configuration is working correctly
+# =====================================================================
+
+validation_tests:
+  # Basic connectivity test:
+  # docker-compose exec any-service ping other-service
+  
+  # Service discovery test:
+  # docker-compose exec any-service nslookup other-service
+  
+  # Port accessibility test:
+  # docker-compose exec any-service curl http://other-service:port/health
+  
+  # Network inspection:
+  # docker network inspect sushi-kitchen_sushi_net
+  
+  # Container network details:
+  # docker-compose exec service-name ip addr show
+
+troubleshooting_commands:
+  network_inspection: "docker network ls | grep sushi"
+  container_networks: "docker-compose ps --format table"
+  network_details: "docker network inspect sushi-kitchen_sushi_net"
+  connectivity_test: "docker-compose exec {service1} ping {service2}"
+  dns_resolution: "docker-compose exec {service} nslookup {target-service}"
+  port_listening: "docker-compose exec {service} netstat -tlnp"
+
+# =====================================================================
+# MIGRATION PATHS
+# How to evolve from this profile to more secure configurations
+# =====================================================================
+
+migration_guidance:
+  to_business_confidential:
+    description: "Add network segmentation for moderate security"
+    changes_required:
+      - "Split services across frontend/backend/data networks"
+      - "Add network access controls between tiers"
+      - "Update service configurations for new hostnames"
+    
+  to_legal_privilege:
+    description: "Maximum isolation for sensitive data"
+    changes_required:
+      - "Implement comprehensive network segmentation"
+      - "Add audit logging for all network traffic"
+      - "Enable encryption for inter-service communication"
+      - "Implement access controls and authentication"
+    
+  backwards_compatibility:
+    description: "Ensure services work across different network profiles"
+    considerations:
+      - "Use environment variables for service URLs"
+      - "Don't hardcode hostnames in application configuration"
+      - "Design services to work with different network topologies"

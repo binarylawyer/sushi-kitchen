@@ -1,0 +1,331 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://sushi-kitchen.dev/schemas/bento_box.schema.json",
+    "title": "Sushi Kitchen Bento Box Schema",
+    "description": "JSON Schema for validating bento box definitions that provide comprehensive 5-8 service environments for complete workflows",
+    "version": "1.1.0",
+    
+    "type": "object",
+    "required": ["schema_version", "bento_boxes"],
+    "additionalProperties": false,
+    
+    "properties": {
+      "schema_version": {
+        "type": "string",
+        "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+        "description": "Version of the bento box schema format being used"
+      },
+      
+      "bento_boxes": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 25,
+        "description": "Collection of comprehensive service environments",
+        "items": {
+          "$ref": "#/$defs/bentoBoxDefinition"
+        }
+      },
+      
+      "metadata": {
+        "type": "object",
+        "description": "Optional metadata about the bento box collection",
+        "properties": {
+          "last_updated": {
+            "type": "string",
+            "format": "date"
+          },
+          "maintainer": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+(\\.\\d+)?$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    
+    "$defs": {
+      "bentoBoxDefinition": {
+        "type": "object",
+        "required": ["id", "name", "description", "includes", "provides", "category", "difficulty"],
+        "description": "Complete definition of a comprehensive service environment",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^bento\\.[a-z-]+$",
+            "description": "Unique identifier following bento.name-pattern convention"
+          },
+          
+          "name": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 80,
+            "description": "Human-readable display name emphasizing the complete environment"
+          },
+          
+          "description": {
+            "type": "string",
+            "minLength": 200,
+            "maxLength": 2000,
+            "description": "Detailed explanation of the complete workflow, service interactions, and business value"
+          },
+          
+          "includes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z]+\\.[a-z0-9-]+$"
+            },
+            "minItems": 4,
+            "maxItems": 10,
+            "uniqueItems": true,
+            "description": "Required services that form the complete environment"
+          },
+          
+          "optional": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z]+\\.[a-z0-9-]+$"
+            },
+            "maxItems": 6,
+            "uniqueItems": true,
+            "description": "Enhancement services that can be added for additional functionality"
+          },
+          
+          "provides": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^cap\\.[a-z-]+$"
+            },
+            "minItems": 3,
+            "maxItems": 12,
+            "uniqueItems": true,
+            "description": "Comprehensive capabilities the environment provides"
+          },
+          
+          "category": {
+            "type": "string",
+            "enum": [
+              "agents",
+              "knowledge", 
+              "creative",
+              "intelligence",
+              "repurposing",
+              "analytics",
+              "observability",
+              "security",
+              "development",
+              "enterprise"
+            ],
+            "description": "Primary category for this comprehensive environment"
+          },
+          
+          "difficulty": {
+            "type": "string",
+            "enum": ["beginner", "intermediate", "advanced", "expert"],
+            "description": "Technical complexity and setup difficulty level"
+          },
+          
+          "estimated_setup_time_min": {
+            "type": "integer",
+            "minimum": 10,
+            "maximum": 240,
+            "description": "Realistic time estimate for complete setup and configuration in minutes"
+          },
+          
+          "resource_estimate": {
+            "$ref": "#/$defs/resourceEstimate"
+          },
+          
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 200
+            },
+            "maxItems": 8,
+            "description": "Important considerations and potential issues to be aware of"
+          },
+          
+          "success_criteria": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 200
+            },
+            "minItems": 3,
+            "maxItems": 10,
+            "description": "Validation steps to confirm the environment is working correctly"
+          },
+          
+          "notes": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 500,
+            "description": "Additional context, usage guidance, or implementation notes"
+          },
+          
+          "prerequisites": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 10,
+              "maxLength": 150
+            },
+            "maxItems": 6,
+            "description": "Requirements that must be met before deployment"
+          },
+          
+          "related_combos": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^combo\\.[a-z-]+$"
+            },
+            "maxItems": 5,
+            "uniqueItems": true,
+            "description": "Simpler combos that are stepping stones to this bento box"
+          },
+          
+          "alternatives": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^bento\\.[a-z-]+$"
+            },
+            "maxItems": 3,
+            "uniqueItems": true,
+            "description": "Alternative bento boxes that solve similar problems"
+          },
+          
+          "upgrade_path": {
+            "type": "object",
+            "description": "How this environment can be enhanced or scaled",
+            "properties": {
+              "next_steps": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 20,
+                  "maxLength": 150
+                },
+                "maxItems": 5
+              },
+              "enterprise_version": {
+                "type": "string",
+                "pattern": "^bento\\.[a-z-]+$",
+                "description": "Enterprise-grade version of this bento box"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "resourceEstimate": {
+        "type": "object",
+        "required": ["cpu_cores", "ram_gb"],
+        "description": "Estimated resource requirements for the complete environment",
+        "properties": {
+          "cpu_cores": {
+            "type": "number",
+            "minimum": 2,
+            "maximum": 64,
+            "description": "Estimated CPU cores needed"
+          },
+          
+          "ram_gb": {
+            "type": "number", 
+            "minimum": 4,
+            "maximum": 256,
+            "description": "Estimated RAM in GB needed"
+          },
+          
+          "vram_gb": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 80,
+            "description": "GPU VRAM in GB needed (0 if no GPU required)"
+          },
+          
+          "storage_gb": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 5000,
+            "description": "Estimated storage in GB needed"
+          },
+          
+          "network_intensive": {
+            "type": "boolean",
+            "description": "Whether this bento box requires high network bandwidth"
+          },
+          
+          "notes": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Additional context about resource requirements"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    
+    "allOf": [
+      {
+        "description": "Ensure bento box IDs are unique across the collection",
+        "properties": {
+          "bento_boxes": {
+            "type": "array",
+            "uniqueItems": true
+          }
+        }
+      },
+      {
+        "description": "Validate resource estimates are reasonable",
+        "properties": {
+          "bento_boxes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "resource_estimate": {
+                  "type": "object",
+                  "properties": {
+                    "cpu_cores": {"type": "number"},
+                    "ram_gb": {"type": "number"}
+                  },
+                  "allOf": [
+                    {
+                      "if": {
+                        "properties": {"cpu_cores": {"const": 2}}
+                      },
+                      "then": {
+                        "properties": {"ram_gb": {"minimum": 4}}
+                      }
+                    },
+                    {
+                      "if": {
+                        "properties": {"vram_gb": {"minimum": 1}}
+                      },
+                      "then": {
+                        "properties": {"ram_gb": {"minimum": 8}}
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }

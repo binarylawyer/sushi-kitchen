@@ -1,0 +1,453 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://sushi-kitchen.dev/schemas/badges.schema.json",
+    "title": "Sushi Kitchen Badge System Schema",
+    "description": "JSON Schema for validating badge definitions that create the visual vocabulary for service characteristics",
+    "version": "1.0.0",
+    
+    "type": "object",
+    "required": ["schema_version", "categories", "badges"],
+    "additionalProperties": false,
+    
+    "properties": {
+      "schema_version": {
+        "type": "string",
+        "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+        "description": "Version of the badge schema format being used"
+      },
+      
+      "icon_base_path": {
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9/_-]+/?$",
+        "description": "Base directory path for badge icon files",
+        "default": "assets/badges/"
+      },
+      
+      "fallback_icon": {
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9._-]+\\.(svg|png|jpg)$",
+        "description": "Default icon file to use when specific badge icon is missing"
+      },
+      
+      "categories": {
+        "type": "object",
+        "minProperties": 1,
+        "description": "Badge categories that group related badges for organizational purposes",
+        "patternProperties": {
+          "^[a-z_]+$": {
+            "$ref": "#/$defs/badgeCategory"
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "badges": {
+        "type": "object",
+        "minProperties": 1,
+        "description": "Individual badge definitions with styling and semantic information",
+        "patternProperties": {
+          "^[a-z_]+$": {
+            "$ref": "#/$defs/badgeDefinition"
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "combination_rules": {
+        "type": "object",
+        "description": "Rules governing which badges can be used together",
+        "properties": {
+          "mutually_exclusive": {
+            "type": "array",
+            "description": "Groups of badges that cannot be used together on the same service",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z_]+$"
+              },
+              "minItems": 2,
+              "uniqueItems": true
+            }
+          },
+          
+          "common_combinations": {
+            "type": "array", 
+            "description": "Badge combinations that frequently appear together",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-z_]+$"
+              },
+              "minItems": 2,
+              "uniqueItems": true
+            }
+          },
+          
+          "recommended_with": {
+            "type": "object",
+            "description": "Badges that should typically be accompanied by other specific badges",
+            "patternProperties": {
+              "^[a-z_]+$": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[a-z_]+$"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[a-z_]+$"
+                    },
+                    "minItems": 1,
+                    "uniqueItems": true
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "display_config": {
+        "type": "object",
+        "description": "Configuration for how badges appear in different contexts",
+        "properties": {
+          "web": {
+            "$ref": "#/$defs/webDisplayConfig"
+          },
+          "cli": {
+            "$ref": "#/$defs/cliDisplayConfig"
+          },
+          "docs": {
+            "$ref": "#/$defs/docsDisplayConfig"
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "validation": {
+        "type": "object",
+        "description": "Validation rules for badge usage across the system",
+        "properties": {
+          "max_badges_per_service": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10,
+            "description": "Maximum number of badges that can be applied to a single service"
+          },
+          
+          "required_for_types": {
+            "type": "object",
+            "description": "Service types that must have specific badges",
+            "patternProperties": {
+              "^[a-z_]+$": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z_]+$"
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              }
+            }
+          },
+          
+          "warn_combinations": {
+            "type": "array",
+            "description": "Badge combinations that should trigger warnings",
+            "items": {
+              "type": "object",
+              "required": ["badges", "message"],
+              "properties": {
+                "badges": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[a-z_]+$"
+                  },
+                  "minItems": 2,
+                  "uniqueItems": true
+                },
+                "message": {
+                  "type": "string",
+                  "minLength": 10,
+                  "description": "Warning message to display when this combination is detected"
+                }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "i18n": {
+        "type": "object",
+        "description": "Internationalization support for multiple languages",
+        "properties": {
+          "supported_languages": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z]{2}(-[A-Z]{2})?$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          
+          "translations": {
+            "type": "object",
+            "patternProperties": {
+              "^[a-z_]+$": {
+                "type": "object",
+                "patternProperties": {
+                  "^[a-z]{2}(-[A-Z]{2})?$": {
+                    "type": "object",
+                    "required": ["label", "tooltip"],
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 20
+                      },
+                      "tooltip": {
+                        "type": "string",
+                        "minLength": 10,
+                        "maxLength": 200
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    
+    "$defs": {
+      "badgeCategory": {
+        "type": "object",
+        "required": ["name", "description", "color_family"],
+        "description": "Definition of a badge category for organizational purposes",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 30,
+            "description": "Human-readable category name"
+          },
+          
+          "description": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 200,
+            "description": "Detailed explanation of what this category represents"
+          },
+          
+          "color_family": {
+            "type": "string",
+            "enum": ["red", "orange", "yellow", "green", "blue", "purple", "gray", "pink"],
+            "description": "Base color family for badges in this category"
+          },
+          
+          "display_order": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Sort order for displaying categories in UI"
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "badgeDefinition": {
+        "type": "object",
+        "required": ["label", "category", "color", "tooltip"],
+        "description": "Complete definition of an individual badge",
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 20,
+            "description": "Display text for the badge"
+          },
+          
+          "category": {
+            "type": "string",
+            "pattern": "^[a-z_]+$",
+            "description": "Category this badge belongs to - must match a defined category"
+          },
+          
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$",
+            "description": "Primary color for the badge in hex format"
+          },
+          
+          "background_color": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$",
+            "description": "Background color for the badge in hex format"
+          },
+          
+          "text_color": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$",
+            "description": "Text color for the badge in hex format"
+          },
+          
+          "icon": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9._-]+\\.(svg|png|jpg)$",
+            "description": "Icon filename for the badge"
+          },
+          
+          "tooltip": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 200,
+            "description": "Detailed explanation shown on hover or help"
+          },
+          
+          "weight": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Relative importance for sorting and display priority"
+          },
+          
+          "usage_notes": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 300,
+            "description": "Guidelines for when and how to use this badge"
+          },
+          
+          "min_ram_gb": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Minimum RAM requirement in GB for services with this badge"
+          },
+          
+          "max_ram_gb": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Maximum RAM requirement in GB for services with this badge"
+          },
+          
+          "min_vram_gb": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Minimum GPU VRAM requirement in GB"
+          },
+          
+          "recommended_vram_gb": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Recommended GPU VRAM in GB for optimal performance"
+          },
+          
+          "min_storage_gb": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Minimum storage requirement in GB"
+          },
+          
+          "performance_impact": {
+            "type": "string",
+            "enum": ["minimal", "low", "moderate", "high", "extreme"],
+            "description": "Expected performance impact on system resources"
+          },
+          
+          "complexity_level": {
+            "type": "string",
+            "enum": ["beginner", "intermediate", "advanced", "expert"],
+            "description": "Technical complexity level for users"
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "webDisplayConfig": {
+        "type": "object",
+        "description": "Configuration for web UI badge display",
+        "properties": {
+          "max_badges_per_service": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "show_tooltip_on_hover": {
+            "type": "boolean"
+          },
+          "badge_spacing": {
+            "type": "string",
+            "pattern": "^\\d+(px|rem|em)$"
+          },
+          "border_radius": {
+            "type": "string",
+            "pattern": "^\\d+(px|rem|em)$"
+          },
+          "font_size": {
+            "type": "string",
+            "pattern": "^\\d+(px|rem|em)$"
+          },
+          "font_weight": {
+            "type": "string",
+            "enum": ["100", "200", "300", "400", "500", "600", "700", "800", "900", "normal", "bold"]
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "cliDisplayConfig": {
+        "type": "object",
+        "description": "Configuration for command-line badge display",
+        "properties": {
+          "use_emoji": {
+            "type": "boolean"
+          },
+          "show_full_label": {
+            "type": "boolean"
+          },
+          "color_support": {
+            "type": "boolean"
+          },
+          "emoji_mapping": {
+            "type": "object",
+            "patternProperties": {
+              "^[a-z_]+$": {
+                "type": "string",
+                "pattern": "^.{1,4}$"
+              }
+            }
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "docsDisplayConfig": {
+        "type": "object",
+        "description": "Configuration for documentation badge display",
+        "properties": {
+          "show_category": {
+            "type": "boolean"
+          },
+          "show_tooltip": {
+            "type": "boolean"
+          },
+          "markdown_format": {
+            "type": "string",
+            "description": "Template for rendering badges in markdown - use {label} and {tooltip} placeholders"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }

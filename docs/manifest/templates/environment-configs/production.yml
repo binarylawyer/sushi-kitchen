@@ -1,0 +1,475 @@
+# =====================================================================
+# 🍣 Production Environment Configuration Template
+# Purpose: Optimized settings for production deployments with maximum reliability
+# Target: Live production systems serving real users and business operations
+# Priority: Performance, security, reliability, monitoring, and cost efficiency
+# =====================================================================
+
+# PHILOSOPHY:
+# Production environments must prioritize system reliability, user experience,
+# security, and cost efficiency over developer convenience. This means optimized
+# performance settings, comprehensive monitoring, robust security controls,
+# efficient resource utilization, and comprehensive backup and recovery systems.
+# Every configuration choice is made with the assumption that this system is
+# business-critical and must operate reliably 24/7.
+
+# GLOBAL ENVIRONMENT VARIABLES
+# These variables apply to all services in the production environment
+global_environment:
+  
+  # ===================================================================
+  # LOGGING AND MONITORING - PRODUCTION OPTIMIZED
+  # Structured logging focused on operational insights and troubleshooting
+  # ===================================================================
+  
+  # Production logging levels focus on operational information
+  LOG_LEVEL: "INFO"
+  DEBUG_MODE: "false"
+  VERBOSE_LOGGING: "false"
+  
+  # Structured logging for automated processing and analysis
+  LOG_FORMAT: "json"           # Machine-readable structured logs
+  LOG_OUTPUT: "file"           # File-based logging for aggregation
+  LOG_TIMESTAMP_FORMAT: "ISO8601"  # Standard timestamp format
+  
+  # Error handling optimized for production monitoring
+  SHOW_ERROR_DETAILS: "false"  # Don't expose internal details to users
+  ENABLE_STACK_TRACES: "false" # Prevent information leakage
+  LOG_CORRELATION_ID: "true"   # Enable request tracing across services
+  
+  # Log rotation and retention for production systems
+  LOG_MAX_SIZE: "100MB"
+  LOG_MAX_FILES: "10"
+  LOG_RETENTION_DAYS: "30"
+  LOG_COMPRESSION: "true"
+  
+  # ===================================================================
+  # SECURITY SETTINGS - PRODUCTION HARDENED
+  # Comprehensive security controls appropriate for production systems
+  # ===================================================================
+  
+  # SSL/TLS enforcement for all communications
+  SSL_VERIFY: "true"
+  TLS_SKIP_VERIFY: "false"
+  HTTPS_ONLY: "true"
+  TLS_MIN_VERSION: "1.2"
+  
+  # Security headers and protections
+  ALLOW_HTTP: "false"
+  CSRF_PROTECTION: "enabled"
+  CORS_ALLOW_ALL: "false"
+  SECURITY_HEADERS_ENABLED: "true"
+  
+  # Authentication and authorization enforcement
+  AUTH_REQUIRED: "true"
+  SKIP_AUTH_FOR_DEVELOPMENT: "false"
+  PRODUCTION_MODE: "true"
+  SESSION_SECURE: "true"
+  SESSION_HTTPONLY: "true"
+  
+  # Additional security controls
+  RATE_LIMITING_ENABLED: "true"
+  REQUEST_SIZE_LIMIT: "10MB"
+  UPLOAD_SIZE_LIMIT: "100MB"
+  ENABLE_WAF: "true"
+  
+  # ===================================================================
+  # PERFORMANCE SETTINGS - PRODUCTION OPTIMIZED
+  # Performance configurations optimized for throughput and efficiency
+  # ===================================================================
+  
+  # Caching enabled for production performance
+  ENABLE_CACHING: "true"
+  CACHE_TTL: "3600"           # 1 hour default cache
+  REDIS_CACHE_ENABLED: "true"
+  CACHE_COMPRESSION: "true"
+  
+  # Production timeouts balanced for performance and reliability
+  REQUEST_TIMEOUT: "60s"      # Generous but not unlimited
+  CONNECTION_TIMEOUT: "30s"   # Quick connection establishment
+  STARTUP_TIMEOUT: "300s"     # Allow time for production startup
+  SHUTDOWN_TIMEOUT: "30s"     # Graceful shutdown time
+  
+  # Performance optimizations
+  ENABLE_HOT_RELOAD: "false"  # Disabled for production stability
+  AUTO_RESTART: "false"       # Controlled restart procedures only
+  WATCH_FILES: "false"        # No file watching overhead
+  
+  # Connection pooling and resource optimization
+  CONNECTION_POOL_SIZE: "20"
+  CONNECTION_POOL_MAX: "50"
+  CONNECTION_POOL_TIMEOUT: "10s"
+  KEEP_ALIVE_TIMEOUT: "75s"
+  
+  # ===================================================================
+  # MONITORING AND OBSERVABILITY - COMPREHENSIVE PRODUCTION MONITORING
+  # Full observability stack for production system management
+  # ===================================================================
+  
+  # Metrics and monitoring enablement
+  METRICS_ENABLED: "true"
+  PROMETHEUS_METRICS: "true"
+  HEALTH_CHECKS_ENABLED: "true"
+  TRACING_ENABLED: "true"
+  PROFILING_ENABLED: "false"  # Disabled unless needed for performance tuning
+  
+  # Alerting and notification configuration
+  ALERTING_ENABLED: "true"
+  ALERT_WEBHOOK_URL: "${ALERT_WEBHOOK_URL}"
+  SLACK_ALERTS_ENABLED: "true"
+  EMAIL_ALERTS_ENABLED: "true"
+  
+  # Application performance monitoring
+  APM_ENABLED: "true"
+  ERROR_TRACKING_ENABLED: "true"
+  PERFORMANCE_MONITORING: "true"
+  UPTIME_MONITORING: "true"
+  
+  # ===================================================================
+  # DATA HANDLING - PRODUCTION DATA PROTECTION AND RETENTION
+  # Comprehensive data management for production systems
+  # ===================================================================
+  
+  # Production data retention policies
+  DATA_RETENTION_DAYS: "365"  # One year retention for business data
+  AUTO_CLEANUP_ENABLED: "true"
+  PRODUCTION_DATA_PROTECTION: "true"
+  
+  # Backup and disaster recovery
+  BACKUP_ENABLED: "true"
+  BACKUP_FREQUENCY: "daily"
+  BACKUP_RETENTION_DAYS: "90"
+  BACKUP_ENCRYPTION: "true"
+  OFFSITE_BACKUP_ENABLED: "true"
+  
+  # Data integrity and validation
+  DATA_VALIDATION_ENABLED: "true"
+  CHECKSUM_VALIDATION: "true"
+  CORRUPTION_DETECTION: "true"
+  
+  # ===================================================================
+  # RESOURCE ALLOCATION - PRODUCTION RESOURCE MANAGEMENT
+  # Optimized resource allocation for production workloads
+  # ===================================================================
+  
+  # Production resource limits based on capacity planning
+  MEMORY_LIMIT: "8g"          # Generous production memory allocation
+  CPU_LIMIT: "4.0"            # Multi-core production allocation
+  STORAGE_LIMIT: "500g"       # Adequate storage with monitoring
+  
+  # Production scaling and concurrency settings
+  WORKER_COUNT: "8"           # Optimized for production load
+  MAX_CONNECTIONS: "1000"     # High connection capacity
+  POOL_SIZE: "50"             # Large connection pools
+  QUEUE_SIZE: "500"           # Adequate queue depth
+  
+  # Health checks optimized for production reliability
+  HEALTH_CHECK_INTERVAL: "30s"     # Regular but not excessive
+  HEALTH_CHECK_TIMEOUT: "10s"      # Quick timeout for responsiveness
+  STARTUP_GRACE_PERIOD: "180s"     # Allow time for production startup
+  LIVENESS_PROBE_ENABLED: "true"   # Kubernetes liveness probes
+  READINESS_PROBE_ENABLED: "true"  # Kubernetes readiness probes
+
+# ===================================================================
+# SERVICE-SPECIFIC PRODUCTION CONFIGURATIONS
+# Optimized settings for individual services in production environment
+# ===================================================================
+
+service_overrides:
+  
+  # AI Inference Services - Production performance optimization
+  ai_services:
+    hosomaki.ollama:
+      OLLAMA_DEBUG: "false"
+      OLLAMA_VERBOSE: "false"
+      OLLAMA_KEEP_ALIVE: "24h"       # Long keep-alive for production efficiency
+      OLLAMA_MAX_LOADED_MODELS: "5"  # Multiple models for production variety
+      OLLAMA_LOAD_TIMEOUT: "300s"    # Patient loading for large models
+      OLLAMA_LOG_LEVEL: "info"
+      OLLAMA_NUM_PARALLEL: "4"       # Parallel processing for throughput
+      OLLAMA_MAX_QUEUE: "100"        # Large queue for production load
+      
+    hosomaki.litellm:
+      LITELLM_LOG: "info"
+      LITELLM_DEBUG_MODE: "false"
+      LITELLM_DETAILED_LOGGER: "false"
+      LITELLM_DROP_PARAMS: "true"    # Clean logs for production
+      LITELLM_REQUEST_TIMEOUT: "120" # Longer timeout for production stability
+      LITELLM_MAX_PARALLEL_REQUESTS: "100"
+      LITELLM_CACHE_ENABLED: "true"  # Enable caching for performance
+      
+    hosomaki.vllm:
+      VLLM_LOGGING_LEVEL: "info"
+      VLLM_LOG_STATS: "true"
+      VLLM_ENABLE_METRICS: "true"
+      VLLM_DISABLE_LOG_REQUESTS: "true"   # Reduce log volume in production
+      VLLM_GPU_MEMORY_UTILIZATION: "0.9"  # Maximize GPU efficiency
+      VLLM_MAX_NUM_SEQS: "256"            # High throughput configuration
+      VLLM_MAX_MODEL_LEN: "4096"          # Production model length limit
+  
+  # Database Services - Production reliability and performance
+  database_services:
+    futomaki.postgresql:
+      POSTGRES_LOG_STATEMENT: "mod"        # Log data modifications only
+      POSTGRES_LOG_DURATION: "true"        # Monitor query performance
+      POSTGRES_LOG_CHECKPOINTS: "false"    # Reduce log noise
+      POSTGRES_LOG_CONNECTIONS: "false"    # Reduce connection log spam
+      POSTGRES_LOG_DISCONNECTIONS: "false"
+      POSTGRES_SHARED_PRELOAD_LIBRARIES: "pg_stat_statements"
+      POSTGRES_MAX_CONNECTIONS: "200"      # High connection limit
+      POSTGRES_SHARED_BUFFERS: "2GB"       # Large shared buffer pool
+      POSTGRES_EFFECTIVE_CACHE_SIZE: "6GB" # Cache size for query planning
+      POSTGRES_CHECKPOINT_COMPLETION_TARGET: "0.9"  # Spread checkpoints
+      
+    futomaki.qdrant:
+      QDRANT__LOG_LEVEL: "info"
+      QDRANT__SERVICE__ENABLE_CORS: "false"        # Security for production
+      QDRANT__TELEMETRY_DISABLED: "true"           # No external telemetry
+      QDRANT__STORAGE__PERFORMANCE__MAX_SEARCH_THREADS: "8"  # Multi-threaded search
+      QDRANT__SERVICE__MAX_REQUEST_SIZE_MB: "100"   # Large request handling
+      QDRANT__STORAGE__OPTIMIZERS_ENABLED: "true"  # Enable optimizations
+      QDRANT__STORAGE__WRITE_CONSISTENCY_FACTOR: "1"  # Consistency for production
+      
+    futomaki.redis:
+      REDIS_LOG_LEVEL: "notice"
+      REDIS_SAVE: "900 1 300 10 60 10000"    # Production persistence policy
+      REDIS_APPENDONLY: "yes"                # Enable AOF for durability
+      REDIS_APPENDFSYNC: "everysec"          # Balance performance and durability
+      REDIS_MAXMEMORY_POLICY: "allkeys-lru"  # LRU eviction policy
+      REDIS_MAXMEMORY: "4gb"                 # Production memory limit
+      REDIS_TCP_KEEPALIVE: "300"             # Connection keep-alive
+      REDIS_TIMEOUT: "0"                     # No idle timeout for production
+  
+  # Web Services - Production web server optimization
+  web_services:
+    hosomaki.caddy:
+      CADDY_DEBUG: "false"
+      CADDY_LOG_LEVEL: "info"
+      CADDY_ADMIN_LISTEN: "127.0.0.1:2019"   # Restricted admin access
+      CADDY_ACME_ENABLE: "true"               # SSL certificate automation
+      CADDY_HTTP_PORT: "80"
+      CADDY_HTTPS_PORT: "443"
+      CADDY_GRACE_PERIOD: "30s"              # Graceful reload time
+      CADDY_MAX_HEADER_SIZE: "16KB"          # Large headers for production
+      
+    hosomaki.n8n:
+      N8N_LOG_LEVEL: "info"
+      N8N_LOG_OUTPUT: "file"
+      N8N_DIAGNOSTICS_ENABLED: "false"       # Disable for production
+      N8N_PERSONALIZATION_ENABLED: "true"    # Production personalization
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+      N8N_TEMPLATES_ENABLED: "true"          # Enable templates for users
+      N8N_EXECUTIONS_DATA_MAX_AGE: "336"     # 2 weeks execution history
+      N8N_EXECUTIONS_DATA_PRUNE: "true"      # Auto-prune old executions
+      N8N_METRICS: "true"                    # Enable metrics collection
+  
+  # Monitoring Services - Production monitoring optimization
+  monitoring_services:
+    inari.prometheus:
+      PROMETHEUS_LOG_LEVEL: "info"
+      PROMETHEUS_ENABLE_LIFECYCLE: "false"    # Disable runtime changes in production
+      PROMETHEUS_STORAGE_TSDB_RETENTION_TIME: "90d"  # Long retention for production
+      PROMETHEUS_STORAGE_TSDB_RETENTION_SIZE: "50GB"  # Size-based retention
+      PROMETHEUS_WEB_ENABLE_ADMIN_API: "false"       # Disable admin API in production
+      PROMETHEUS_QUERY_MAX_CONCURRENCY: "20"         # High query concurrency
+      PROMETHEUS_QUERY_TIMEOUT: "2m"                 # Reasonable query timeout
+      
+    inari.grafana:
+      GF_LOG_LEVEL: "info"
+      GF_ENABLE_GZIP: "true"
+      GF_USERS_ALLOW_SIGN_UP: "false"        # Controlled user creation
+      GF_AUTH_ANONYMOUS_ENABLED: "false"     # No anonymous access in production
+      GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_ADMIN_PASSWORD}"
+      GF_SECURITY_SECRET_KEY: "${GRAFANA_SECRET_KEY}"
+      GF_SESSION_LIFE_TIME: "86400"          # 24-hour sessions
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/production-overview.json"
+      GF_ALERTING_ENABLED: "true"            # Enable alerting in production
+      GF_SMTP_ENABLED: "true"                # Email notifications
+
+# ===================================================================
+# PRODUCTION SECURITY HARDENING
+# Additional security configurations for production deployments
+# ===================================================================
+
+security_hardening:
+  
+  # Container security settings
+  container_security:
+    run_as_non_root: true              # Never run as root user
+    read_only_root_filesystem: true   # Immutable container filesystems
+    no_new_privileges: true           # Prevent privilege escalation
+    drop_capabilities:                # Drop unnecessary Linux capabilities
+      - "ALL"
+    add_capabilities:                 # Add only required capabilities
+      - "CHOWN"
+      - "SETGID"
+      - "SETUID"
+    
+  # Network security policies
+  network_security:
+    enable_network_policies: true     # Kubernetes network policies
+    restrict_egress_traffic: true     # Limit outbound connections
+    enable_service_mesh: true         # Service mesh for mTLS
+    require_tls_everywhere: true      # Encrypt all inter-service communication
+    
+  # Secrets management
+  secrets_management:
+    use_external_secrets: true       # External secret management system
+    rotate_secrets_regularly: true   # Automated secret rotation
+    encrypt_secrets_at_rest: true    # Encrypt stored secrets
+    audit_secret_access: true        # Log all secret access
+
+# ===================================================================
+# PRODUCTION MONITORING AND ALERTING
+# Comprehensive monitoring strategy for production systems
+# ===================================================================
+
+production_monitoring:
+  
+  # System health monitoring
+  system_health:
+    cpu_utilization_threshold: 80    # Alert when CPU > 80%
+    memory_utilization_threshold: 85 # Alert when memory > 85%
+    disk_utilization_threshold: 90   # Alert when disk > 90%
+    network_error_threshold: 1       # Alert on network errors
+    
+  # Application performance monitoring
+  application_performance:
+    response_time_threshold: "2s"    # Alert when response time > 2s
+    error_rate_threshold: 1          # Alert when error rate > 1%
+    throughput_threshold: 100        # Alert when throughput < 100 req/min
+    availability_threshold: 99.9     # Alert when availability < 99.9%
+    
+  # Business metrics monitoring
+  business_metrics:
+    active_users_threshold: 10       # Alert when active users < 10
+    conversion_rate_threshold: 5     # Alert when conversion < 5%
+    revenue_impact_monitoring: true  # Monitor business impact of issues
+    customer_satisfaction_tracking: true  # Track user experience metrics
+    
+  # Infrastructure monitoring
+  infrastructure_monitoring:
+    database_performance: true       # Monitor database query performance
+    cache_hit_ratio: true           # Monitor cache effectiveness
+    queue_depth_monitoring: true     # Monitor processing queue depths
+    external_dependency_monitoring: true  # Monitor external API health
+
+# ===================================================================
+# PRODUCTION BACKUP AND DISASTER RECOVERY
+# Comprehensive data protection and business continuity planning
+# ===================================================================
+
+backup_and_recovery:
+  
+  # Backup strategy
+  backup_configuration:
+    full_backup_schedule: "daily"          # Full backups every day
+    incremental_backup_schedule: "hourly"  # Incremental backups every hour
+    backup_retention_policy: "3-2-1"      # 3 copies, 2 media types, 1 offsite
+    backup_encryption: "AES-256"          # Strong encryption for backups
+    backup_compression: "true"            # Compress backups for efficiency
+    
+  # Disaster recovery procedures
+  disaster_recovery:
+    recovery_time_objective: "4h"         # Maximum downtime tolerance
+    recovery_point_objective: "1h"        # Maximum data loss tolerance
+    automated_failover: true              # Automatic failover when possible
+    manual_failover_procedures: true      # Documented manual procedures
+    disaster_recovery_testing: "monthly"  # Regular DR testing schedule
+    
+  # Data integrity verification
+  data_integrity:
+    checksum_verification: true          # Verify backup integrity
+    restore_testing: "weekly"            # Test backup restoration
+    data_corruption_detection: true      # Monitor for data corruption
+    integrity_alerting: true             # Alert on integrity issues
+
+# ===================================================================
+# PRODUCTION SCALING AND RESOURCE MANAGEMENT
+# Dynamic scaling and resource optimization for production loads
+# ===================================================================
+
+scaling_configuration:
+  
+  # Horizontal scaling settings
+  horizontal_scaling:
+    enable_auto_scaling: true           # Enable automatic scaling
+    min_replicas: 2                     # Minimum instances for availability
+    max_replicas: 10                    # Maximum instances for cost control
+    target_cpu_utilization: 70         # Scale when CPU > 70%
+    target_memory_utilization: 80      # Scale when memory > 80%
+    scale_up_cooldown: "5m"            # Wait before scaling up again
+    scale_down_cooldown: "10m"         # Wait before scaling down again
+    
+  # Vertical scaling considerations
+  vertical_scaling:
+    enable_vpa: true                   # Vertical Pod Autoscaler (K8s)
+    cpu_request_multiplier: 1.5       # CPU request buffer
+    memory_request_multiplier: 1.2    # Memory request buffer
+    resource_limit_enforcement: true   # Enforce resource limits
+    
+  # Load balancing and traffic management
+  load_balancing:
+    load_balancing_algorithm: "round_robin"  # Even distribution
+    health_check_based_routing: true        # Route only to healthy instances
+    circuit_breaker_enabled: true           # Prevent cascade failures
+    retry_policy: "exponential_backoff"     # Intelligent retry strategy
+    timeout_policy: "adaptive"              # Adaptive timeout management
+
+# ===================================================================
+# PRODUCTION DEPLOYMENT AND MAINTENANCE
+# Strategies for safe production deployments and ongoing maintenance
+# ===================================================================
+
+deployment_strategy:
+  
+  # Blue-green deployment configuration
+  blue_green_deployment:
+    enable_blue_green: true           # Use blue-green deployment strategy
+    health_check_duration: "10m"     # Validate new deployment for 10 minutes
+    automatic_rollback: true         # Auto-rollback on health check failure
+    traffic_shift_duration: "30m"    # Gradually shift traffic over 30 minutes
+    
+  # Canary deployment settings
+  canary_deployment:
+    enable_canary: true              # Enable canary deployments
+    canary_traffic_percentage: 10    # Start with 10% traffic to canary
+    canary_duration: "2h"            # Run canary for 2 hours
+    success_criteria:                # Criteria for promoting canary
+      error_rate_threshold: 0.5      # Error rate must be < 0.5%
+      response_time_threshold: "1s"  # Response time must be < 1s
+      
+  # Maintenance windows and procedures
+  maintenance_procedures:
+    scheduled_maintenance_window: "Sunday 02:00-04:00 UTC"  # Low-traffic window
+    emergency_maintenance_procedures: true                  # Emergency change procedures
+    change_approval_required: true                          # Require change approval
+    rollback_procedures_tested: true                       # Test rollback procedures
+
+# ===================================================================
+# PRODUCTION COST OPTIMIZATION
+# Strategies for optimizing production costs while maintaining quality
+# ===================================================================
+
+cost_optimization:
+  
+  # Resource optimization
+  resource_optimization:
+    right_sizing_enabled: true        # Optimize instance sizes
+    reserved_instance_planning: true  # Use reserved instances for predictable workloads
+    spot_instance_utilization: false  # Avoid spot instances for production
+    resource_tagging: true            # Tag resources for cost tracking
+    
+  # Storage optimization
+  storage_optimization:
+    storage_tiering: true            # Use appropriate storage tiers
+    data_compression: true           # Compress data to reduce storage costs
+    lifecycle_policies: true        # Automated data lifecycle management
+    unused_resource_cleanup: true   # Clean up unused resources
+    
+  # Monitoring and cost alerts
+  cost_monitoring:
+    cost_budgets_enabled: true      # Set cost budgets with alerts
+    cost_anomaly_detection: true    # Detect unusual cost patterns
+    resource_utilization_tracking: true  # Track resource efficiency
+    cost_optimization_recommendations: true  # Regular cost optimization reviews

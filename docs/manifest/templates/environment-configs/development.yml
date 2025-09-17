@@ -1,0 +1,352 @@
+# =====================================================================
+# 🍣 Development Environment Configuration Template
+# Purpose: Optimized settings for development, debugging, and experimentation
+# Target: Local development, testing, learning environments
+# Priority: Fast iteration, detailed logging, ease of debugging
+# =====================================================================
+
+# PHILOSOPHY:
+# Development environments should prioritize developer productivity over security
+# or performance optimization. This means enabling debug logging, relaxing some
+# security restrictions, using faster but less secure alternatives, and providing
+# extensive debugging information. The goal is to make it as easy as possible to
+# understand what's happening and quickly iterate on changes.
+
+# GLOBAL ENVIRONMENT VARIABLES
+# These variables apply to all services in the development environment
+global_environment:
+  
+  # ===================================================================
+  # LOGGING AND DEBUGGING CONFIGURATION
+  # Verbose logging and debugging features for development insight
+  # ===================================================================
+  
+  # Log levels set to maximum verbosity for debugging
+  LOG_LEVEL: "DEBUG"
+  DEBUG_MODE: "true"
+  VERBOSE_LOGGING: "true"
+  
+  # Enable detailed error reporting and stack traces
+  SHOW_ERROR_DETAILS: "true"
+  ENABLE_STACK_TRACES: "true"
+  DEBUG_PRINT_QUERIES: "true"
+  
+  # Development-specific logging formats
+  LOG_FORMAT: "development"  # Pretty-printed logs with colors
+  LOG_OUTPUT: "console"      # Direct console output for real-time viewing
+  LOG_TIMESTAMP_FORMAT: "HH:mm:ss.SSS"  # Precise timestamps for debugging
+  
+  # ===================================================================
+  # SECURITY SETTINGS - RELAXED FOR DEVELOPMENT
+  # Reduced security for easier development and testing
+  # ===================================================================
+  
+  # Disable SSL verification for local development
+  SSL_VERIFY: "false"
+  TLS_SKIP_VERIFY: "true"
+  HTTPS_ONLY: "false"
+  
+  # Allow insecure connections for development convenience
+  ALLOW_HTTP: "true"
+  CSRF_PROTECTION: "disabled"
+  CORS_ALLOW_ALL: "true"
+  
+  # Relaxed authentication for development
+  AUTH_REQUIRED: "false"
+  SKIP_AUTH_FOR_DEVELOPMENT: "true"
+  DEVELOPMENT_MODE: "true"
+  
+  # ===================================================================
+  # PERFORMANCE SETTINGS - OPTIMIZED FOR DEBUGGING
+  # Performance settings that favor visibility over speed
+  # ===================================================================
+  
+  # Disable caching for consistent development behavior
+  ENABLE_CACHING: "false"
+  CACHE_TTL: "0"
+  DISABLE_REDIS_CACHE: "true"
+  
+  # Shorter timeouts for faster development feedback
+  REQUEST_TIMEOUT: "30s"
+  CONNECTION_TIMEOUT: "10s"
+  STARTUP_TIMEOUT: "60s"
+  
+  # Enable hot reloading and auto-restart features
+  ENABLE_HOT_RELOAD: "true"
+  AUTO_RESTART: "true"
+  WATCH_FILES: "true"
+  
+  # ===================================================================
+  # DATA HANDLING - DEVELOPMENT-FRIENDLY SETTINGS
+  # Data settings that prioritize convenience over protection
+  # ===================================================================
+  
+  # Short data retention for development cleanup
+  DATA_RETENTION_DAYS: "7"
+  AUTO_CLEANUP_ENABLED: "true"
+  DEVELOPMENT_DATA_RESET: "true"
+  
+  # Relaxed backup requirements
+  BACKUP_ENABLED: "false"
+  BACKUP_FREQUENCY: "none"
+  
+  # Sample data and fixtures for development
+  LOAD_SAMPLE_DATA: "true"
+  ENABLE_DATA_FIXTURES: "true"
+  DEVELOPMENT_SEED_DATA: "true"
+  
+  # ===================================================================
+  # RESOURCE ALLOCATION - DEVELOPMENT OPTIMIZED
+  # Resource settings that balance development needs with local constraints
+  # ===================================================================
+  
+  # Conservative resource limits for local development
+  MEMORY_LIMIT: "2g"
+  CPU_LIMIT: "2.0"
+  
+  # Development-friendly worker and connection settings
+  WORKER_COUNT: "2"
+  MAX_CONNECTIONS: "50"
+  POOL_SIZE: "5"
+  
+  # Generous development timeouts
+  HEALTH_CHECK_INTERVAL: "15s"
+  HEALTH_CHECK_TIMEOUT: "5s"
+  STARTUP_GRACE_PERIOD: "120s"
+
+# ===================================================================
+# SERVICE-SPECIFIC DEVELOPMENT CONFIGURATIONS
+# Custom settings for individual services in development mode
+# ===================================================================
+
+service_overrides:
+  
+  # AI Inference Services - Development-friendly settings
+  ai_services:
+    hosomaki.ollama:
+      OLLAMA_DEBUG: "true"
+      OLLAMA_VERBOSE: "true"
+      OLLAMA_KEEP_ALIVE: "5m"        # Shorter keep-alive for development
+      OLLAMA_MAX_LOADED_MODELS: "2"  # Limit for local development
+      OLLAMA_LOAD_TIMEOUT: "30s"     # Faster feedback
+      OLLAMA_LOG_LEVEL: "debug"
+      
+    hosomaki.litellm:
+      LITELLM_LOG: "debug"
+      LITELLM_DEBUG_MODE: "true"
+      LITELLM_DETAILED_LOGGER: "true"
+      LITELLM_DROP_PARAMS: "false"   # Keep all params for debugging
+      LITELLM_REQUEST_TIMEOUT: "60"  # Longer timeout for debugging
+      
+    hosomaki.vllm:
+      VLLM_LOGGING_LEVEL: "debug"
+      VLLM_LOG_STATS: "true"
+      VLLM_ENABLE_METRICS: "true"
+      VLLM_DISABLE_LOG_REQUESTS: "false"  # Log all requests for debugging
+  
+  # Database Services - Development-friendly settings
+  database_services:
+    futomaki.postgresql:
+      POSTGRES_LOG_STATEMENT: "all"    # Log all SQL statements
+      POSTGRES_LOG_DURATION: "true"    # Log query durations
+      POSTGRES_LOG_CHECKPOINTS: "true"
+      POSTGRES_LOG_CONNECTIONS: "true"
+      POSTGRES_LOG_DISCONNECTIONS: "true"
+      POSTGRES_SHARED_PRELOAD_LIBRARIES: "pg_stat_statements"  # Query stats
+      
+    futomaki.qdrant:
+      QDRANT__LOG_LEVEL: "debug"
+      QDRANT__SERVICE__ENABLE_CORS: "true"    # Allow browser access
+      QDRANT__TELEMETRY_DISABLED: "true"      # Disable telemetry in dev
+      QDRANT__STORAGE__PERFORMANCE__MAX_SEARCH_THREADS: "2"  # Limit for dev
+      
+    futomaki.redis:
+      REDIS_LOG_LEVEL: "debug"
+      REDIS_SAVE: ""                          # Disable persistence for dev
+      REDIS_APPENDONLY: "no"                  # No AOF in development
+      REDIS_MAXMEMORY_POLICY: "allkeys-lru"   # LRU eviction for dev
+  
+  # Web Services - Development debugging enabled
+  web_services:
+    hosomaki.caddy:
+      CADDY_DEBUG: "true"
+      CADDY_LOG_LEVEL: "debug"
+      CADDY_ADMIN_LISTEN: "0.0.0.0:2019"     # Enable admin API
+      CADDY_ACME_DISABLE: "true"              # No SSL certs in dev
+      
+    hosomaki.n8n:
+      N8N_LOG_LEVEL: "debug"
+      N8N_LOG_OUTPUT: "console"
+      N8N_DIAGNOSTICS_ENABLED: "true"
+      N8N_PERSONALIZATION_ENABLED: "false"    # Skip setup wizard
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+      N8N_TEMPLATES_ENABLED: "false"          # Focus on development
+  
+  # Monitoring Services - Development-focused monitoring
+  monitoring_services:
+    inari.prometheus:
+      PROMETHEUS_LOG_LEVEL: "debug"
+      PROMETHEUS_ENABLE_LIFECYCLE: "true"     # Allow runtime config changes
+      PROMETHEUS_STORAGE_TSDB_RETENTION_TIME: "7d"  # Short retention for dev
+      PROMETHEUS_WEB_ENABLE_ADMIN_API: "true" # Enable admin operations
+      
+    inari.grafana:
+      GF_LOG_LEVEL: "debug"
+      GF_ENABLE_GZIP: "true"
+      GF_USERS_ALLOW_SIGN_UP: "true"          # Easy user creation in dev
+      GF_AUTH_ANONYMOUS_ENABLED: "true"       # Anonymous access for dev
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Editor"    # Generous permissions for dev
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/dev-overview.json"
+
+# ===================================================================
+# DEVELOPMENT TOOLS AND UTILITIES
+# Additional tools and configurations that aid development
+# ===================================================================
+
+development_tools:
+  
+  # Database debugging and administration tools
+  database_tools:
+    enable_pgadmin: true              # PostgreSQL web admin
+    enable_redis_commander: true     # Redis web admin
+    enable_qdrant_dashboard: true    # Qdrant web interface
+    
+  # API debugging and testing tools
+  api_tools:
+    enable_swagger_ui: true          # API documentation and testing
+    enable_postman_collection: true # Pre-configured API tests
+    enable_curl_examples: true      # Ready-to-use curl commands
+    
+  # Monitoring and debugging dashboards
+  monitoring_tools:
+    enable_dev_dashboard: true      # Development-specific Grafana dashboard
+    enable_log_viewer: true         # Real-time log viewing interface
+    enable_metrics_explorer: true   # Interactive metrics exploration
+  
+  # Development automation
+  automation_tools:
+    enable_auto_migration: true     # Automatic database migrations
+    enable_test_data_seeding: true  # Automatic test data creation
+    enable_service_discovery: true  # Service health and discovery dashboard
+
+# ===================================================================
+# DOCKER COMPOSE INTEGRATION SETTINGS
+# How these environment variables integrate with Docker Compose
+# ===================================================================
+
+docker_integration:
+  
+  # Volume mounts for development
+  development_volumes:
+    enable_source_mounts: true      # Mount source code for hot reload
+    enable_config_mounts: true     # Mount config files for easy editing
+    enable_log_mounts: true        # Mount log directories for access
+    
+  # Port exposure for development access
+  port_strategy:
+    expose_all_services: true      # Expose all service ports for debugging
+    use_standard_ports: true       # Use predictable port numbers
+    enable_port_forwarding: true   # Easy access from host machine
+    
+  # Container settings for development
+  container_settings:
+    restart_policy: "no"           # Don't auto-restart in development
+    enable_init: true              # Proper signal handling for debugging
+    enable_interactive: true       # Allow interactive debugging sessions
+
+# ===================================================================
+# VALIDATION AND HEALTH CHECKS
+# Development-friendly validation and monitoring
+# ===================================================================
+
+development_validation:
+  
+  # Health check settings optimized for development
+  health_checks:
+    interval: "15s"                # Frequent checks for fast feedback
+    timeout: "5s"                  # Quick timeout for responsiveness
+    retries: 2                     # Fewer retries for faster failure detection
+    start_period: "30s"            # Reasonable startup time for development
+    
+  # Development-specific success criteria
+  success_criteria:
+    all_services_responding: "All services respond to health checks within 30 seconds"
+    logs_accessible: "All service logs are visible and updating in real-time"
+    apis_documented: "All API endpoints are accessible and documented"
+    debugging_enabled: "Debug features and verbose logging are working"
+    hot_reload_functional: "Code changes trigger automatic service updates"
+    
+  # Development troubleshooting aids
+  troubleshooting:
+    enable_debug_endpoints: true   # Special debugging API endpoints
+    enable_metrics_endpoints: true # Prometheus metrics for all services
+    enable_profiling: true         # Performance profiling capabilities
+    enable_tracing: true           # Distributed tracing for request flow
+
+# ===================================================================
+# MIGRATION AND UPGRADE CONSIDERATIONS
+# How development environment evolves and transitions
+# ===================================================================
+
+environment_evolution:
+  
+  # Transitioning to other environments
+  migration_paths:
+    to_production:
+      description: "Move from development to production configuration"
+      key_changes:
+        - "Enable security features and authentication"
+        - "Optimize performance settings and disable debugging"
+        - "Enable backup and monitoring systems"
+        - "Configure proper SSL certificates and encryption"
+        - "Implement proper resource limits and scaling"
+      
+    to_staging:
+      description: "Create staging environment for testing"
+      key_changes:
+        - "Production-like security but with development debugging"
+        - "Test data that mirrors production patterns"
+        - "Full monitoring and alerting without notifications"
+        - "Performance testing with realistic load simulation"
+  
+  # Development environment maintenance
+  maintenance_procedures:
+    daily_tasks:
+      - "Clear development logs and temporary files"
+      - "Reset test databases to clean state"
+      - "Update development dependencies and images"
+      - "Verify all debugging features are working"
+      
+    weekly_tasks:
+      - "Review and update development configurations"
+      - "Test migration procedures to other environments"
+      - "Update development documentation and examples"
+      - "Clean up unused development resources and data"
+
+# ===================================================================
+# BEST PRACTICES AND GUIDELINES
+# Development environment best practices and common patterns
+# ===================================================================
+
+development_best_practices:
+  
+  # Code development practices
+  coding_guidelines:
+    configuration_management: "Use environment variables for all configurable values"
+    service_dependencies: "Design services to gracefully handle dependency failures"
+    logging_practices: "Include request IDs and correlation IDs in all log messages"
+    error_handling: "Provide detailed error messages with debugging context"
+    
+  # Testing and validation practices
+  testing_guidelines:
+    unit_testing: "Run unit tests automatically on code changes"
+    integration_testing: "Test service interactions with realistic data"
+    end_to_end_testing: "Validate complete workflows from user perspective"
+    performance_testing: "Monitor resource usage and response times"
+    
+  # Security practices even in development
+  security_guidelines:
+    secret_management: "Use development-specific secrets, never production secrets"
+    data_handling: "Use synthetic data that resembles production but isn't sensitive"
+    access_controls: "Implement basic access controls even in development"
+    vulnerability_scanning: "Regularly scan development images for vulnerabilities"

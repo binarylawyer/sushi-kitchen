@@ -1,0 +1,711 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://sushi-kitchen.dev/schemas/platters.schema.json",
+    "title": "Sushi Kitchen Platters Schema",
+    "description": "JSON Schema for validating platter definitions that combine multiple combos into complete deployment scenarios",
+    "version": "1.0.0",
+    
+    "type": "object",
+    "required": ["schema_version", "platters"],
+    "additionalProperties": false,
+    
+    "properties": {
+      "schema_version": {
+        "type": "string",
+        "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+        "description": "Version of the platters schema format being used"
+      },
+      
+      "platters": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 20,
+        "description": "Collection of complete deployment scenarios",
+        "items": {
+          "$ref": "#/$defs/platterDefinition"
+        }
+      },
+      
+      "categories": {
+        "type": "object",
+        "description": "Platter category definitions for organization and UI",
+        "patternProperties": {
+          "^[a-z_]+$": {
+            "$ref": "#/$defs/categoryDefinition"
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "deployment_profiles": {
+        "type": "object",
+        "description": "Recommended deployment profiles for different use cases",
+        "patternProperties": {
+          "^[a-z_]+$": {
+            "$ref": "#/$defs/deploymentProfile"
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "hardware_recommendations": {
+        "type": "object",
+        "description": "Hardware configuration recommendations by class",
+        "patternProperties": {
+          "^[a-z_]+$": {
+            "$ref": "#/$defs/hardwareRecommendation"
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "metadata": {
+        "type": "object",
+        "description": "Optional metadata about the platter collection",
+        "properties": {
+          "last_updated": {
+            "type": "string",
+            "format": "date"
+          },
+          "maintainer": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+(\\.\\d+)?$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    
+    "$defs": {
+      "platterDefinition": {
+        "type": "object",
+        "required": ["id", "name", "description", "category", "target_audience", "combos", "privacy_profile", "resource_requirements"],
+        "description": "Complete definition of a deployment scenario combining multiple services",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^platter\\.[a-z-]+$",
+            "description": "Unique identifier following platter.name-pattern convention"
+          },
+          
+          "name": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 60,
+            "description": "Human-readable display name for the platter"
+          },
+          
+          "description": {
+            "type": "string",
+            "minLength": 200,
+            "maxLength": 1500,
+            "description": "Comprehensive explanation of the deployment scenario and its business value"
+          },
+          
+          "category": {
+            "type": "string",
+            "enum": ["foundational", "specialized", "enterprise", "showcase"],
+            "description": "Primary category for this deployment scenario"
+          },
+          
+          "target_audience": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z-]+$"
+            },
+            "minItems": 1,
+            "maxItems": 6,
+            "uniqueItems": true,
+            "description": "Primary audiences who would benefit from this deployment"
+          },
+          
+          "combos": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^combo\\.[a-z-]+$"
+            },
+            "minItems": 1,
+            "maxItems": 10,
+            "uniqueItems": true,
+            "description": "Required combos that form the foundation of this platter"
+          },
+          
+          "additional_services": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z]+\\.[a-z0-9-]+$"
+            },
+            "maxItems": 15,
+            "uniqueItems": true,
+            "description": "Individual services added beyond what combos provide"
+          },
+          
+          "privacy_profile": {
+            "type": "string",
+            "enum": ["open_research", "business_confidential", "legal_privilege"],
+            "description": "Network isolation and security profile for this deployment"
+          },
+          
+          "resource_requirements": {
+            "$ref": "#/$defs/resourceRequirements"
+          },
+          
+          "estimated_cost": {
+            "$ref": "#/$defs/costEstimate"
+          },
+          
+          "setup_time_minutes": {
+            "type": "integer",
+            "minimum": 5,
+            "maximum": 300,
+            "description": "Estimated time to complete setup and initial configuration"
+          },
+          
+          "maintenance_level": {
+            "type": "string",
+            "enum": ["minimal", "low", "medium", "high", "expert"],
+            "description": "Ongoing maintenance complexity and time investment"
+          },
+          
+          "use_cases": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 150
+            },
+            "minItems": 1,
+            "maxItems": 8,
+            "description": "Specific scenarios where this platter provides value"
+          },
+          
+          "success_criteria": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 200
+            },
+            "minItems": 2,
+            "maxItems": 10,
+            "description": "Validation steps to confirm the deployment is working correctly"
+          },
+          
+          "notes": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 500,
+            "description": "Additional context, recommendations, or important considerations"
+          },
+          
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 150
+            },
+            "maxItems": 10,
+            "description": "Key features and capabilities provided by this platter"
+          },
+          
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 200
+            },
+            "maxItems": 6,
+            "description": "Important warnings and considerations before deployment"
+          },
+          
+          "enterprise_features": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 150
+            },
+            "maxItems": 10,
+            "description": "Enterprise-specific capabilities and features"
+          },
+          
+          "development_features": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 150
+            },
+            "maxItems": 10,
+            "description": "Development and engineering-specific features"
+          },
+          
+          "creative_capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 150
+            },
+            "maxItems": 8,
+            "description": "Creative and content generation capabilities"
+          },
+          
+          "voice_features": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 150
+            },
+            "maxItems": 8,
+            "description": "Voice and speech processing capabilities"
+          },
+          
+          "research_features": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 150
+            },
+            "maxItems": 8,
+            "description": "Research and academic-specific features"
+          },
+          
+          "homelab_features": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 150
+            },
+            "maxItems": 10,
+            "description": "Self-hosting and homelab-specific features"
+          },
+          
+          "showcase_features": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 15,
+              "maxLength": 150
+            },
+            "maxItems": 8,
+            "description": "Demonstration and showcase capabilities"
+          },
+          
+          "compliance_features": {
+            "type": "object",
+            "description": "Compliance and regulatory features",
+            "properties": {
+              "sso": {
+                "type": "object",
+                "properties": {
+                  "enabled": {"type": "boolean"},
+                  "provider": {"type": "string"}
+                }
+              },
+              "encryption": {
+                "type": "object",
+                "properties": {
+                  "at_rest": {"type": "boolean"},
+                  "in_transit": {"type": "boolean"}
+                }
+              },
+              "audit": {
+                "type": "object",
+                "properties": {
+                  "enabled": {"type": "boolean"},
+                  "retention_days": {"type": "integer", "minimum": 1}
+                }
+              },
+              "backup": {
+                "type": "object",
+                "properties": {
+                  "automated": {"type": "boolean"},
+                  "retention_policy": {"type": "string"}
+                }
+              },
+              "hipaa": {
+                "type": "object",
+                "properties": {
+                  "enabled": {"type": "boolean"},
+                  "audit_retention_years": {"type": "integer"},
+                  "encryption": {"type": "string"},
+                  "baa_ready": {"type": "boolean"}
+                }
+              },
+              "gdpr": {
+                "type": "object",
+                "properties": {
+                  "enabled": {"type": "boolean"},
+                  "right_to_deletion": {"type": "boolean"},
+                  "data_residency": {"type": "string"},
+                  "dpo_dashboard": {"type": "boolean"}
+                }
+              },
+              "sox": {
+                "type": "object",
+                "properties": {
+                  "enabled": {"type": "boolean"},
+                  "change_control": {"type": "boolean"},
+                  "audit_immutability": {"type": "boolean"},
+                  "separation_of_duties": {"type": "boolean"}
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          
+          "high_availability": {
+            "type": "object",
+            "description": "High availability and redundancy features",
+            "properties": {
+              "database_replication": {"type": "boolean"},
+              "service_redundancy": {"type": "boolean"},
+              "automated_failover": {"type": "boolean"},
+              "backup_sites": {"type": "string"}
+            },
+            "additionalProperties": false
+          },
+          
+          "sla_targets": {
+            "type": "object",
+            "description": "Service level agreement targets",
+            "properties": {
+              "uptime": {"type": "string"},
+              "rto_hours": {"type": "number"},
+              "rpo_minutes": {"type": "number"},
+              "response_time_p99_ms": {"type": "number"}
+            },
+            "additionalProperties": false
+          },
+          
+          "alternatives": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["platter_id", "reason"],
+              "properties": {
+                "platter_id": {
+                  "type": "string",
+                  "pattern": "^platter\\.[a-z-]+$"
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 20,
+                  "maxLength": 200
+                }
+              },
+              "additionalProperties": false
+            },
+            "maxItems": 3,
+            "description": "Alternative platters for different needs"
+          },
+          
+          "upgrade_path": {
+            "type": "object",
+            "description": "How to evolve this platter into more comprehensive deployments",
+            "properties": {
+              "next_platter": {
+                "type": "string",
+                "pattern": "^platter\\.[a-z-]+$"
+              },
+              "additional_combos": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^combo\\.[a-z-]+$"
+                },
+                "maxItems": 5,
+                "uniqueItems": true
+              },
+              "notes": {
+                "type": "string",
+                "maxLength": 300
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "resourceRequirements": {
+        "type": "object",
+        "required": ["cpu_cores", "memory_gb", "storage_gb", "gpu_required"],
+        "description": "Hardware resource requirements for the complete deployment",
+        "properties": {
+          "cpu_cores": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 128,
+            "description": "Required CPU cores"
+          },
+          
+          "memory_gb": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 512,
+            "description": "Required RAM in GB"
+          },
+          
+          "storage_gb": {
+            "type": "integer",
+            "minimum": 10,
+            "maximum": 10000,
+            "description": "Required storage in GB"
+          },
+          
+          "gpu_vram_gb": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 80,
+            "description": "Required GPU VRAM in GB (0 if no GPU needed)"
+          },
+          
+          "gpu_required": {
+            "type": "boolean",
+            "description": "Whether GPU is mandatory for this deployment"
+          },
+          
+          "backup_storage_gb": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5000,
+            "description": "Additional storage needed for backups"
+          },
+          
+          "network_bandwidth_mbps": {
+            "type": "integer",
+            "minimum": 10,
+            "maximum": 10000,
+            "description": "Recommended network bandwidth"
+          },
+          
+          "notes": {
+            "type": "string",
+            "maxLength": 300,
+            "description": "Additional resource considerations"
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "costEstimate": {
+        "type": "object",
+        "description": "Cost estimates for different deployment approaches",
+        "properties": {
+          "cloud_monthly_usd": {
+            "type": "integer",
+            "minimum": 10,
+            "maximum": 5000,
+            "description": "Estimated monthly cloud hosting cost in USD"
+          },
+          
+          "hardware_onetime_usd": {
+            "type": "integer",
+            "minimum": 200,
+            "maximum": 50000,
+            "description": "Estimated one-time hardware cost in USD"
+          },
+          
+          "notes": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 200,
+            "description": "Additional cost considerations and context"
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "categoryDefinition": {
+        "type": "object",
+        "required": ["name", "description", "icon", "color"],
+        "description": "Definition of a platter category",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 30
+          },
+          
+          "description": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 200
+          },
+          
+          "icon": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 30
+          },
+          
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9A-Fa-f]{6}$"
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "deploymentProfile": {
+        "type": "object",
+        "required": ["description", "recommended_platters", "target_use_case"],
+        "description": "Deployment profile recommendation",
+        "properties": {
+          "description": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 200
+          },
+          
+          "recommended_platters": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^platter\\.[a-z-]+$"
+            },
+            "minItems": 1,
+            "maxItems": 5,
+            "uniqueItems": true
+          },
+          
+          "target_use_case": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 100
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "hardwareRecommendation": {
+        "type": "object",
+        "required": ["suitable_platters", "specs", "estimated_cost"],
+        "description": "Hardware configuration recommendation",
+        "properties": {
+          "suitable_platters": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^platter\\.[a-z-]+$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          
+          "specs": {
+            "type": "string",
+            "minLength": 20,
+            "maxLength": 200,
+            "description": "Hardware specification description"
+          },
+          
+          "estimated_cost": {
+            "type": "string",
+            "pattern": "^\\$[0-9,]+-?[0-9,]*\\+?$",
+            "description": "Cost range in USD format"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    
+    "allOf": [
+      {
+        "description": "Ensure platter IDs are unique across the collection",
+        "properties": {
+          "platters": {
+            "type": "array",
+            "uniqueItems": true
+          }
+        }
+      },
+      {
+        "description": "Validate resource requirements are reasonable for category",
+        "properties": {
+          "platters": {
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "properties": {
+                    "category": {
+                      "const": "foundational"
+                    },
+                    "resource_requirements": {
+                      "properties": {
+                        "cpu_cores": {
+                          "maximum": 8
+                        },
+                        "memory_gb": {
+                          "maximum": 16
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "category": {
+                      "enum": ["specialized", "enterprise", "showcase"]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      },
+      {
+        "description": "Ensure GPU requirements are consistent",
+        "properties": {
+          "platters": {
+            "type": "array",
+            "items": {
+              "allOf": [
+                {
+                  "if": {
+                    "properties": {
+                      "resource_requirements": {
+                        "properties": {
+                          "gpu_required": {
+                            "const": true
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "then": {
+                    "properties": {
+                      "resource_requirements": {
+                        "properties": {
+                          "gpu_vram_gb": {
+                            "minimum": 4
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }

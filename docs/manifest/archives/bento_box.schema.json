@@ -1,0 +1,842 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://sushi-kitchen.dev/schemas/bento_box.schema.json",
+    "title": "Sushi Kitchen Bento Box Schema",
+    "description": "JSON Schema for validating bento box definitions that provide comprehensive 5-8 service environments for complete workflows",
+    "version": "1.0.0",
+    
+    "type": "object",
+    "required": ["schema_version", "bento_boxes"],
+    "additionalProperties": false,
+    
+    "properties": {
+      "schema_version": {
+        "type": "string",
+        "pattern": "^\\d+\\.\\d+(\\.\\d+)?$",
+        "description": "Version of the bento box schema format being used"
+      },
+      
+      "bento_boxes": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 25,
+        "description": "Collection of comprehensive service environments",
+        "items": {
+          "$ref": "#/$defs/bentoBoxDefinition"
+        }
+      },
+      
+      "metadata": {
+        "type": "object",
+        "description": "Optional metadata about the bento box collection",
+        "properties": {
+          "last_updated": {
+            "type": "string",
+            "format": "date"
+          },
+          
+          "maintainer": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          
+          "version": {
+            "type": "string",
+            "pattern": "^\\d+\\.\\d+(\\.\\d+)?$"
+          },
+          
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "enterprise",
+                "research",
+                "development",
+                "production",
+                "compliance",
+                "creative",
+                "analytics"
+              ]
+            },
+            "uniqueItems": true,
+            "description": "Categories represented in this collection"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    
+    "$defs": {
+      "bentoBoxDefinition": {
+        "type": "object",
+        "required": ["id", "name", "description", "includes", "provides", "category", "complexity", "target_audience"],
+        "description": "Complete definition of a comprehensive service environment",
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^bento\\.[a-z-]+$",
+            "description": "Unique identifier following bento.name-pattern convention"
+          },
+          
+          "name": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 60,
+            "description": "Human-readable display name emphasizing the complete environment"
+          },
+          
+          "description": {
+            "type": "string",
+            "minLength": 200,
+            "maxLength": 1200,
+            "description": "Detailed explanation of the complete workflow, service interactions, and business value"
+          },
+          
+          "includes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z]+\\.[a-z0-9-]+$"
+            },
+            "minItems": 5,
+            "maxItems": 8,
+            "uniqueItems": true,
+            "description": "Required services that form the complete environment"
+          },
+          
+          "optional": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z]+\\.[a-z0-9-]+$"
+            },
+            "maxItems": 4,
+            "uniqueItems": true,
+            "description": "Enhancement services that can be added for additional functionality"
+          },
+          
+          "provides": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z_]+$"
+            },
+            "minItems": 3,
+            "maxItems": 15,
+            "uniqueItems": true,
+            "description": "Comprehensive capabilities the environment provides"
+          },
+          
+          "category": {
+            "type": "string",
+            "enum": [
+              "enterprise_ai",
+              "research_platform",
+              "development_environment", 
+              "production_rag",
+              "compliance_ready",
+              "creative_studio",
+              "data_analytics",
+              "mlops_platform",
+              "observability_stack",
+              "security_framework"
+            ],
+            "description": "Primary category for this comprehensive environment"
+          },
+          
+          "complexity": {
+            "type": "string",
+            "enum": ["intermediate", "advanced", "expert"],
+            "description": "Technical complexity - bento boxes are inherently more complex than combos"
+          },
+          
+          "target_audience": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "data_scientists",
+                "ml_engineers", 
+                "platform_engineers",
+                "enterprise_architects",
+                "research_teams",
+                "startup_teams",
+                "compliance_officers",
+                "creative_professionals",
+                "devops_teams",
+                "security_teams"
+              ]
+            },
+            "minItems": 1,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "description": "Primary audiences who would benefit from this environment"
+          },
+          
+          "estimated_setup_time_hours": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 24,
+            "description": "Realistic time estimate for complete setup and configuration"
+          },
+          
+          "resource_requirements": {
+            "$ref": "#/$defs/comprehensiveResourceRequirements"
+          },
+          
+          "hardware_recommendations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/hardwareProfile"
+            },
+            "minItems": 1,
+            "maxItems": 4,
+            "description": "Recommended hardware configurations for different deployment scales"
+          },
+          
+          "prerequisites": {
+            "type": "object",
+            "description": "Requirements that must be met before deployment",
+            "properties": {
+              "technical_skills": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "docker_compose",
+                    "kubernetes",
+                    "linux_administration",
+                    "network_configuration", 
+                    "ssl_certificates",
+                    "reverse_proxy",
+                    "database_administration",
+                    "gpu_setup",
+                    "monitoring_systems"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              
+              "infrastructure": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "domain_name",
+                    "ssl_certificate",
+                    "gpu_drivers",
+                    "external_storage",
+                    "backup_system",
+                    "monitoring_alerts",
+                    "load_balancer"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              
+              "organizational": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "security_review",
+                    "compliance_approval",
+                    "data_governance",
+                    "incident_response_plan",
+                    "backup_procedures",
+                    "access_policies"
+                  ]
+                },
+                "uniqueItems": true
+              }
+            },
+            "additionalProperties": false
+          },
+          
+          "deployment_phases": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/deploymentPhase"
+            },
+            "minItems": 2,
+            "maxItems": 6,
+            "description": "Recommended phases for gradual deployment and validation"
+          },
+          
+          "success_criteria": {
+            "type": "object",
+            "required": ["functional_tests", "performance_benchmarks"],
+            "description": "Comprehensive validation criteria for the complete environment",
+            "properties": {
+              "functional_tests": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 30,
+                  "maxLength": 200
+                },
+                "minItems": 3,
+                "maxItems": 10,
+                "description": "End-to-end functional tests that validate the workflow"
+              },
+              
+              "performance_benchmarks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["metric", "target", "measurement_method"],
+                  "properties": {
+                    "metric": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 50
+                    },
+                    "target": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 100
+                    },
+                    "measurement_method": {
+                      "type": "string",
+                      "minLength": 10,
+                      "maxLength": 200
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "minItems": 2,
+                "maxItems": 8
+              },
+              
+              "security_validations": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 20,
+                  "maxLength": 150
+                },
+                "maxItems": 6,
+                "description": "Security checks specific to this environment"
+              }
+            },
+            "additionalProperties": false
+          },
+          
+          "operational_considerations": {
+            "type": "object",
+            "description": "Important considerations for ongoing operations",
+            "properties": {
+              "monitoring_strategy": {
+                "type": "string",
+                "minLength": 50,
+                "maxLength": 400,
+                "description": "How to monitor the health and performance of this environment"
+              },
+              
+              "backup_strategy": {
+                "type": "string",
+                "minLength": 50,
+                "maxLength": 400,
+                "description": "Critical data and backup procedures for business continuity"
+              },
+              
+              "scaling_considerations": {
+                "type": "string",
+                "minLength": 50,
+                "maxLength": 400,
+                "description": "How to scale this environment as usage grows"
+              },
+              
+              "maintenance_schedule": {
+                "type": "object",
+                "properties": {
+                  "daily_tasks": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 100
+                    },
+                    "maxItems": 5
+                  },
+                  "weekly_tasks": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 100
+                    },
+                    "maxItems": 5
+                  },
+                  "monthly_tasks": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "maxLength": 100
+                    },
+                    "maxItems": 5
+                  }
+                },
+                "additionalProperties": false
+              },
+              
+              "common_issues": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "required": ["problem", "symptoms", "resolution"],
+                  "properties": {
+                    "problem": {
+                      "type": "string",
+                      "minLength": 10,
+                      "maxLength": 100
+                    },
+                    "symptoms": {
+                      "type": "string",
+                      "minLength": 20,
+                      "maxLength": 200
+                    },
+                    "resolution": {
+                      "type": "string",
+                      "minLength": 30,
+                      "maxLength": 300
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "maxItems": 8
+              }
+            },
+            "additionalProperties": false
+          },
+          
+          "compliance_features": {
+            "type": "object",
+            "description": "Compliance and governance capabilities",
+            "properties": {
+              "data_privacy": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "gdpr_ready",
+                    "hipaa_compatible",
+                    "ccpa_compliant",
+                    "data_minimization",
+                    "right_to_deletion",
+                    "data_portability",
+                    "consent_management"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              
+              "security_standards": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "sox_compliant",
+                    "iso27001_aligned",
+                    "nist_framework",
+                    "encryption_at_rest",
+                    "encryption_in_transit",
+                    "access_controls",
+                    "audit_logging"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              
+              "industry_specific": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "financial_services",
+                    "healthcare",
+                    "government",
+                    "education",
+                    "retail",
+                    "manufacturing"
+                  ]
+                },
+                "uniqueItems": true
+              }
+            },
+            "additionalProperties": false
+          },
+          
+          "cost_considerations": {
+            "type": "object",
+            "description": "Cost analysis and optimization guidance",
+            "properties": {
+              "deployment_cost_factors": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 20,
+                  "maxLength": 150
+                },
+                "maxItems": 8,
+                "description": "Primary factors that drive deployment costs"
+              },
+              
+              "optimization_strategies": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 30,
+                  "maxLength": 200
+                },
+                "maxItems": 6,
+                "description": "Ways to reduce ongoing operational costs"
+              },
+              
+              "scaling_economics": {
+                "type": "string",
+                "minLength": 100,
+                "maxLength": 400,
+                "description": "How costs change as the environment scales"
+              }
+            },
+            "additionalProperties": false
+          },
+          
+          "evolution_path": {
+            "type": "object",
+            "description": "How this environment can grow and evolve",
+            "properties": {
+              "next_capabilities": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[a-z_]+$"
+                },
+                "maxItems": 8,
+                "uniqueItems": true,
+                "description": "Capabilities commonly added as the environment matures"
+              },
+              
+              "architectural_evolution": {
+                "type": "string",
+                "minLength": 100,
+                "maxLength": 500,
+                "description": "How the architecture typically evolves over time"
+              },
+              
+              "migration_considerations": {
+                "type": "string",
+                "minLength": 100,
+                "maxLength": 400,
+                "description": "Important factors when migrating or upgrading this environment"
+              }
+            },
+            "additionalProperties": false
+          },
+          
+          "related_combos": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^combo\\.[a-z-]+$"
+            },
+            "maxItems": 5,
+            "uniqueItems": true,
+            "description": "Simpler combos that are stepping stones to this bento box"
+          },
+          
+          "documentation_links": {
+            "type": "object",
+            "description": "Links to additional documentation and resources",
+            "properties": {
+              "architecture_diagram": {
+                "type": "string",
+                "format": "uri-reference"
+              },
+              "deployment_guide": {
+                "type": "string", 
+                "format": "uri-reference"
+              },
+              "troubleshooting_guide": {
+                "type": "string",
+                "format": "uri-reference"
+              },
+              "api_documentation": {
+                "type": "string",
+                "format": "uri-reference"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "comprehensiveResourceRequirements": {
+        "type": "object",
+        "required": ["minimum", "recommended"],
+        "description": "Detailed resource requirements for comprehensive environments",
+        "properties": {
+          "minimum": {
+            "$ref": "#/$defs/resourceProfile"
+          },
+          
+          "recommended": {
+            "$ref": "#/$defs/resourceProfile"
+          },
+          
+          "high_performance": {
+            "$ref": "#/$defs/resourceProfile"
+          },
+          
+          "notes": {
+            "type": "string",
+            "maxLength": 300,
+            "description": "Additional context about resource requirements"
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "resourceProfile": {
+        "type": "object",
+        "required": ["cpu_cores", "memory_gb", "storage_gb"],
+        "description": "Specific resource configuration profile",
+        "properties": {
+          "cpu_cores": {
+            "type": "number",
+            "minimum": 2,
+            "maximum": 128
+          },
+          
+          "memory_gb": {
+            "type": "number",
+            "minimum": 8,
+            "maximum": 1024
+          },
+          
+          "storage_gb": {
+            "type": "number",
+            "minimum": 50,
+            "maximum": 10240
+          },
+          
+          "gpu_memory_gb": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 80
+          },
+          
+          "gpu_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 8
+          },
+          
+          "network_bandwidth_gbps": {
+            "type": "number",
+            "minimum": 0.1,
+            "maximum": 100
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "hardwareProfile": {
+        "type": "object",
+        "required": ["name", "description", "specifications"],
+        "description": "Recommended hardware configuration",
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": ["development", "production", "enterprise", "cloud"]
+          },
+          
+          "description": {
+            "type": "string",
+            "minLength": 50,
+            "maxLength": 200
+          },
+          
+          "specifications": {
+            "$ref": "#/$defs/resourceProfile"
+          },
+          
+          "estimated_cost_monthly": {
+            "type": "object",
+            "properties": {
+              "cloud_usd": {
+                "type": "number",
+                "minimum": 50,
+                "maximum": 50000
+              },
+              "hardware_amortized_usd": {
+                "type": "number",
+                "minimum": 100,
+                "maximum": 20000
+              }
+            }
+          },
+          
+          "suitable_for": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "proof_of_concept",
+                "development",
+                "staging",
+                "production",
+                "high_availability",
+                "disaster_recovery"
+              ]
+            },
+            "uniqueItems": true
+          }
+        },
+        "additionalProperties": false
+      },
+      
+      "deploymentPhase": {
+        "type": "object",
+        "required": ["phase_number", "name", "description", "services", "success_criteria"],
+        "description": "Individual phase in a gradual deployment strategy",
+        "properties": {
+          "phase_number": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10
+          },
+          
+          "name": {
+            "type": "string",
+            "minLength": 10,
+            "maxLength": 50
+          },
+          
+          "description": {
+            "type": "string",
+            "minLength": 50,
+            "maxLength": 300
+          },
+          
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z]+\\.[a-z0-9-]+$"
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          
+          "estimated_time_hours": {
+            "type": "number",
+            "minimum": 0.5,
+            "maximum": 12
+          },
+          
+          "success_criteria": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 150
+            },
+            "minItems": 1,
+            "maxItems": 5
+          },
+          
+          "common_issues": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 20,
+              "maxLength": 200
+            },
+            "maxItems": 3
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    
+    "allOf": [
+      {
+        "description": "Ensure bento box IDs are unique",
+        "properties": {
+          "bento_boxes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "uniqueItems": true
+      },
+      {
+        "description": "Validate that minimum requirements are less than recommended",
+        "properties": {
+          "bento_boxes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "resource_requirements": {
+                  "type": "object",
+                  "properties": {
+                    "minimum": {
+                      "type": "object",
+                      "properties": {
+                        "cpu_cores": {"type": "number"},
+                        "memory_gb": {"type": "number"},
+                        "storage_gb": {"type": "number"}
+                      }
+                    },
+                    "recommended": {
+                      "type": "object",
+                      "properties": {
+                        "cpu_cores": {"type": "number"},
+                        "memory_gb": {"type": "number"},
+                        "storage_gb": {"type": "number"}
+                      }
+                    }
+                  },
+                  "allOf": [
+                    {
+                      "properties": {
+                        "recommended": {
+                          "properties": {
+                            "cpu_cores": {
+                              "minimum": {"$data": "2/minimum/cpu_cores"}
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "properties": {
+                        "recommended": {
+                          "properties": {
+                            "memory_gb": {
+                              "minimum": {"$data": "2/minimum/memory_gb"}
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
