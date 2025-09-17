@@ -3,7 +3,7 @@
     "$id": "https://sushi-kitchen.dev/schemas/contracts.schema.json",
     "title": "Sushi Kitchen Service Contracts Schema",
     "description": "JSON Schema for validating technical service contracts that define Docker configurations, dependencies, and deployment specifications",
-    "version": "1.0.0",
+    "version": "1.1.0",
     
     "type": "object",
     "required": ["schema_version", "capabilities", "services"],
@@ -27,7 +27,7 @@
         "minProperties": 1,
         "description": "Abstract interfaces that services can provide or require for dependency resolution",
         "patternProperties": {
-          "^[a-z_]+$": {
+          "^cap\\.[a-z-]+$": {
             "$ref": "#/$defs/capabilityDefinition"
           }
         },
@@ -38,7 +38,7 @@
         "type": "object",
         "description": "Network isolation patterns for different security and privacy requirements",
         "patternProperties": {
-          "^[a-z_]+$": {
+          "^[a-z-]+$": {
             "$ref": "#/$defs/networkProfile"
           }
         },
@@ -75,7 +75,7 @@
             "type": "object",
             "description": "Default service choices for common capabilities",
             "patternProperties": {
-              "^[a-z_]+$": {
+              "^cap\\.[a-z-]+$": {
                 "type": "string",
                 "pattern": "^[a-z]+\\.[a-z0-9-]+$"
               }
@@ -94,7 +94,7 @@
             "type": "object",
             "description": "Rules for scaling services based on resource constraints",
             "patternProperties": {
-              "^[a-z_]+$": {
+              "^[a-z-]+$": {
                 "type": "object",
                 "required": ["rule", "services"],
                 "properties": {
@@ -314,11 +314,16 @@
             "description": "Override container command"
           },
           
+          "working_dir": {
+            "type": "string",
+            "description": "Working directory inside container"
+          },
+          
           "provides": {
             "type": "array",
             "items": {
               "type": "string",
-              "pattern": "^[a-z_]+$"
+              "pattern": "^cap\\.[a-z-]+$"
             },
             "minItems": 1,
             "uniqueItems": true,
@@ -329,7 +334,7 @@
             "type": "array",
             "items": {
               "type": "string",
-              "pattern": "^[a-z_]+$"
+              "pattern": "^cap\\.[a-z-]+$"
             },
             "uniqueItems": true,
             "description": "Capabilities this service requires to function"
@@ -339,7 +344,7 @@
             "type": "array",
             "items": {
               "type": "string",
-              "pattern": "^[a-z_]+$"
+              "pattern": "^cap\\.[a-z-]+$"
             },
             "uniqueItems": true,
             "description": "Optional capabilities that enhance this service"
@@ -379,11 +384,11 @@
             "type": "object",
             "description": "Network assignments for different profiles",
             "patternProperties": {
-              "^[a-z_]+$": {
+              "^[a-z-]+$": {
                 "type": "array",
                 "items": {
                   "type": "string",
-                  "pattern": "^[a-z_]+$"
+                  "pattern": "^[a-z_-]+$"
                 },
                 "uniqueItems": true
               }
