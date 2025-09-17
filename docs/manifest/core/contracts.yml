@@ -1,5 +1,5 @@
 # =====================================================================
-# 🍣 Sushi Kitchen — CONTRACTS (v1.1)
+# 🍣 Sushi Kitchen — CONTRACTS (v0.1.0)
 # Purpose: Machine-readable technical contracts for all services
 # - Docker images, versions, ports, volumes, environment variables
 # - Dependencies, capabilities, and conflict resolution
@@ -7,7 +7,7 @@
 # - Network isolation and security configurations
 # =====================================================================
 
-schema_version: "1.1"
+schema_version: "0.1.0"
 last_updated: "2025-09-17"
 
 # ========================================================================
@@ -262,7 +262,7 @@ capabilities:
 # ========================================================================
 
 network_profiles:
-  open-research:
+  chirashi:
     description: "Single network for research and development"
     networks:
       sushi_net:
@@ -272,7 +272,7 @@ network_profiles:
             - subnet: "172.20.0.0/16"
     isolation_level: "none"
     
-  business-confidential:
+  temaki:
     description: "Segmented networks for business use"
     networks:
       sushi_frontend:
@@ -286,7 +286,7 @@ network_profiles:
         internal: true
     isolation_level: "moderate"
     
-  legal-privilege:
+  inari:
     description: "Maximum isolation for sensitive data"
     networks:
       sushi_public:
@@ -361,9 +361,9 @@ services:
       timeout: "10s"
       retries: 3
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
   hosomaki.litellm:
     name: "LiteLLM Gateway"
@@ -404,9 +404,9 @@ services:
       timeout: "10s"
       retries: 3
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
   hosomaki.ollama:
     name: "Ollama Local LLM Server"
@@ -451,9 +451,9 @@ services:
       timeout: "10s"
       retries: 3
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   hosomaki.anythingllm:
     name: "AnythingLLM RAG Interface"
@@ -504,9 +504,9 @@ services:
       timeout: "10s"
       retries: 3
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
   hosomaki.vllm:
     name: "vLLM High-Performance Inference"
@@ -545,9 +545,9 @@ services:
       timeout: "10s"
       retries: 3
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   hosomaki.caddy:
     name: "Caddy Web Server"
@@ -599,9 +599,9 @@ services:
       timeout: "5s"
       retries: 3
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend"]
-      legal-privilege: ["sushi_public"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend"]
+      inari: ["sushi_public"]
 
   hosomaki.tgi:
     name: "Text Generation Inference (TGI)"
@@ -635,9 +635,9 @@ services:
       max_replicas: 2
       scale_metric: "gpu_utilization"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   hosomaki.triton:
     name: "NVIDIA Triton Inference Server"
@@ -680,9 +680,9 @@ services:
       max_replicas: 2
       scale_metric: "gpu_utilization"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   hosomaki.temporal:
     name: "Temporal Workflow Engine"
@@ -718,9 +718,9 @@ services:
       max_replicas: 3
       scale_metric: "cpu_usage"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
 # ----------------------------------------------------------------------
 # FUTOMAKI - Knowledge & Storage Services  
@@ -763,9 +763,9 @@ services:
       max_replicas: 2
       scale_metric: "cpu_usage"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend", "sushi_data"]
-      legal-privilege: ["sushi_storage"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend", "sushi_data"]
+      inari: ["sushi_storage"]
 
   futomaki.postgres:
     name: "PostgreSQL Database"
@@ -805,9 +805,9 @@ services:
       timeout: "10s"
       retries: 3
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_data"]
-      legal-privilege: ["sushi_storage"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_data"]
+      inari: ["sushi_storage"]
 
   futomaki.redis:
     name: "Redis Cache"
@@ -844,9 +844,9 @@ services:
       timeout: "3s"
       retries: 3
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend", "sushi_data"]
-      legal-privilege: ["sushi_processing", "sushi_storage"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend", "sushi_data"]
+      inari: ["sushi_processing", "sushi_storage"]
 
   futomaki.qdrant:
     name: "Qdrant Vector Database"
@@ -888,9 +888,9 @@ services:
       timeout: "10s"
       retries: 3
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend", "sushi_data"]
-      legal-privilege: ["sushi_processing", "sushi_storage"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend", "sushi_data"]
+      inari: ["sushi_processing", "sushi_storage"]
 
   futomaki.weaviate:
     name: "Weaviate Vector Database"
@@ -923,9 +923,9 @@ services:
       max_replicas: 2
       scale_metric: "memory_usage"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend", "sushi_data"]
-      legal-privilege: ["sushi_processing", "sushi_storage"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend", "sushi_data"]
+      inari: ["sushi_processing", "sushi_storage"]
 
   futomaki.chroma:
     name: "Chroma Vector Store"
@@ -954,9 +954,9 @@ services:
       max_replicas: 2
       scale_metric: "memory_usage"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend", "sushi_data"]
-      legal-privilege: ["sushi_processing", "sushi_storage"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend", "sushi_data"]
+      inari: ["sushi_processing", "sushi_storage"]
 
   futomaki.infinity:
     name: "Infinity Embedding Server"
@@ -982,9 +982,9 @@ services:
       max_replicas: 3
       scale_metric: "cpu_usage"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   futomaki.neo4j:
     name: "Neo4j Graph Database"
@@ -1023,9 +1023,9 @@ services:
       max_replicas: 1
       scale_metric: "none"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend", "sushi_data"]
-      legal-privilege: ["sushi_processing", "sushi_storage"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend", "sushi_data"]
+      inari: ["sushi_processing", "sushi_storage"]
 
   futomaki.minio:
     name: "MinIO Object Storage"
@@ -1068,9 +1068,9 @@ services:
       timeout: "20s"
       retries: 3
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend", "sushi_data"]
-      legal-privilege: ["sushi_storage"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend", "sushi_data"]
+      inari: ["sushi_storage"]
 
   futomaki.restic:
     name: "Restic Backup System"
@@ -1096,9 +1096,9 @@ services:
       memory_mb: 512
       storage_gb: 100
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_data"]
-      legal-privilege: ["sushi_storage"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_data"]
+      inari: ["sushi_storage"]
 
   futomaki.pgadmin:
     name: "pgAdmin Database Management"
@@ -1128,9 +1128,9 @@ services:
       memory_mb: 512
       storage_gb: 2
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_storage"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_storage"]
 
   futomaki.redisinsight:
     name: "RedisInsight Management UI"
@@ -1156,9 +1156,9 @@ services:
       memory_mb: 256
       storage_gb: 1
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public"]
 
   futomaki.rclone-browser:
     name: "Rclone Browser GUI"
@@ -1183,9 +1183,9 @@ services:
       memory_mb: 256
       storage_gb: 1
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend"]
-      legal-privilege: ["sushi_public"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend"]
+      inari: ["sushi_public"]
 
 # ----------------------------------------------------------------------
 # NIGIRI - Speech & Interaction Services
@@ -1226,9 +1226,9 @@ services:
       timeout: "10s"
       retries: 3
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   nigiri.piper:
     name: "Piper TTS Service"
@@ -1257,9 +1257,9 @@ services:
       max_replicas: 2
       scale_metric: "cpu_usage"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   nigiri.openvoice:
     name: "OpenVoice Voice Cloning"
@@ -1293,9 +1293,9 @@ services:
       max_replicas: 2
       scale_metric: "gpu_utilization"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   nigiri.open-webui:
     name: "Open WebUI Chat Interface"
@@ -1329,9 +1329,9 @@ services:
       max_replicas: 3
       scale_metric: "active_sessions"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
 # ----------------------------------------------------------------------
 # URAMAKI - Visual & Media Generation/Processing Services
@@ -1376,9 +1376,9 @@ services:
       timeout: "10s"
       retries: 3
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   uramaki.automatic1111:
     name: "Automatic1111 Stable Diffusion"
@@ -1414,9 +1414,9 @@ services:
       max_replicas: 2
       scale_metric: "gpu_memory"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   uramaki.ffmpeg:
     name: "FFmpeg Media Processing"
@@ -1438,9 +1438,9 @@ services:
       memory_mb: 2048
       storage_gb: 20
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   uramaki.imagemagick:
     name: "ImageMagick Image Processing"
@@ -1462,9 +1462,9 @@ services:
       memory_mb: 1024
       storage_gb: 10
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   uramaki.rclone:
     name: "Rclone File Sync"
@@ -1486,9 +1486,9 @@ services:
       memory_mb: 512
       storage_gb: 5
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   uramaki.remotion:
     name: "Remotion Video Creation"
@@ -1513,9 +1513,9 @@ services:
       memory_mb: 4096
       storage_gb: 50
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
 # ----------------------------------------------------------------------
 # CHIRASHI - Data Science & Compute Services
@@ -1551,9 +1551,9 @@ services:
       max_replicas: 3
       scale_metric: "cpu_usage"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
   chirashi.panel:
     name: "Panel Dashboard Framework"
@@ -1578,9 +1578,9 @@ services:
       memory_mb: 2048
       storage_gb: 5
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
   chirashi.dask:
     name: "Dask Distributed Computing"
@@ -1608,9 +1608,9 @@ services:
       max_replicas: 5
       scale_metric: "cpu_usage"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   chirashi.mlflow:
     name: "MLflow Experiment Tracking"
@@ -1641,9 +1641,9 @@ services:
       memory_mb: 2048
       storage_gb: 10
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
   chirashi.bentoml:
     name: "BentoML Model Serving"
@@ -1672,9 +1672,9 @@ services:
       max_replicas: 5
       scale_metric: "request_rate"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   chirashi.kubeflow:
     name: "Kubeflow ML Workflows"
@@ -1702,9 +1702,9 @@ services:
       memory_mb: 8192
       storage_gb: 100
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   chirashi.metabase:
     name: "Metabase Analytics"
@@ -1738,9 +1738,9 @@ services:
       memory_mb: 4096
       storage_gb: 10
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
 # ----------------------------------------------------------------------
 # TEMAKI - Developer / Builder Tool Services
@@ -1778,9 +1778,9 @@ services:
       max_replicas: 3
       scale_metric: "active_sessions"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
   temaki.gitea:
     name: "Gitea Git Service"
@@ -1822,9 +1822,9 @@ services:
       memory_mb: 1024
       storage_gb: 50
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
   temaki.sonarqube:
     name: "SonarQube Code Quality"
@@ -1861,9 +1861,9 @@ services:
       memory_mb: 4096
       storage_gb: 20
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
   temaki.flowise:
     name: "Flowise Visual Agent Builder"
@@ -1892,9 +1892,9 @@ services:
       memory_mb: 2048
       storage_gb: 10
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
   temaki.dify:
     name: "Dify Assistant Builder"
@@ -1917,9 +1917,9 @@ services:
       memory_mb: 2048
       storage_gb: 5
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
   temaki.windmill:
     name: "Windmill Workflow Engine"
@@ -1949,9 +1949,9 @@ services:
       memory_mb: 2048
       storage_gb: 10
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
   temaki.openui:
     name: "OpenUI Interface Builder"
@@ -1971,9 +1971,9 @@ services:
       memory_mb: 1024
       storage_gb: 5
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
 # ----------------------------------------------------------------------
 # INARI - Observability & Telemetry Services
@@ -2018,9 +2018,9 @@ services:
       max_replicas: 1
       scale_metric: "none"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_audit"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_audit"]
 
   inari.grafana:
     name: "Grafana Dashboards"
@@ -2054,9 +2054,9 @@ services:
       max_replicas: 2
       scale_metric: "active_users"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_audit"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_audit"]
 
   inari.langfuse:
     name: "Langfuse LLM Analytics"
@@ -2087,9 +2087,9 @@ services:
       memory_mb: 2048
       storage_gb: 20
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_audit"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_audit"]
 
   inari.cadvisor:
     name: "cAdvisor Container Metrics"
@@ -2135,9 +2135,9 @@ services:
       memory_mb: 512
       storage_gb: 1
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_audit"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_audit"]
 
   inari.node-exporter:
     name: "Node Exporter System Metrics"
@@ -2178,9 +2178,9 @@ services:
       memory_mb: 128
       storage_gb: 1
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_audit"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_audit"]
 
   inari.loki:
     name: "Loki Log Aggregation"
@@ -2209,9 +2209,9 @@ services:
       memory_mb: 2048
       storage_gb: 50
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_audit"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_audit"]
 
   inari.promtail:
     name: "Promtail Log Shipper"
@@ -2239,9 +2239,9 @@ services:
       memory_mb: 128
       storage_gb: 1
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_audit"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_audit"]
 
   inari.otel-collector:
     name: "OpenTelemetry Collector"
@@ -2274,9 +2274,9 @@ services:
       memory_mb: 1024
       storage_gb: 5
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_audit"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_audit"]
 
 # ----------------------------------------------------------------------
 # GUNKANMAKI - Security & Identity Services
@@ -2329,9 +2329,9 @@ services:
       max_replicas: 3
       scale_metric: "active_sessions"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
   gunkanmaki.keycloak:
     name: "Keycloak Identity Server"
@@ -2366,9 +2366,9 @@ services:
       max_replicas: 2
       scale_metric: "cpu_usage"
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
   gunkanmaki.vaultwarden:
     name: "Vaultwarden Password Manager"
@@ -2399,9 +2399,9 @@ services:
       memory_mb: 512
       storage_gb: 5
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
   gunkanmaki.infisical:
     name: "Infisical Secrets Manager"
@@ -2434,9 +2434,9 @@ services:
       memory_mb: 1024
       storage_gb: 5
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public", "sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public", "sushi_processing"]
 
 # ----------------------------------------------------------------------
 # SASHIMI - API & Documentation Services
@@ -2467,9 +2467,9 @@ services:
       memory_mb: 1024
       storage_gb: 5
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend"]
-      legal-privilege: ["sushi_public"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend"]
+      inari: ["sushi_public"]
 
   sashimi.swaggerui:
     name: "Swagger UI API Explorer"
@@ -2496,9 +2496,9 @@ services:
       memory_mb: 256
       storage_gb: 1
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend"]
-      legal-privilege: ["sushi_public"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend"]
+      inari: ["sushi_public"]
 
   sashimi.redoc:
     name: "ReDoc API Documentation"
@@ -2520,9 +2520,9 @@ services:
       memory_mb: 256
       storage_gb: 1
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend"]
-      legal-privilege: ["sushi_public"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend"]
+      inari: ["sushi_public"]
 
 # ----------------------------------------------------------------------
 # OTSUMAMI - Optional Side Utilities
@@ -2546,9 +2546,9 @@ services:
       memory_mb: 2048
       storage_gb: 50
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   otsumami.sqlite:
     name: "SQLite Embedded Database"
@@ -2568,9 +2568,9 @@ services:
       memory_mb: 512
       storage_gb: 20
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_backend"]
-      legal-privilege: ["sushi_processing"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_backend"]
+      inari: ["sushi_processing"]
 
   otsumami.searxng:
     name: "SearXNG Privacy Search"
@@ -2597,9 +2597,9 @@ services:
       memory_mb: 1024
       storage_gb: 2
     networks:
-      open-research: ["sushi_net"]
-      business-confidential: ["sushi_frontend", "sushi_backend"]
-      legal-privilege: ["sushi_public"]
+      chirashi: ["sushi_net"]
+      temaki: ["sushi_frontend", "sushi_backend"]
+      inari: ["sushi_public"]
 
 # ========================================================================
 # DEPENDENCY RESOLUTION RULES

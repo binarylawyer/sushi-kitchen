@@ -1,7 +1,7 @@
 ---
 # ============================================================
 # 🍣 Sushi Kitchen — Menu Manifest (SSOT: human-facing catalog)
-# Version: 2.6  (supersedes 2.5)
+# Version: 0.1.0  (supersedes 2.5)
 # Schema: front matter for website/homepage rendering.
 # IMPORTANT:
 #  - Keep ONLY presentational fields here (ids, names, notes, badges).

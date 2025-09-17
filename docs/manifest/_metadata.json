@@ -1,8 +1,8 @@
 {
     "manifest_system": {
       "name": "Sushi Kitchen Manifest System",
-      "version": "1.0.0",
-      "schema_version": "1.0",
+      "version": "0.1.0",
+      "schema_version": "0.1.0",
       "last_updated": "2025-09-16T22:45:00Z",
       "description": "Comprehensive Docker Compose framework for AI infrastructure deployment with intelligent dependency resolution and resource management",
       "repository": "https://github.com/yourusername/sushi-kitchen",
@@ -39,8 +39,8 @@
         "primary": "core/menu-manifest.md",
         "description": "Human-friendly catalog of all available services organized by function",
         "audience": "end users, service selectors, documentation generators",
-        "service_count": 52,
-        "category_count": 11
+        "service_count": 64,
+        "category_count": 10
       },
       "technical_contracts": {
         "primary": "core/contracts.yml",
@@ -154,14 +154,15 @@
   
     "statistics": {
       "services": {
-        "total": 52,
+        "total": 64,
         "by_category": {
           "hosomaki_foundation": 9,
-          "futomaki_knowledge": 8,
-          "temaki_voice": 6,
+          "futomaki_knowledge": 13,
+          "nigiri_speech": 6,
           "uramaki_visual": 5,
           "inari_observability": 8,
-          "chirashi_development": 4,
+          "temaki_developer": 7,
+          "chirashi_data_science": 4,
           "gunkanmaki_security": 4,
           "sashimi_documentation": 3,
           "otsumami_utilities": 5
