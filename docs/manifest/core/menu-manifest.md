@@ -14,7 +14,7 @@
 # ============================================================
 
 title: "🍣 Sushi Kitchen Menu Manifest"
-version: "2.6"
+version: "0.1.0"
 manifest_schema_version: "1.1"
 last_updated: 2025-09-16
 legend: "✅ recommended · ⚖️ optional"

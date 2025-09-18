@@ -3,7 +3,7 @@
       "name": "Sushi Kitchen Manifest System",
       "version": "0.1.0",
       "schema_version": "0.1.0",
-      "last_updated": "2025-09-16T22:45:00Z",
+      "last_updated": "2025-09-18T22:45:00Z",
       "description": "Comprehensive Docker Compose framework for AI infrastructure deployment with intelligent dependency resolution and resource management",
       "repository": "https://github.com/yourusername/sushi-kitchen",
       "documentation_url": "https://sushi-kitchen.dev/docs/manifest",
@@ -46,15 +46,15 @@
         "primary": "core/contracts.yml",
         "description": "Machine-readable Docker configurations and dependency specifications",
         "audience": "deployment automation, MCP servers, CI/CD systems",
-        "service_definitions": 25,
-        "capability_definitions": 15,
+        "service_definitions": 64,
+        "capability_definitions": 46,
         "network_profiles": 3
       },
       "visual_system": {
         "primary": "core/badges.yml",
         "description": "Badge definitions with styling, validation rules, and semantic meaning",
         "audience": "UI generators, documentation systems, validation tools",
-        "badge_count": 18,
+        "badge_count": 20,
         "category_count": 5
       },
       "curated_bundles": {
@@ -156,16 +156,16 @@
       "services": {
         "total": 64,
         "by_category": {
-          "hosomaki_foundation": 9,
-          "futomaki_knowledge": 13,
-          "nigiri_speech": 6,
-          "uramaki_visual": 5,
-          "inari_observability": 8,
-          "temaki_developer": 7,
-          "chirashi_data_science": 4,
-          "gunkanmaki_security": 4,
-          "sashimi_documentation": 3,
-          "otsumami_utilities": 5
+          "hosomaki": 9,
+          "futomaki": 13,
+          "nigiri": 4,
+          "uramaki": 6,
+          "inari": 8,
+          "temaki": 7,
+          "chirashi": 7,
+          "gunkanmaki": 4,
+          "sashimi": 3,
+          "otsumami": 3
         },
         "by_status": {
           "recommended": 31,
@@ -178,7 +178,7 @@
         }
       },
       "capabilities": {
-        "total": 15,
+        "total": 46,
         "categories": [
           "storage_capabilities",
           "inference_capabilities", 
@@ -187,7 +187,7 @@
         ]
       },
       "badges": {
-        "total": 18,
+        "total": 20,
         "by_category": {
           "adoption": 2,
           "requirements": 4,

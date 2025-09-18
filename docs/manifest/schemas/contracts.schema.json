@@ -3,7 +3,7 @@
     "$id": "https://sushi-kitchen.dev/schemas/contracts.schema.json",
     "title": "Sushi Kitchen Service Contracts Schema",
     "description": "JSON Schema for validating technical service contracts that define Docker configurations, dependencies, and deployment specifications",
-    "version": "1.1.0",
+    "version": "0.1.0",
     
     "type": "object",
     "required": ["schema_version", "capabilities", "services"],
