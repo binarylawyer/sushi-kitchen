@@ -3,7 +3,7 @@
     "$id": "https://sushi-kitchen.dev/schemas/bento_box.schema.json",
     "title": "Sushi Kitchen Bento Box Schema",
     "description": "JSON Schema for validating bento box definitions that provide comprehensive 5-8 service environments for complete workflows",
-    "version": "1.1.0",
+    "version": "0.1.0",
     
     "type": "object",
     "required": ["schema_version", "bento_boxes"],

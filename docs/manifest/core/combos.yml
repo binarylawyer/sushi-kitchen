@@ -1,10 +1,10 @@
 # =====================================================================
-# Sushi Kitchen — COMBOS (v2.4)
+# Sushi Kitchen — COMBOS (previously v2.4)
 # Purpose: Simple, focused bundles of 2-4 rolls that solve specific problems
 # Schema: front matter for website/homepage rendering
 # =====================================================================
 
-schema_version: "1.1"
+schema_version: "0.1.0"
 
 combos:
   - id: combo.chat-local
@@ -40,7 +40,6 @@ combos:
     optional: []
     provides:
       - cap.dev-env
-      - cap.ide
       - cap.notebooks
       - cap.docs-site
     category: dev
@@ -170,7 +169,7 @@ combos:
       - futomaki.pgadmin
     optional: []
     provides:
-      - cap.object-store
+      - cap.object-storage
       - cap.db-admin
     category: data
     difficulty: easy
@@ -218,8 +217,7 @@ combos:
       - uramaki.imagemagick
     optional: []
     provides:
-      - cap.media-tool
-      - cap.image-tool
+      - cap.media-processing
     category: media
     difficulty: easy
     estimated_setup_time_min: 4

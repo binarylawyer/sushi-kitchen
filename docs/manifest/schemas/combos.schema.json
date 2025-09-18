@@ -3,7 +3,7 @@
     "$id": "https://sushi-kitchen.dev/schemas/combos.schema.json",
     "title": "Sushi Kitchen Combos Schema",
     "description": "JSON Schema for validating combo definitions that bundle 2-4 services for specific use cases",
-    "version": "1.1.0",
+    "version": "0.1.0", 
     
     "type": "object",
     "required": ["schema_version", "combos"],

@@ -4,7 +4,7 @@
 # Schema: front matter for website/homepage rendering
 # =====================================================================
 
-schema_version: "1.1"
+schema_version: "0.1.0"
 
 bento_boxes:
   - id: bento.ai-agent-foundation

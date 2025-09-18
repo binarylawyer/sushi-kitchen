@@ -1,12 +1,12 @@
 # =====================================================================
-# 🍣 Sushi Kitchen — BADGES (v1.0)
+# 🍣 Sushi Kitchen — BADGES (v0.1.0)
 # Purpose: Define visual and semantic meaning for service annotations
 # - Used by menu-manifest.md, combos.yml, bento_box.yml, and contracts.yml
 # - Icon files should be stored in assets/badges/ directory
 # - Each badge has consistent styling for web UI and CLI
 # =====================================================================
 
-schema_version: "1.0"
+schema_version: "0.1.0"
 icon_base_path: "assets/badges/"
 fallback_icon: "default.svg"
 
@@ -65,7 +65,7 @@ badges:
     weight: 100
     usage_notes: "Services with proven track record and large user base"
     
-  battle_tested:
+  battle-tested:
     label: "Battle Tested"
     category: "adoption"
     color: "#0056B3"
@@ -91,7 +91,7 @@ badges:
     usage_notes: "Ensure NVIDIA GPU with sufficient VRAM before deployment"
     min_vram_gb: 8
     
-  gpu_optional:
+  gpu-optional:
     label: "GPU Optional"
     category: "requirements"
     color: "#FFA500"
@@ -164,7 +164,7 @@ badges:
     weight: 60
     usage_notes: "Designed for distributed edge environments"
     
-  cloud_native:
+  cloud-native:
     label: "Cloud Native"
     category: "deployment"
     color: "#0D6EFD"
@@ -299,8 +299,8 @@ badges:
 combination_rules:
   # GPU badges are mutually exclusive
   mutually_exclusive:
-    - ["gpu", "gpu_optional"]
-    - ["experimental", "production", "battle_tested"]
+    - ["gpu", "gpu-optional"]
+    - ["experimental", "production", "battle-tested"]
     - ["deprecated", "future"]
     - ["lightweight", "heavy"]
     
@@ -308,10 +308,10 @@ combination_rules:
   common_combinations:
     - ["popular", "production"]
     - ["gpu", "heavy"]
-    - ["enterprise", "battle_tested"]
+    - ["enterprise", "battle-tested"]
     - ["experimental", "research"]
     - ["security", "compliance"]
-    - ["k8s", "cloud_native"]
+    - ["k8s", "cloud-native"]
     
   # Required combinations - if you have the first, you should have the second
   recommended_with:
@@ -343,7 +343,7 @@ display_config:
     emoji_mapping:
       popular: "⭐"
       gpu: "🎮"
-      gpu_optional: "🔧"
+      gpu-optional: "🔧"
       heavy: "🏋️"
       enterprise: "🏢"
       experimental: "🧪"
@@ -368,7 +368,7 @@ validation:
   
   # Required badges for certain service types
   required_for_types:
-    inference_engine: ["gpu", "gpu_optional"]
+    inference_engine: ["gpu", "gpu-optional"]
     security_service: ["security"]
     monitoring_service: ["production"]
     

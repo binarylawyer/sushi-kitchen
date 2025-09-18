@@ -3,7 +3,7 @@
     "$id": "https://sushi-kitchen.dev/schemas/badges.schema.json",
     "title": "Sushi Kitchen Badge System Schema",
     "description": "JSON Schema for validating badge definitions that create the visual vocabulary for service characteristics",
-    "version": "1.0.0",
+    "version": "0.1.0",
     
     "type": "object",
     "required": ["schema_version", "categories", "badges"],
@@ -34,7 +34,7 @@
         "minProperties": 1,
         "description": "Badge categories that group related badges for organizational purposes",
         "patternProperties": {
-          "^[a-z_]+$": {
+          "^[a-z-]+$": {
             "$ref": "#/$defs/badgeCategory"
           }
         },
@@ -46,7 +46,7 @@
         "minProperties": 1,
         "description": "Individual badge definitions with styling and semantic information",
         "patternProperties": {
-          "^[a-z_]+$": {
+          "^[a-z-]+$": {
             "$ref": "#/$defs/badgeDefinition"
           }
         },
@@ -64,7 +64,7 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^[a-z_]+$"
+                "pattern": "^[a-z-]+$"
               },
               "minItems": 2,
               "uniqueItems": true
@@ -78,7 +78,7 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "pattern": "^[a-z_]+$"
+                "pattern": "^[a-z-]+$"
               },
               "minItems": 2,
               "uniqueItems": true
@@ -89,17 +89,17 @@
             "type": "object",
             "description": "Badges that should typically be accompanied by other specific badges",
             "patternProperties": {
-              "^[a-z_]+$": {
+              "^[a-z-]+$": {
                 "oneOf": [
                   {
                     "type": "string",
-                    "pattern": "^[a-z_]+$"
+                    "pattern": "^[a-z-]+$"
                   },
                   {
                     "type": "array",
                     "items": {
                       "type": "string",
-                      "pattern": "^[a-z_]+$"
+                      "pattern": "^[a-z-]+$"
                     },
                     "minItems": 1,
                     "uniqueItems": true
@@ -144,11 +144,11 @@
             "type": "object",
             "description": "Service types that must have specific badges",
             "patternProperties": {
-              "^[a-z_]+$": {
+              "^[a-z-]+$": {
                 "type": "array",
                 "items": {
                   "type": "string",
-                  "pattern": "^[a-z_]+$"
+                  "pattern": "^[a-z-]+$"
                 },
                 "minItems": 1,
                 "uniqueItems": true
@@ -167,7 +167,7 @@
                   "type": "array",
                   "items": {
                     "type": "string",
-                    "pattern": "^[a-z_]+$"
+                    "pattern": "^[a-z-]+$"
                   },
                   "minItems": 2,
                   "uniqueItems": true
@@ -202,7 +202,7 @@
           "translations": {
             "type": "object",
             "patternProperties": {
-              "^[a-z_]+$": {
+              "^[a-z-]+$": {
                 "type": "object",
                 "patternProperties": {
                   "^[a-z]{2}(-[A-Z]{2})?$": {
@@ -280,7 +280,7 @@
           
           "category": {
             "type": "string",
-            "pattern": "^[a-z_]+$",
+            "pattern": "^[a-z-]+$",
             "description": "Category this badge belongs to - must match a defined category"
           },
           
@@ -422,7 +422,7 @@
           "emoji_mapping": {
             "type": "object",
             "patternProperties": {
-              "^[a-z_]+$": {
+              "^[a-z-]+$": {
                 "type": "string",
                 "pattern": "^.{1,4}$"
               }
