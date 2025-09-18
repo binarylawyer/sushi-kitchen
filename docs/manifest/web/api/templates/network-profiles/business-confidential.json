@@ -1,0 +1,358 @@
+{
+  "networks": {
+    "sushi_frontend": {
+      "driver": "bridge",
+      "driver_opts": {
+        "com.docker.network.bridge.enable_icc": "true",
+        "com.docker.network.bridge.enable_ip_masquerade": "true",
+        "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0"
+      },
+      "ipam": {
+        "driver": "default",
+        "config": [
+          {
+            "subnet": "172.21.0.0/24",
+            "gateway": "172.21.0.1",
+            "ip_range": "172.21.0.0/26"
+          }
+        ]
+      },
+      "labels": [
+        "sushi.kitchen.network.profile=business_confidential",
+        "sushi.kitchen.network.tier=frontend",
+        "sushi.kitchen.network.access=external",
+        "sushi.kitchen.network.purpose=user_interface"
+      ]
+    },
+    "sushi_backend": {
+      "driver": "bridge",
+      "driver_opts": {
+        "com.docker.network.bridge.enable_icc": "true",
+        "com.docker.network.bridge.enable_ip_masquerade": "true",
+        "com.docker.network.bridge.host_binding_ipv4": "127.0.0.1"
+      },
+      "ipam": {
+        "driver": "default",
+        "config": [
+          {
+            "subnet": "172.22.0.0/24",
+            "gateway": "172.22.0.1",
+            "ip_range": "172.22.0.0/26"
+          }
+        ]
+      },
+      "internal": false,
+      "labels": [
+        "sushi.kitchen.network.profile=business_confidential",
+        "sushi.kitchen.network.tier=backend",
+        "sushi.kitchen.network.access=internal",
+        "sushi.kitchen.network.purpose=processing"
+      ]
+    },
+    "sushi_data": {
+      "driver": "bridge",
+      "driver_opts": {
+        "com.docker.network.bridge.enable_icc": "true",
+        "com.docker.network.bridge.enable_ip_masquerade": "true",
+        "com.docker.network.bridge.host_binding_ipv4": "127.0.0.1"
+      },
+      "ipam": {
+        "driver": "default",
+        "config": [
+          {
+            "subnet": "172.23.0.0/24",
+            "gateway": "172.23.0.1",
+            "ip_range": "172.23.0.0/26"
+          }
+        ]
+      },
+      "internal": true,
+      "labels": [
+        "sushi.kitchen.network.profile=business_confidential",
+        "sushi.kitchen.network.tier=data",
+        "sushi.kitchen.network.access=none",
+        "sushi.kitchen.network.purpose=storage"
+      ]
+    }
+  },
+  "service_network_assignments": {
+    "frontend_services": {
+      "networks": [
+        "sushi_frontend",
+        "sushi_backend"
+      ],
+      "service_types": [
+        "Web UIs (AnythingLLM, Grafana, etc.)",
+        "Reverse proxies (Caddy, Nginx)",
+        "Authentication services (Authentik)",
+        "API gateways and load balancers",
+        "Documentation sites (Docusaurus)"
+      ],
+      "example_services": [
+        "hosomaki.caddy",
+        "hosomaki.anythingllm",
+        "gunkanmaki.authentik",
+        "inari.grafana",
+        "sashimi.docusaurus"
+      ]
+    },
+    "backend_services": {
+      "networks": [
+        "sushi_backend",
+        "sushi_data"
+      ],
+      "service_types": [
+        "AI inference engines (Ollama, vLLM)",
+        "Workflow orchestrators (n8n)",
+        "Processing services (Whisper, ComfyUI)",
+        "API middleware and business logic",
+        "Monitoring collectors (Prometheus)"
+      ],
+      "example_services": [
+        "hosomaki.ollama",
+        "hosomaki.n8n",
+        "temaki.whisper",
+        "uramaki.comfyui",
+        "inari.prometheus"
+      ]
+    },
+    "data_services": {
+      "networks": [
+        "sushi_data"
+      ],
+      "service_types": [
+        "Databases (PostgreSQL, MySQL)",
+        "Vector databases (Qdrant, Weaviate)",
+        "Caches (Redis, Valkey)",
+        "Object storage (MinIO)",
+        "Search engines (Elasticsearch)"
+      ],
+      "example_services": [
+        "futomaki.postgresql",
+        "futomaki.qdrant",
+        "futomaki.redis",
+        "futomaki.minio"
+      ]
+    }
+  },
+  "communication_patterns": {
+    "frontend_to_backend": {
+      "description": "User interfaces calling AI services and APIs",
+      "examples": [
+        "AnythingLLM → Ollama for LLM inference",
+        "Grafana → Prometheus for metrics data",
+        "Web UI → n8n for workflow management"
+      ],
+      "connection_method": "HTTP/HTTPS over backend network",
+      "security_considerations": [
+        "All API calls should use proper authentication",
+        "Consider rate limiting to prevent abuse",
+        "Log API calls for audit purposes"
+      ]
+    },
+    "backend_to_data": {
+      "description": "Processing services accessing storage systems",
+      "examples": [
+        "Ollama → PostgreSQL for session storage",
+        "n8n → Redis for job queuing",
+        "Prometheus → its own storage volumes"
+      ],
+      "connection_method": "Native protocols over data network",
+      "security_considerations": [
+        "Use strong database passwords",
+        "Implement connection pooling",
+        "Monitor for unusual access patterns"
+      ]
+    },
+    "security_boundaries": {
+      "frontend_to_data": "BLOCKED - Frontend cannot directly access data layer",
+      "external_to_backend": "BLOCKED - Backend services not externally accessible",
+      "external_to_data": "BLOCKED - Data services completely isolated"
+    }
+  },
+  "security_improvements": {
+    "network_isolation": {
+      "description": "Services isolated by function and risk level",
+      "benefits": [
+        "Compromised frontend cannot directly access databases",
+        "Data breaches limited to specific network segments",
+        "Easier to monitor and control inter-service communication",
+        "Simplified compliance through clear data flow boundaries"
+      ]
+    },
+    "access_controls": {
+      "description": "Network-level restrictions on service communication",
+      "implementation": [
+        "Frontend services cannot bypass backend to reach data",
+        "Data services protected from direct external access",
+        "Backend services isolated from external attack surface"
+      ]
+    },
+    "monitoring_advantages": {
+      "description": "Network segmentation enables better security monitoring",
+      "capabilities": [
+        "Monitor cross-network communication for anomalies",
+        "Separate logging for different security zones",
+        "Easier to detect lateral movement attacks",
+        "Clear audit trails for compliance reporting"
+      ]
+    }
+  },
+  "operational_impact": {
+    "service_discovery": {
+      "description": "How services find each other across network boundaries",
+      "patterns": [
+        "Use environment variables for cross-network service URLs",
+        "Implement service registration for dynamic discovery",
+        "Maintain DNS entries for critical service endpoints"
+      ],
+      "example_configurations": [
+        "DATABASE_URL=postgresql://user:pass@postgresql.sushi_data:5432/db",
+        "OLLAMA_API_URL=http://ollama.sushi_backend:11434"
+      ]
+    },
+    "debugging_complexity": {
+      "description": "Network segmentation adds troubleshooting complexity",
+      "considerations": [
+        "Services may not be able to directly ping each other",
+        "Need to understand which networks each service uses",
+        "Cross-network communication requires proper routing"
+      ],
+      "debugging_strategies": [
+        "Use network-aware monitoring tools",
+        "Implement comprehensive health checks",
+        "Maintain network topology documentation"
+      ]
+    },
+    "deployment_coordination": {
+      "description": "Services must start in proper order across networks",
+      "requirements": [
+        "Data services start first (databases, storage)",
+        "Backend services start second (processing, APIs)",
+        "Frontend services start last (user interfaces)"
+      ],
+      "automation_approaches": [
+        "Use Docker Compose depends_on with health checks",
+        "Implement startup coordination in orchestration scripts",
+        "Monitor service readiness across all network tiers"
+      ]
+    }
+  },
+  "monitoring_strategy": {
+    "network_monitoring": {
+      "description": "Monitor health and performance of each network segment",
+      "metrics_to_track": [
+        "Inter-network traffic volumes and patterns",
+        "Network latency between tiers",
+        "Failed connection attempts across boundaries",
+        "Bandwidth utilization per network segment"
+      ]
+    },
+    "service_discovery_monitoring": {
+      "description": "Ensure services can find each other across networks",
+      "health_checks": [
+        "DNS resolution across network boundaries",
+        "Port accessibility between authorized service pairs",
+        "Authentication success rates for cross-tier calls",
+        "API response times across network hops"
+      ]
+    },
+    "security_monitoring": {
+      "description": "Detect potential security issues in network communication",
+      "alerting_criteria": [
+        "Unexpected cross-network communication attempts",
+        "Services trying to access unauthorized network segments",
+        "Unusual traffic patterns between tiers",
+        "Failed authentication attempts across networks"
+      ]
+    }
+  },
+  "compliance_features": {
+    "data_flow_control": {
+      "description": "Clear boundaries for data movement and access",
+      "advantages": [
+        "Data processing isolated from user access points",
+        "Storage systems protected from direct external access",
+        "Clear audit trail of data access patterns",
+        "Simplified compliance reporting for data handling"
+      ]
+    },
+    "network_audit_logging": {
+      "description": "Comprehensive logging of network communications",
+      "log_sources": [
+        "Docker network driver logs",
+        "Service-to-service API call logs",
+        "Authentication and authorization logs",
+        "Network access control violation logs"
+      ]
+    },
+    "incident_response": {
+      "description": "Network segmentation aids security incident response",
+      "capabilities": [
+        "Isolate compromised services by network segment",
+        "Trace attack progression through network boundaries",
+        "Implement emergency network isolation procedures",
+        "Maintain service availability during incident response"
+      ]
+    }
+  },
+  "migration_guidance": {
+    "from_open_research": {
+      "description": "Upgrading from single network to segmented architecture",
+      "steps": [
+        "Audit current service communication patterns",
+        "Assign services to appropriate network tiers",
+        "Update service configurations for new network hostnames",
+        "Test inter-service communication across network boundaries",
+        "Implement monitoring for new network architecture"
+      ],
+      "common_challenges": [
+        "Services hardcoded with simple hostnames",
+        "Applications assuming all services are directly reachable",
+        "Health checks that need cross-network access",
+        "Monitoring systems that need visibility across tiers"
+      ]
+    },
+    "to_legal_privilege": {
+      "description": "Further hardening for maximum security requirements",
+      "additional_requirements": [
+        "Add audit logging network for compliance monitoring",
+        "Implement encryption for all inter-service communication",
+        "Add authentication for all cross-network API calls",
+        "Enable comprehensive network traffic logging",
+        "Implement data retention and purge capabilities"
+      ]
+    }
+  },
+  "validation_procedures": {
+    "network_connectivity_tests": {
+      "description": "Verify services can reach authorized destinations",
+      "test_cases": [
+        "Frontend service → Backend service API",
+        "Backend service → Data service database",
+        "Monitoring service → Services in all tiers",
+        "Frontend service → Data service directly",
+        "External client → Backend service directly",
+        "External client → Data service directly"
+      ]
+    },
+    "security_boundary_validation": {
+      "description": "Confirm network isolation is effective",
+      "verification_methods": [
+        "Attempt unauthorized cross-network connections",
+        "Verify data services are not externally accessible",
+        "Test that network failures don't cascade inappropriately",
+        "Confirm monitoring can detect unauthorized access attempts"
+      ]
+    },
+    "operational_readiness_checks": {
+      "description": "Ensure the segmented network supports business operations",
+      "success_criteria": [
+        "All business workflows function correctly",
+        "Performance is acceptable across network boundaries",
+        "Monitoring provides adequate visibility",
+        "Incident response procedures work as designed"
+      ]
+    }
+  }
+}

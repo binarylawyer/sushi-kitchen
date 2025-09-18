@@ -1,0 +1,112 @@
+{
+  "networks": {
+    "sushi_net": {
+      "driver": "bridge",
+      "driver_opts": {
+        "com.docker.network.bridge.enable_icc": "true",
+        "com.docker.network.bridge.enable_ip_masquerade": "true"
+      },
+      "ipam": {
+        "driver": "default",
+        "config": [
+          {
+            "subnet": "172.20.0.0/16",
+            "gateway": "172.20.0.1",
+            "ip_range": "172.20.1.0/24"
+          }
+        ]
+      },
+      "labels": [
+        "sushi.kitchen.network.profile=open_research",
+        "sushi.kitchen.network.isolation=minimal",
+        "sushi.kitchen.network.purpose=development"
+      ]
+    }
+  },
+  "service_network_template": {
+    "networks": [
+      "sushi_net"
+    ]
+  },
+  "network_aliases_template": {
+    "networks": {
+      "sushi_net": {
+        "aliases": [
+          "${SERVICE_STYLE}.${SERVICE_NAME}",
+          "${SERVICE_NAME}"
+        ]
+      }
+    }
+  },
+  "dns_configuration": {
+    "enable_service_discovery": true,
+    "dns_servers": [
+      "172.20.0.1"
+    ],
+    "dns_search": [
+      "sushi_net"
+    ]
+  },
+  "logging_configuration": {
+    "driver": "json-file",
+    "options": {
+      "max-size": "50m",
+      "max-file": "5",
+      "labels": "sushi.service,sushi.style,sushi.network"
+    }
+  },
+  "port_exposure": {
+    "expose_all_ports": true,
+    "port_range_start": 3000,
+    "port_range_end": 9999,
+    "document_port_assignments": true
+  },
+  "development_optimizations": {
+    "enable_bind_mounts": true,
+    "allow_privileged_containers": false,
+    "enable_debug_tools": true,
+    "health_check_interval": "15s",
+    "health_check_start_period": "60s"
+  },
+  "resource_strategy": {
+    "memory_overcommit_factor": 1.5,
+    "cpu_overcommit_factor": 2.0,
+    "storage_monitoring": "advisory"
+  },
+  "validation_tests": null,
+  "troubleshooting_commands": {
+    "network_inspection": "docker network ls | grep sushi",
+    "container_networks": "docker-compose ps --format table",
+    "network_details": "docker network inspect sushi-kitchen_sushi_net",
+    "connectivity_test": "docker-compose exec {service1} ping {service2}",
+    "dns_resolution": "docker-compose exec {service} nslookup {target-service}",
+    "port_listening": "docker-compose exec {service} netstat -tlnp"
+  },
+  "migration_guidance": {
+    "to_business_confidential": {
+      "description": "Add network segmentation for moderate security",
+      "changes_required": [
+        "Split services across frontend/backend/data networks",
+        "Add network access controls between tiers",
+        "Update service configurations for new hostnames"
+      ]
+    },
+    "to_legal_privilege": {
+      "description": "Maximum isolation for sensitive data",
+      "changes_required": [
+        "Implement comprehensive network segmentation",
+        "Add audit logging for all network traffic",
+        "Enable encryption for inter-service communication",
+        "Implement access controls and authentication"
+      ]
+    },
+    "backwards_compatibility": {
+      "description": "Ensure services work across different network profiles",
+      "considerations": [
+        "Use environment variables for service URLs",
+        "Don't hardcode hostnames in application configuration",
+        "Design services to work with different network topologies"
+      ]
+    }
+  }
+}

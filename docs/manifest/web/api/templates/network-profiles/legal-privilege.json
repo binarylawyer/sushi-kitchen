@@ -1,0 +1,498 @@
+{
+  "networks": {
+    "sushi_public": {
+      "driver": "bridge",
+      "driver_opts": {
+        "com.docker.network.bridge.enable_icc": "false",
+        "com.docker.network.bridge.enable_ip_masquerade": "true",
+        "com.docker.network.bridge.host_binding_ipv4": "0.0.0.0"
+      },
+      "ipam": {
+        "driver": "default",
+        "config": [
+          {
+            "subnet": "172.24.0.0/28",
+            "gateway": "172.24.0.1",
+            "ip_range": "172.24.0.0/29"
+          }
+        ]
+      },
+      "labels": [
+        "sushi.kitchen.network.profile=legal_privilege",
+        "sushi.kitchen.network.tier=public",
+        "sushi.kitchen.network.access=external",
+        "sushi.kitchen.network.purpose=controlled_entry",
+        "sushi.kitchen.compliance.audit=required",
+        "sushi.kitchen.compliance.encryption=required"
+      ]
+    },
+    "sushi_processing": {
+      "driver": "bridge",
+      "driver_opts": {
+        "com.docker.network.bridge.enable_icc": "true",
+        "com.docker.network.bridge.enable_ip_masquerade": "true",
+        "com.docker.network.bridge.host_binding_ipv4": "127.0.0.1"
+      },
+      "ipam": {
+        "driver": "default",
+        "config": [
+          {
+            "subnet": "172.25.0.0/24",
+            "gateway": "172.25.0.1",
+            "ip_range": "172.25.0.0/25"
+          }
+        ]
+      },
+      "internal": false,
+      "labels": [
+        "sushi.kitchen.network.profile=legal_privilege",
+        "sushi.kitchen.network.tier=processing",
+        "sushi.kitchen.network.access=internal",
+        "sushi.kitchen.network.purpose=business_logic",
+        "sushi.kitchen.compliance.audit=comprehensive",
+        "sushi.kitchen.compliance.authentication=required"
+      ]
+    },
+    "sushi_storage": {
+      "driver": "bridge",
+      "driver_opts": {
+        "com.docker.network.bridge.enable_icc": "true",
+        "com.docker.network.bridge.enable_ip_masquerade": "false",
+        "com.docker.network.bridge.host_binding_ipv4": "127.0.0.1"
+      },
+      "ipam": {
+        "driver": "default",
+        "config": [
+          {
+            "subnet": "172.26.0.0/24",
+            "gateway": "172.26.0.1",
+            "ip_range": "172.26.0.0/25"
+          }
+        ]
+      },
+      "internal": true,
+      "labels": [
+        "sushi.kitchen.network.profile=legal_privilege",
+        "sushi.kitchen.network.tier=storage",
+        "sushi.kitchen.network.access=none",
+        "sushi.kitchen.network.purpose=data_protection",
+        "sushi.kitchen.compliance.audit=complete",
+        "sushi.kitchen.compliance.encryption=at_rest_and_transit",
+        "sushi.kitchen.compliance.retention=managed"
+      ]
+    },
+    "sushi_audit": {
+      "driver": "bridge",
+      "driver_opts": {
+        "com.docker.network.bridge.enable_icc": "true",
+        "com.docker.network.bridge.enable_ip_masquerade": "true",
+        "com.docker.network.bridge.host_binding_ipv4": "127.0.0.1"
+      },
+      "ipam": {
+        "driver": "default",
+        "config": [
+          {
+            "subnet": "172.27.0.0/24",
+            "gateway": "172.27.0.1",
+            "ip_range": "172.27.0.0/26"
+          }
+        ]
+      },
+      "external": false,
+      "labels": [
+        "sushi.kitchen.network.profile=legal_privilege",
+        "sushi.kitchen.network.tier=audit",
+        "sushi.kitchen.network.access=monitoring",
+        "sushi.kitchen.network.purpose=compliance_audit",
+        "sushi.kitchen.compliance.immutable=true",
+        "sushi.kitchen.compliance.retention=long_term"
+      ]
+    }
+  },
+  "service_network_assignments": {
+    "public_services": {
+      "networks": [
+        "sushi_public",
+        "sushi_audit"
+      ],
+      "allowed_services": [
+        "Reverse proxy (Caddy) with WAF and DDoS protection",
+        "Authentication gateway (Authentik) with MFA required",
+        "Static documentation (minimal, read-only content)"
+      ],
+      "security_requirements": [
+        "Mandatory HTTPS with perfect forward secrecy",
+        "Web Application Firewall (WAF) enabled",
+        "DDoS protection and rate limiting",
+        "Intrusion detection and prevention",
+        "All connections logged and monitored"
+      ],
+      "example_services": [
+        "hosomaki.caddy (with security hardening)",
+        "gunkanmaki.authentik (MFA enforced)"
+      ]
+    },
+    "processing_services": {
+      "networks": [
+        "sushi_processing",
+        "sushi_storage",
+        "sushi_audit"
+      ],
+      "allowed_services": [
+        "AI inference services with access controls",
+        "Workflow engines with audit logging",
+        "Business APIs with authentication",
+        "User interfaces requiring authentication"
+      ],
+      "security_requirements": [
+        "Mutual TLS for all inter-service communication",
+        "Service-to-service authentication tokens",
+        "Comprehensive activity logging",
+        "Data access authorization checks",
+        "Session management and timeout controls"
+      ],
+      "example_services": [
+        "hosomaki.ollama (with access controls)",
+        "hosomaki.n8n (with audit logging)",
+        "hosomaki.anythingllm (authenticated access only)",
+        "inari.grafana (admin access only)"
+      ]
+    },
+    "storage_services": {
+      "networks": [
+        "sushi_storage",
+        "sushi_audit"
+      ],
+      "allowed_services": [
+        "Databases with encryption at rest and in transit",
+        "Vector databases with access controls",
+        "Object storage with versioning and audit trails",
+        "Backup systems with encryption and integrity checking"
+      ],
+      "security_requirements": [
+        "Encryption at rest with key rotation",
+        "Encryption in transit with certificate validation",
+        "Database-level access controls and audit logs",
+        "Data integrity verification and corruption detection",
+        "Automated backup with encryption and offsite storage"
+      ],
+      "example_services": [
+        "futomaki.postgresql (encrypted, audited)",
+        "futomaki.qdrant (access-controlled, logged)",
+        "futomaki.minio (versioned, encrypted)",
+        "futomaki.redis (secured, monitored)"
+      ]
+    },
+    "audit_services": {
+      "networks": [
+        "sushi_audit",
+        "sushi_public",
+        "sushi_processing",
+        "sushi_storage"
+      ],
+      "allowed_services": [
+        "Log aggregation and analysis systems",
+        "Security information and event management (SIEM)",
+        "Compliance reporting and dashboard systems",
+        "Intrusion detection and response systems"
+      ],
+      "security_requirements": [
+        "Immutable log storage with integrity verification",
+        "Real-time security monitoring and alerting",
+        "Automated compliance reporting",
+        "Long-term log retention with secure archival",
+        "Incident response automation and escalation"
+      ],
+      "example_services": [
+        "inari.prometheus (security monitoring mode)",
+        "Log aggregation service (ELK stack or similar)",
+        "SIEM system for compliance reporting",
+        "Backup verification and integrity checking"
+      ]
+    }
+  },
+  "communication_security": {
+    "encryption_standards": {
+      "public_to_processing": {
+        "protocol": "HTTPS with TLS 1.3 minimum",
+        "authentication": "Client certificates required",
+        "cipher_suites": "AEAD ciphers only (AES-GCM, ChaCha20-Poly1305)",
+        "key_rotation": "Weekly certificate rotation",
+        "perfect_forward_secrecy": "Required"
+      },
+      "processing_to_storage": {
+        "protocol": "Mutual TLS with database-specific encryption",
+        "authentication": "Service accounts with rotating secrets",
+        "database_encryption": "AES-256 encryption at rest",
+        "key_management": "External key management service (KMS)",
+        "connection_pooling": "Encrypted connection pools only"
+      },
+      "audit_communications": {
+        "protocol": "TLS with audit-specific certificates",
+        "log_integrity": "Cryptographic log signing",
+        "tamper_detection": "Hash-based integrity verification",
+        "retention_encryption": "Long-term encryption with secure key escrow"
+      }
+    },
+    "access_controls": {
+      "service_authentication": {
+        "method": "JWT tokens with short expiration (15 minutes)",
+        "refresh_mechanism": "Secure token refresh with audit logging",
+        "service_accounts": "Dedicated accounts per service with minimal privileges",
+        "secret_rotation": "Automated daily secret rotation"
+      },
+      "user_authentication": {
+        "multi_factor": "Required for all human access",
+        "session_management": "Secure session tokens with timeout",
+        "privilege_escalation": "Explicit approval required with audit trail",
+        "emergency_access": "Break-glass procedures with comprehensive logging"
+      },
+      "data_access_authorization": {
+        "principle": "Least privilege with explicit deny by default",
+        "data_classification": "Automatic data tagging and access control",
+        "access_reviews": "Monthly automated access privilege reviews",
+        "anomaly_detection": "ML-based unusual access pattern detection"
+      }
+    }
+  },
+  "compliance_framework": {
+    "hipaa_compliance": {
+      "data_protection": [
+        "Encryption of all PHI at rest and in transit",
+        "Access controls with minimum necessary principle",
+        "Automatic PHI detection and classification",
+        "Data retention and secure deletion policies"
+      ],
+      "audit_requirements": [
+        "Comprehensive access logs for all PHI access",
+        "User authentication and authorization tracking",
+        "Data modification and deletion audit trails",
+        "Regular compliance reports and violation alerts"
+      ],
+      "technical_safeguards": [
+        "User access management with role-based controls",
+        "Automatic logoff after inactivity periods",
+        "Data backup and disaster recovery procedures",
+        "Network transmission security with encryption"
+      ]
+    },
+    "sox_compliance": {
+      "financial_controls": [
+        "Segregation of duties in data access and modification",
+        "Change management controls with approval workflows",
+        "Data integrity verification and error detection",
+        "Financial data retention and immutable audit trails"
+      ],
+      "it_controls": [
+        "Access controls with regular review and certification",
+        "System change controls with testing and approval",
+        "Data backup and recovery controls with testing",
+        "Incident response and problem management procedures"
+      ]
+    },
+    "gdpr_compliance": {
+      "privacy_rights": [
+        "Data subject access request automation",
+        "Right to deletion with secure data purging",
+        "Data portability with standard export formats",
+        "Consent management and withdrawal tracking"
+      ],
+      "data_protection": [
+        "Privacy by design in all system components",
+        "Data minimization with automatic purging",
+        "Pseudonymization and anonymization capabilities",
+        "Data breach detection and notification automation"
+      ]
+    }
+  },
+  "security_monitoring": {
+    "threat_detection": {
+      "network_monitoring": [
+        "Intrusion detection system (IDS) on all network boundaries",
+        "Deep packet inspection for malicious content",
+        "Behavioral analysis for anomalous network patterns",
+        "Automated threat response and containment"
+      ],
+      "access_monitoring": [
+        "Failed authentication attempt tracking and alerting",
+        "Privilege escalation detection and prevention",
+        "Unusual data access pattern identification",
+        "Concurrent session monitoring and control"
+      ],
+      "data_monitoring": [
+        "Data exfiltration detection and prevention",
+        "Unauthorized data modification alerting",
+        "Large data transfer monitoring and approval",
+        "Data integrity verification and corruption alerting"
+      ]
+    },
+    "compliance_monitoring": {
+      "automated_reporting": [
+        "Daily compliance status dashboards",
+        "Weekly security posture assessments",
+        "Monthly audit trail summaries",
+        "Quarterly compliance certification reports"
+      ],
+      "violation_detection": [
+        "Policy violation automatic detection and alerting",
+        "Access control bypass attempt identification",
+        "Data handling policy compliance verification",
+        "Security configuration drift detection"
+      ]
+    },
+    "incident_response": {
+      "automated_containment": [
+        "Suspicious activity automatic network isolation",
+        "Compromised account automatic suspension",
+        "Malware detection and quarantine procedures",
+        "Data breach containment and evidence preservation"
+      ],
+      "escalation_procedures": [
+        "Security incident automatic escalation workflows",
+        "Compliance violation notification procedures",
+        "Executive reporting for significant security events",
+        "External notification for regulatory violations"
+      ]
+    }
+  },
+  "data_lifecycle_management": {
+    "retention_policies": {
+      "audit_logs": {
+        "retention_period": "7 years (SOX compliance)",
+        "storage_tier": "Immutable archive with encryption",
+        "access_controls": "Read-only with audit trail",
+        "purge_procedure": "Secure deletion with certification"
+      },
+      "application_data": {
+        "retention_period": "Configurable by data classification",
+        "storage_tier": "Encrypted with regular key rotation",
+        "access_controls": "Role-based with least privilege",
+        "purge_procedure": "Secure overwrite with verification"
+      },
+      "personal_data": {
+        "retention_period": "GDPR-compliant based on purpose",
+        "storage_tier": "Pseudonymized with separation of identifiers",
+        "access_controls": "Purpose limitation with consent tracking",
+        "purge_procedure": "Right to deletion with proof of erasure"
+      },
+      "temporary_data": {
+        "retention_period": "24-48 hours maximum",
+        "storage_tier": "Encrypted temporary storage",
+        "access_controls": "Process-specific with time limits",
+        "purge_procedure": "Automatic secure deletion"
+      }
+    },
+    "lifecycle_automation": {
+      "daily_tasks": [
+        "Temporary data cleanup and verification",
+        "Access log integrity verification",
+        "Backup completion and validation checks",
+        "Security alert review and triage"
+      ],
+      "weekly_tasks": [
+        "Data retention policy compliance verification",
+        "Access privilege review and cleanup",
+        "Security configuration assessment",
+        "Compliance dashboard updates"
+      ],
+      "monthly_tasks": [
+        "Full data inventory and classification review",
+        "Archive data migration and verification",
+        "Security control effectiveness assessment",
+        "Compliance audit preparation and reporting"
+      ],
+      "quarterly_tasks": [
+        "Complete data purging and certification",
+        "Security architecture review and updates",
+        "Compliance certification and external reporting",
+        "Disaster recovery testing and documentation"
+      ]
+    }
+  },
+  "operational_procedures": {
+    "secure_deployment": {
+      "change_approval": [
+        "All changes require multi-person approval",
+        "Security impact assessment mandatory",
+        "Rollback procedures tested and documented",
+        "Change audit trail with comprehensive logging"
+      ],
+      "testing_requirements": [
+        "Security testing in isolated environment",
+        "Compliance verification before production",
+        "Performance impact assessment",
+        "Integration testing with audit systems"
+      ],
+      "production_deployment": [
+        "Maintenance windows with advance notification",
+        "Zero-downtime deployment for critical systems",
+        "Immediate post-deployment verification",
+        "Continuous monitoring during deployment"
+      ]
+    },
+    "emergency_response": {
+      "security_incidents": [
+        "Immediate isolation of affected systems",
+        "Evidence preservation and forensic imaging",
+        "Stakeholder notification within required timeframes",
+        "Recovery procedures with security verification"
+      ],
+      "compliance_violations": [
+        "Immediate violation containment and documentation",
+        "Root cause analysis and corrective action plans",
+        "Regulatory notification if required",
+        "Process improvement and prevention measures"
+      ],
+      "system_failures": [
+        "Failover to secure backup systems",
+        "Data integrity verification during recovery",
+        "Security control restoration and verification",
+        "Comprehensive incident documentation and lessons learned"
+      ]
+    }
+  },
+  "compliance_validation": {
+    "daily_checks": {
+      "security_status": [
+        "All services running with current security patches",
+        "Network isolation functioning correctly",
+        "Authentication systems operational and secure",
+        "Audit logging capturing all required events"
+      ],
+      "data_protection": [
+        "Encryption functioning for all data at rest and in transit",
+        "Access controls enforced and logged",
+        "Data backup completion and integrity verification",
+        "Retention policies applied correctly"
+      ]
+    },
+    "weekly_assessments": {
+      "configuration_compliance": [
+        "Security configurations match approved baselines",
+        "Network segmentation rules enforced correctly",
+        "Service accounts and privileges reviewed",
+        "Monitoring and alerting systems functional"
+      ],
+      "audit_readiness": [
+        "Audit logs complete and tamper-evident",
+        "Compliance reports generated and reviewed",
+        "Documentation current and accessible",
+        "Emergency procedures tested and verified"
+      ]
+    },
+    "monthly_certification": {
+      "comprehensive_review": [
+        "Full security control effectiveness assessment",
+        "Compliance gap analysis and remediation planning",
+        "Risk assessment updates and mitigation verification",
+        "Executive reporting and certification sign-off"
+      ],
+      "external_validation": [
+        "Third-party security assessment coordination",
+        "Regulatory compliance verification",
+        "Audit firm coordination and evidence provision",
+        "Certification maintenance and renewal planning"
+      ]
+    }
+  }
+}

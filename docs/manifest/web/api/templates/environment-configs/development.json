@@ -1,0 +1,243 @@
+{
+  "global_environment": {
+    "LOG_LEVEL": "DEBUG",
+    "DEBUG_MODE": "true",
+    "VERBOSE_LOGGING": "true",
+    "SHOW_ERROR_DETAILS": "true",
+    "ENABLE_STACK_TRACES": "true",
+    "DEBUG_PRINT_QUERIES": "true",
+    "LOG_FORMAT": "development",
+    "LOG_OUTPUT": "console",
+    "LOG_TIMESTAMP_FORMAT": "HH:mm:ss.SSS",
+    "SSL_VERIFY": "false",
+    "TLS_SKIP_VERIFY": "true",
+    "HTTPS_ONLY": "false",
+    "ALLOW_HTTP": "true",
+    "CSRF_PROTECTION": "disabled",
+    "CORS_ALLOW_ALL": "true",
+    "AUTH_REQUIRED": "false",
+    "SKIP_AUTH_FOR_DEVELOPMENT": "true",
+    "DEVELOPMENT_MODE": "true",
+    "ENABLE_CACHING": "false",
+    "CACHE_TTL": "0",
+    "DISABLE_REDIS_CACHE": "true",
+    "REQUEST_TIMEOUT": "30s",
+    "CONNECTION_TIMEOUT": "10s",
+    "STARTUP_TIMEOUT": "60s",
+    "ENABLE_HOT_RELOAD": "true",
+    "AUTO_RESTART": "true",
+    "WATCH_FILES": "true",
+    "DATA_RETENTION_DAYS": "7",
+    "AUTO_CLEANUP_ENABLED": "true",
+    "DEVELOPMENT_DATA_RESET": "true",
+    "BACKUP_ENABLED": "false",
+    "BACKUP_FREQUENCY": "none",
+    "LOAD_SAMPLE_DATA": "true",
+    "ENABLE_DATA_FIXTURES": "true",
+    "DEVELOPMENT_SEED_DATA": "true",
+    "MEMORY_LIMIT": "2g",
+    "CPU_LIMIT": "2.0",
+    "WORKER_COUNT": "2",
+    "MAX_CONNECTIONS": "50",
+    "POOL_SIZE": "5",
+    "HEALTH_CHECK_INTERVAL": "15s",
+    "HEALTH_CHECK_TIMEOUT": "5s",
+    "STARTUP_GRACE_PERIOD": "120s"
+  },
+  "service_overrides": {
+    "ai_services": {
+      "hosomaki.ollama": {
+        "OLLAMA_DEBUG": "true",
+        "OLLAMA_VERBOSE": "true",
+        "OLLAMA_KEEP_ALIVE": "5m",
+        "OLLAMA_MAX_LOADED_MODELS": "2",
+        "OLLAMA_LOAD_TIMEOUT": "30s",
+        "OLLAMA_LOG_LEVEL": "debug"
+      },
+      "hosomaki.litellm": {
+        "LITELLM_LOG": "debug",
+        "LITELLM_DEBUG_MODE": "true",
+        "LITELLM_DETAILED_LOGGER": "true",
+        "LITELLM_DROP_PARAMS": "false",
+        "LITELLM_REQUEST_TIMEOUT": "60"
+      },
+      "hosomaki.vllm": {
+        "VLLM_LOGGING_LEVEL": "debug",
+        "VLLM_LOG_STATS": "true",
+        "VLLM_ENABLE_METRICS": "true",
+        "VLLM_DISABLE_LOG_REQUESTS": "false"
+      }
+    },
+    "database_services": {
+      "futomaki.postgresql": {
+        "POSTGRES_LOG_STATEMENT": "all",
+        "POSTGRES_LOG_DURATION": "true",
+        "POSTGRES_LOG_CHECKPOINTS": "true",
+        "POSTGRES_LOG_CONNECTIONS": "true",
+        "POSTGRES_LOG_DISCONNECTIONS": "true",
+        "POSTGRES_SHARED_PRELOAD_LIBRARIES": "pg_stat_statements"
+      },
+      "futomaki.qdrant": {
+        "QDRANT__LOG_LEVEL": "debug",
+        "QDRANT__SERVICE__ENABLE_CORS": "true",
+        "QDRANT__TELEMETRY_DISABLED": "true",
+        "QDRANT__STORAGE__PERFORMANCE__MAX_SEARCH_THREADS": "2"
+      },
+      "futomaki.redis": {
+        "REDIS_LOG_LEVEL": "debug",
+        "REDIS_SAVE": "",
+        "REDIS_APPENDONLY": "no",
+        "REDIS_MAXMEMORY_POLICY": "allkeys-lru"
+      }
+    },
+    "web_services": {
+      "hosomaki.caddy": {
+        "CADDY_DEBUG": "true",
+        "CADDY_LOG_LEVEL": "debug",
+        "CADDY_ADMIN_LISTEN": "0.0.0.0:2019",
+        "CADDY_ACME_DISABLE": "true"
+      },
+      "hosomaki.n8n": {
+        "N8N_LOG_LEVEL": "debug",
+        "N8N_LOG_OUTPUT": "console",
+        "N8N_DIAGNOSTICS_ENABLED": "true",
+        "N8N_PERSONALIZATION_ENABLED": "false",
+        "N8N_VERSION_NOTIFICATIONS_ENABLED": "false",
+        "N8N_TEMPLATES_ENABLED": "false"
+      }
+    },
+    "monitoring_services": {
+      "inari.prometheus": {
+        "PROMETHEUS_LOG_LEVEL": "debug",
+        "PROMETHEUS_ENABLE_LIFECYCLE": "true",
+        "PROMETHEUS_STORAGE_TSDB_RETENTION_TIME": "7d",
+        "PROMETHEUS_WEB_ENABLE_ADMIN_API": "true"
+      },
+      "inari.grafana": {
+        "GF_LOG_LEVEL": "debug",
+        "GF_ENABLE_GZIP": "true",
+        "GF_USERS_ALLOW_SIGN_UP": "true",
+        "GF_AUTH_ANONYMOUS_ENABLED": "true",
+        "GF_AUTH_ANONYMOUS_ORG_ROLE": "Editor",
+        "GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH": "/var/lib/grafana/dashboards/dev-overview.json"
+      }
+    }
+  },
+  "development_tools": {
+    "database_tools": {
+      "enable_pgadmin": true,
+      "enable_redis_commander": true,
+      "enable_qdrant_dashboard": true
+    },
+    "api_tools": {
+      "enable_swagger_ui": true,
+      "enable_postman_collection": true,
+      "enable_curl_examples": true
+    },
+    "monitoring_tools": {
+      "enable_dev_dashboard": true,
+      "enable_log_viewer": true,
+      "enable_metrics_explorer": true
+    },
+    "automation_tools": {
+      "enable_auto_migration": true,
+      "enable_test_data_seeding": true,
+      "enable_service_discovery": true
+    }
+  },
+  "docker_integration": {
+    "development_volumes": {
+      "enable_source_mounts": true,
+      "enable_config_mounts": true,
+      "enable_log_mounts": true
+    },
+    "port_strategy": {
+      "expose_all_services": true,
+      "use_standard_ports": true,
+      "enable_port_forwarding": true
+    },
+    "container_settings": {
+      "restart_policy": "no",
+      "enable_init": true,
+      "enable_interactive": true
+    }
+  },
+  "development_validation": {
+    "health_checks": {
+      "interval": "15s",
+      "timeout": "5s",
+      "retries": 2,
+      "start_period": "30s"
+    },
+    "success_criteria": {
+      "all_services_responding": "All services respond to health checks within 30 seconds",
+      "logs_accessible": "All service logs are visible and updating in real-time",
+      "apis_documented": "All API endpoints are accessible and documented",
+      "debugging_enabled": "Debug features and verbose logging are working",
+      "hot_reload_functional": "Code changes trigger automatic service updates"
+    },
+    "troubleshooting": {
+      "enable_debug_endpoints": true,
+      "enable_metrics_endpoints": true,
+      "enable_profiling": true,
+      "enable_tracing": true
+    }
+  },
+  "environment_evolution": {
+    "migration_paths": {
+      "to_production": {
+        "description": "Move from development to production configuration",
+        "key_changes": [
+          "Enable security features and authentication",
+          "Optimize performance settings and disable debugging",
+          "Enable backup and monitoring systems",
+          "Configure proper SSL certificates and encryption",
+          "Implement proper resource limits and scaling"
+        ]
+      },
+      "to_staging": {
+        "description": "Create staging environment for testing",
+        "key_changes": [
+          "Production-like security but with development debugging",
+          "Test data that mirrors production patterns",
+          "Full monitoring and alerting without notifications",
+          "Performance testing with realistic load simulation"
+        ]
+      }
+    },
+    "maintenance_procedures": {
+      "daily_tasks": [
+        "Clear development logs and temporary files",
+        "Reset test databases to clean state",
+        "Update development dependencies and images",
+        "Verify all debugging features are working"
+      ],
+      "weekly_tasks": [
+        "Review and update development configurations",
+        "Test migration procedures to other environments",
+        "Update development documentation and examples",
+        "Clean up unused development resources and data"
+      ]
+    }
+  },
+  "development_best_practices": {
+    "coding_guidelines": {
+      "configuration_management": "Use environment variables for all configurable values",
+      "service_dependencies": "Design services to gracefully handle dependency failures",
+      "logging_practices": "Include request IDs and correlation IDs in all log messages",
+      "error_handling": "Provide detailed error messages with debugging context"
+    },
+    "testing_guidelines": {
+      "unit_testing": "Run unit tests automatically on code changes",
+      "integration_testing": "Test service interactions with realistic data",
+      "end_to_end_testing": "Validate complete workflows from user perspective",
+      "performance_testing": "Monitor resource usage and response times"
+    },
+    "security_guidelines": {
+      "secret_management": "Use development-specific secrets, never production secrets",
+      "data_handling": "Use synthetic data that resembles production but isn't sensitive",
+      "access_controls": "Implement basic access controls even in development",
+      "vulnerability_scanning": "Regularly scan development images for vulnerabilities"
+    }
+  }
+}
