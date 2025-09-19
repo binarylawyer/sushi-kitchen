@@ -1,3 +1,9 @@
+# ⚠️ Template moved
+
+This legacy template is retained for historical reference. New roll documentation should use
+`docs/manifest/narratives/rolls/_template.md`, which includes manifest-aware metadata and structured sections
+for MCP discovery.
+
 # 🍣 [Roll Name]
 
 ## 🧑‍🍳 Why this roll is on the menu
