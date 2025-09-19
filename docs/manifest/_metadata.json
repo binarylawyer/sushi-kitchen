@@ -64,6 +64,12 @@
         "audience": "end users, quick start guides, recommendation engines",
         "combo_count": 10,
         "bento_count": 8
+      },
+      "roll_documentation": {
+        "primary": "docs/manifest/narratives/rolls/_template.md",
+        "additional": "docs/manifest/narratives/rolls/",
+        "description": "Narrative roll pages with manifest-aligned metadata for SEO and MCP discovery",
+        "audience": "documentation generators, LLM indexes, contributor onboarding"
       }
     },
   
