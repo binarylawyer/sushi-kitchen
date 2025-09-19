@@ -1,0 +1,338 @@
+{
+  "global_environment": {
+    "LOG_LEVEL": "INFO",
+    "DEBUG_MODE": "false",
+    "VERBOSE_LOGGING": "false",
+    "LOG_FORMAT": "json",
+    "LOG_OUTPUT": "file",
+    "LOG_TIMESTAMP_FORMAT": "ISO8601",
+    "SHOW_ERROR_DETAILS": "false",
+    "ENABLE_STACK_TRACES": "false",
+    "LOG_CORRELATION_ID": "true",
+    "LOG_MAX_SIZE": "100MB",
+    "LOG_MAX_FILES": "10",
+    "LOG_RETENTION_DAYS": "30",
+    "LOG_COMPRESSION": "true",
+    "SSL_VERIFY": "true",
+    "TLS_SKIP_VERIFY": "false",
+    "HTTPS_ONLY": "true",
+    "TLS_MIN_VERSION": "1.2",
+    "ALLOW_HTTP": "false",
+    "CSRF_PROTECTION": "enabled",
+    "CORS_ALLOW_ALL": "false",
+    "SECURITY_HEADERS_ENABLED": "true",
+    "AUTH_REQUIRED": "true",
+    "SKIP_AUTH_FOR_DEVELOPMENT": "false",
+    "PRODUCTION_MODE": "true",
+    "SESSION_SECURE": "true",
+    "SESSION_HTTPONLY": "true",
+    "RATE_LIMITING_ENABLED": "true",
+    "REQUEST_SIZE_LIMIT": "10MB",
+    "UPLOAD_SIZE_LIMIT": "100MB",
+    "ENABLE_WAF": "true",
+    "ENABLE_CACHING": "true",
+    "CACHE_TTL": "3600",
+    "REDIS_CACHE_ENABLED": "true",
+    "CACHE_COMPRESSION": "true",
+    "REQUEST_TIMEOUT": "60s",
+    "CONNECTION_TIMEOUT": "30s",
+    "STARTUP_TIMEOUT": "300s",
+    "SHUTDOWN_TIMEOUT": "30s",
+    "ENABLE_HOT_RELOAD": "false",
+    "AUTO_RESTART": "false",
+    "WATCH_FILES": "false",
+    "CONNECTION_POOL_SIZE": "20",
+    "CONNECTION_POOL_MAX": "50",
+    "CONNECTION_POOL_TIMEOUT": "10s",
+    "KEEP_ALIVE_TIMEOUT": "75s",
+    "METRICS_ENABLED": "true",
+    "PROMETHEUS_METRICS": "true",
+    "HEALTH_CHECKS_ENABLED": "true",
+    "TRACING_ENABLED": "true",
+    "PROFILING_ENABLED": "false",
+    "ALERTING_ENABLED": "true",
+    "ALERT_WEBHOOK_URL": "${ALERT_WEBHOOK_URL}",
+    "SLACK_ALERTS_ENABLED": "true",
+    "EMAIL_ALERTS_ENABLED": "true",
+    "APM_ENABLED": "true",
+    "ERROR_TRACKING_ENABLED": "true",
+    "PERFORMANCE_MONITORING": "true",
+    "UPTIME_MONITORING": "true",
+    "DATA_RETENTION_DAYS": "365",
+    "AUTO_CLEANUP_ENABLED": "true",
+    "PRODUCTION_DATA_PROTECTION": "true",
+    "BACKUP_ENABLED": "true",
+    "BACKUP_FREQUENCY": "daily",
+    "BACKUP_RETENTION_DAYS": "90",
+    "BACKUP_ENCRYPTION": "true",
+    "OFFSITE_BACKUP_ENABLED": "true",
+    "DATA_VALIDATION_ENABLED": "true",
+    "CHECKSUM_VALIDATION": "true",
+    "CORRUPTION_DETECTION": "true",
+    "MEMORY_LIMIT": "8g",
+    "CPU_LIMIT": "4.0",
+    "STORAGE_LIMIT": "500g",
+    "WORKER_COUNT": "8",
+    "MAX_CONNECTIONS": "1000",
+    "POOL_SIZE": "50",
+    "QUEUE_SIZE": "500",
+    "HEALTH_CHECK_INTERVAL": "30s",
+    "HEALTH_CHECK_TIMEOUT": "10s",
+    "STARTUP_GRACE_PERIOD": "180s",
+    "LIVENESS_PROBE_ENABLED": "true",
+    "READINESS_PROBE_ENABLED": "true"
+  },
+  "service_overrides": {
+    "ai_services": {
+      "hosomaki.ollama": {
+        "OLLAMA_DEBUG": "false",
+        "OLLAMA_VERBOSE": "false",
+        "OLLAMA_KEEP_ALIVE": "24h",
+        "OLLAMA_MAX_LOADED_MODELS": "5",
+        "OLLAMA_LOAD_TIMEOUT": "300s",
+        "OLLAMA_LOG_LEVEL": "info",
+        "OLLAMA_NUM_PARALLEL": "4",
+        "OLLAMA_MAX_QUEUE": "100"
+      },
+      "hosomaki.litellm": {
+        "LITELLM_LOG": "info",
+        "LITELLM_DEBUG_MODE": "false",
+        "LITELLM_DETAILED_LOGGER": "false",
+        "LITELLM_DROP_PARAMS": "true",
+        "LITELLM_REQUEST_TIMEOUT": "120",
+        "LITELLM_MAX_PARALLEL_REQUESTS": "100",
+        "LITELLM_CACHE_ENABLED": "true"
+      },
+      "hosomaki.vllm": {
+        "VLLM_LOGGING_LEVEL": "info",
+        "VLLM_LOG_STATS": "true",
+        "VLLM_ENABLE_METRICS": "true",
+        "VLLM_DISABLE_LOG_REQUESTS": "true",
+        "VLLM_GPU_MEMORY_UTILIZATION": "0.9",
+        "VLLM_MAX_NUM_SEQS": "256",
+        "VLLM_MAX_MODEL_LEN": "4096"
+      }
+    },
+    "database_services": {
+      "futomaki.postgresql": {
+        "POSTGRES_LOG_STATEMENT": "mod",
+        "POSTGRES_LOG_DURATION": "true",
+        "POSTGRES_LOG_CHECKPOINTS": "false",
+        "POSTGRES_LOG_CONNECTIONS": "false",
+        "POSTGRES_LOG_DISCONNECTIONS": "false",
+        "POSTGRES_SHARED_PRELOAD_LIBRARIES": "pg_stat_statements",
+        "POSTGRES_MAX_CONNECTIONS": "200",
+        "POSTGRES_SHARED_BUFFERS": "2GB",
+        "POSTGRES_EFFECTIVE_CACHE_SIZE": "6GB",
+        "POSTGRES_CHECKPOINT_COMPLETION_TARGET": "0.9"
+      },
+      "futomaki.qdrant": {
+        "QDRANT__LOG_LEVEL": "info",
+        "QDRANT__SERVICE__ENABLE_CORS": "false",
+        "QDRANT__TELEMETRY_DISABLED": "true",
+        "QDRANT__STORAGE__PERFORMANCE__MAX_SEARCH_THREADS": "8",
+        "QDRANT__SERVICE__MAX_REQUEST_SIZE_MB": "100",
+        "QDRANT__STORAGE__OPTIMIZERS_ENABLED": "true",
+        "QDRANT__STORAGE__WRITE_CONSISTENCY_FACTOR": "1"
+      },
+      "futomaki.redis": {
+        "REDIS_LOG_LEVEL": "notice",
+        "REDIS_SAVE": "900 1 300 10 60 10000",
+        "REDIS_APPENDONLY": "yes",
+        "REDIS_APPENDFSYNC": "everysec",
+        "REDIS_MAXMEMORY_POLICY": "allkeys-lru",
+        "REDIS_MAXMEMORY": "4gb",
+        "REDIS_TCP_KEEPALIVE": "300",
+        "REDIS_TIMEOUT": "0"
+      }
+    },
+    "web_services": {
+      "hosomaki.caddy": {
+        "CADDY_DEBUG": "false",
+        "CADDY_LOG_LEVEL": "info",
+        "CADDY_ADMIN_LISTEN": "127.0.0.1:2019",
+        "CADDY_ACME_ENABLE": "true",
+        "CADDY_HTTP_PORT": "80",
+        "CADDY_HTTPS_PORT": "443",
+        "CADDY_GRACE_PERIOD": "30s",
+        "CADDY_MAX_HEADER_SIZE": "16KB"
+      },
+      "hosomaki.n8n": {
+        "N8N_LOG_LEVEL": "info",
+        "N8N_LOG_OUTPUT": "file",
+        "N8N_DIAGNOSTICS_ENABLED": "false",
+        "N8N_PERSONALIZATION_ENABLED": "true",
+        "N8N_VERSION_NOTIFICATIONS_ENABLED": "false",
+        "N8N_TEMPLATES_ENABLED": "true",
+        "N8N_EXECUTIONS_DATA_MAX_AGE": "336",
+        "N8N_EXECUTIONS_DATA_PRUNE": "true",
+        "N8N_METRICS": "true"
+      }
+    },
+    "monitoring_services": {
+      "inari.prometheus": {
+        "PROMETHEUS_LOG_LEVEL": "info",
+        "PROMETHEUS_ENABLE_LIFECYCLE": "false",
+        "PROMETHEUS_STORAGE_TSDB_RETENTION_TIME": "90d",
+        "PROMETHEUS_STORAGE_TSDB_RETENTION_SIZE": "50GB",
+        "PROMETHEUS_WEB_ENABLE_ADMIN_API": "false",
+        "PROMETHEUS_QUERY_MAX_CONCURRENCY": "20",
+        "PROMETHEUS_QUERY_TIMEOUT": "2m"
+      },
+      "inari.grafana": {
+        "GF_LOG_LEVEL": "info",
+        "GF_ENABLE_GZIP": "true",
+        "GF_USERS_ALLOW_SIGN_UP": "false",
+        "GF_AUTH_ANONYMOUS_ENABLED": "false",
+        "GF_SECURITY_ADMIN_PASSWORD": "${GRAFANA_ADMIN_PASSWORD}",
+        "GF_SECURITY_SECRET_KEY": "${GRAFANA_SECRET_KEY}",
+        "GF_SESSION_LIFE_TIME": "86400",
+        "GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH": "/var/lib/grafana/dashboards/production-overview.json",
+        "GF_ALERTING_ENABLED": "true",
+        "GF_SMTP_ENABLED": "true"
+      }
+    }
+  },
+  "security_hardening": {
+    "container_security": {
+      "run_as_non_root": true,
+      "read_only_root_filesystem": true,
+      "no_new_privileges": true,
+      "drop_capabilities": [
+        "ALL"
+      ],
+      "add_capabilities": [
+        "CHOWN",
+        "SETGID",
+        "SETUID"
+      ]
+    },
+    "network_security": {
+      "enable_network_policies": true,
+      "restrict_egress_traffic": true,
+      "enable_service_mesh": true,
+      "require_tls_everywhere": true
+    },
+    "secrets_management": {
+      "use_external_secrets": true,
+      "rotate_secrets_regularly": true,
+      "encrypt_secrets_at_rest": true,
+      "audit_secret_access": true
+    }
+  },
+  "production_monitoring": {
+    "system_health": {
+      "cpu_utilization_threshold": 80,
+      "memory_utilization_threshold": 85,
+      "disk_utilization_threshold": 90,
+      "network_error_threshold": 1
+    },
+    "application_performance": {
+      "response_time_threshold": "2s",
+      "error_rate_threshold": 1,
+      "throughput_threshold": 100,
+      "availability_threshold": 99.9
+    },
+    "business_metrics": {
+      "active_users_threshold": 10,
+      "conversion_rate_threshold": 5,
+      "revenue_impact_monitoring": true,
+      "customer_satisfaction_tracking": true
+    },
+    "infrastructure_monitoring": {
+      "database_performance": true,
+      "cache_hit_ratio": true,
+      "queue_depth_monitoring": true,
+      "external_dependency_monitoring": true
+    }
+  },
+  "backup_and_recovery": {
+    "backup_configuration": {
+      "full_backup_schedule": "daily",
+      "incremental_backup_schedule": "hourly",
+      "backup_retention_policy": "3-2-1",
+      "backup_encryption": "AES-256",
+      "backup_compression": "true"
+    },
+    "disaster_recovery": {
+      "recovery_time_objective": "4h",
+      "recovery_point_objective": "1h",
+      "automated_failover": true,
+      "manual_failover_procedures": true,
+      "disaster_recovery_testing": "monthly"
+    },
+    "data_integrity": {
+      "checksum_verification": true,
+      "restore_testing": "weekly",
+      "data_corruption_detection": true,
+      "integrity_alerting": true
+    }
+  },
+  "scaling_configuration": {
+    "horizontal_scaling": {
+      "enable_auto_scaling": true,
+      "min_replicas": 2,
+      "max_replicas": 10,
+      "target_cpu_utilization": 70,
+      "target_memory_utilization": 80,
+      "scale_up_cooldown": "5m",
+      "scale_down_cooldown": "10m"
+    },
+    "vertical_scaling": {
+      "enable_vpa": true,
+      "cpu_request_multiplier": 1.5,
+      "memory_request_multiplier": 1.2,
+      "resource_limit_enforcement": true
+    },
+    "load_balancing": {
+      "load_balancing_algorithm": "round_robin",
+      "health_check_based_routing": true,
+      "circuit_breaker_enabled": true,
+      "retry_policy": "exponential_backoff",
+      "timeout_policy": "adaptive"
+    }
+  },
+  "deployment_strategy": {
+    "blue_green_deployment": {
+      "enable_blue_green": true,
+      "health_check_duration": "10m",
+      "automatic_rollback": true,
+      "traffic_shift_duration": "30m"
+    },
+    "canary_deployment": {
+      "enable_canary": true,
+      "canary_traffic_percentage": 10,
+      "canary_duration": "2h",
+      "success_criteria": {
+        "error_rate_threshold": 0.5,
+        "response_time_threshold": "1s"
+      }
+    },
+    "maintenance_procedures": {
+      "scheduled_maintenance_window": "Sunday 02:00-04:00 UTC",
+      "emergency_maintenance_procedures": true,
+      "change_approval_required": true,
+      "rollback_procedures_tested": true
+    }
+  },
+  "cost_optimization": {
+    "resource_optimization": {
+      "right_sizing_enabled": true,
+      "reserved_instance_planning": true,
+      "spot_instance_utilization": false,
+      "resource_tagging": true
+    },
+    "storage_optimization": {
+      "storage_tiering": true,
+      "data_compression": true,
+      "lifecycle_policies": true,
+      "unused_resource_cleanup": true
+    },
+    "cost_monitoring": {
+      "cost_budgets_enabled": true,
+      "cost_anomaly_detection": true,
+      "resource_utilization_tracking": true,
+      "cost_optimization_recommendations": true
+    }
+  }
+}

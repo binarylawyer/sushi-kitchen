@@ -1,0 +1,760 @@
+{
+  "schema_version": "1.0",
+  "platters": [
+    {
+      "id": "platter.hosomaki-core",
+      "name": "Hosomaki Core",
+      "description": "Minimal foundation for testing and learning AI infrastructure basics. This platter provides the essential services needed to understand how local AI systems work together, featuring Ollama for running language models and a simple chat interface for interaction. Perfect for newcomers who want to explore AI capabilities without complexity, resource overhead, or financial commitment. The setup demonstrates core concepts of local AI inference while maintaining minimal resource requirements that work on most modern computers.",
+      "category": "foundational",
+      "target_audience": [
+        "beginners",
+        "students",
+        "hobbyists"
+      ],
+      "combos": [
+        "combo.chat-local"
+      ],
+      "additional_services": [],
+      "privacy_profile": "open_research",
+      "resource_requirements": {
+        "cpu_cores": 2,
+        "memory_gb": 4,
+        "storage_gb": 20,
+        "gpu_vram_gb": 0,
+        "gpu_required": false
+      },
+      "estimated_cost": {
+        "cloud_monthly_usd": 25,
+        "hardware_onetime_usd": 400,
+        "notes": "Can run on any modern laptop or mini PC"
+      },
+      "setup_time_minutes": 10,
+      "maintenance_level": "minimal",
+      "use_cases": [
+        "Learning AI fundamentals",
+        "Testing local language models",
+        "Educational demonstrations",
+        "Resource-constrained environments"
+      ],
+      "success_criteria": [
+        "Chat with a local model through web interface",
+        "Download and switch between different model sizes",
+        "Understand basic model capabilities and limitations"
+      ],
+      "notes": "Ideal starting point before progressing to more complex deployments"
+    },
+    {
+      "id": "platter.knowledge-worker",
+      "name": "Knowledge Worker",
+      "description": "Balanced platform designed for professionals who need AI-powered knowledge management without enterprise complexity. Combines document analysis capabilities with chat interfaces and basic monitoring to create a productive AI workspace. This platter addresses the needs of consultants, researchers, and knowledge professionals who want to leverage AI for document processing, question answering, and content creation while maintaining reasonable resource requirements and setup complexity.",
+      "category": "foundational",
+      "target_audience": [
+        "consultants",
+        "researchers",
+        "knowledge-professionals",
+        "small-teams"
+      ],
+      "combos": [
+        "combo.knowledge-rag",
+        "combo.monitor-basic"
+      ],
+      "additional_services": [
+        "futomaki.minio",
+        "hosomaki.caddy"
+      ],
+      "privacy_profile": "business_confidential",
+      "resource_requirements": {
+        "cpu_cores": 6,
+        "memory_gb": 12,
+        "storage_gb": 100,
+        "gpu_vram_gb": 0,
+        "gpu_required": false
+      },
+      "estimated_cost": {
+        "cloud_monthly_usd": 150,
+        "hardware_onetime_usd": 800,
+        "notes": "Optimized for desktop workstations"
+      },
+      "setup_time_minutes": 25,
+      "maintenance_level": "low",
+      "features": [
+        "Document upload and semantic search",
+        "Multi-model LLM access (local and cloud)",
+        "Basic performance monitoring",
+        "Secure file storage",
+        "SSL termination and routing"
+      ],
+      "use_cases": [
+        "Research and analysis workflows",
+        "Document-based question answering",
+        "Content creation assistance",
+        "Professional knowledge management"
+      ],
+      "success_criteria": [
+        "Upload documents and get accurate answers",
+        "Monitor system health through dashboards",
+        "Access services through secure web interface",
+        "Store and organize work files securely"
+      ],
+      "notes": "Balanced features and resources; good for most professional use cases"
+    },
+    {
+      "id": "platter.developer-complete",
+      "name": "Developer Complete",
+      "description": "Comprehensive development environment for AI and machine learning engineers building production applications. Integrates development tools, experiment tracking, version control, and AI services to create a complete development lifecycle platform. This platter solves the challenge of maintaining consistent development environments while providing the specialized tools needed for AI application development, model experimentation, and collaborative software development.",
+      "category": "specialized",
+      "target_audience": [
+        "ml-engineers",
+        "full-stack-developers",
+        "data-scientists",
+        "development-teams"
+      ],
+      "combos": [
+        "combo.dev-workspace",
+        "combo.knowledge-rag",
+        "combo.monitor-basic"
+      ],
+      "additional_services": [
+        "chirashi.mlflow",
+        "sashimi.gitea",
+        "futomaki.minio",
+        "futomaki.pgadmin",
+        "hosomaki.caddy"
+      ],
+      "privacy_profile": "business_confidential",
+      "resource_requirements": {
+        "cpu_cores": 8,
+        "memory_gb": 16,
+        "storage_gb": 200,
+        "gpu_vram_gb": 8,
+        "gpu_required": false
+      },
+      "estimated_cost": {
+        "cloud_monthly_usd": 250,
+        "hardware_onetime_usd": 1200,
+        "notes": "GPU optional but recommended for ML workloads"
+      },
+      "setup_time_minutes": 30,
+      "maintenance_level": "medium",
+      "development_features": [
+        "Browser-based VS Code with AI extensions",
+        "JupyterLab with GPU support",
+        "Experiment tracking and model registry",
+        "Self-hosted Git with CI/CD",
+        "Database administration tools",
+        "RAG document processing capabilities"
+      ],
+      "use_cases": [
+        "AI application development",
+        "Machine learning experimentation",
+        "Data science projects",
+        "Team collaboration and code sharing"
+      ],
+      "success_criteria": [
+        "Develop and debug code in browser IDE",
+        "Track ML experiments and model performance",
+        "Manage code repositories and releases",
+        "Process and query document collections"
+      ],
+      "notes": "Complete development stack; scales well for small to medium teams"
+    },
+    {
+      "id": "platter.creative-professional",
+      "name": "Creative Professional",
+      "description": "Multimodal content generation platform designed for creators who need AI-powered tools for visual, audio, and video content production. Combines image generation, voice synthesis, and media processing capabilities with automation workflows to streamline creative processes. This platter addresses the needs of content creators, marketers, and designers who want to integrate AI generation tools into their creative workflows while maintaining professional quality and efficiency.",
+      "category": "specialized",
+      "target_audience": [
+        "content-creators",
+        "designers",
+        "marketers",
+        "artists"
+      ],
+      "combos": [
+        "combo.media-basic",
+        "combo.flow-builder"
+      ],
+      "additional_services": [
+        "uramaki.comfyui",
+        "temaki.whisper",
+        "temaki.coqui-tts",
+        "futomaki.minio",
+        "hosomaki.caddy"
+      ],
+      "privacy_profile": "business_confidential",
+      "resource_requirements": {
+        "cpu_cores": 8,
+        "memory_gb": 16,
+        "storage_gb": 300,
+        "gpu_vram_gb": 12,
+        "gpu_required": true
+      },
+      "estimated_cost": {
+        "cloud_monthly_usd": 350,
+        "hardware_onetime_usd": 2000,
+        "notes": "Requires powerful GPU for real-time generation"
+      },
+      "setup_time_minutes": 45,
+      "maintenance_level": "medium",
+      "creative_capabilities": [
+        "AI image generation (Stable Diffusion, FLUX)",
+        "Voice synthesis and cloning",
+        "Video and audio processing",
+        "Automated content workflows",
+        "Media format conversion"
+      ],
+      "use_cases": [
+        "Social media content creation",
+        "Marketing material generation",
+        "Podcast and video production",
+        "Digital art and design"
+      ],
+      "success_criteria": [
+        "Generate high-quality images from prompts",
+        "Convert speech to text and text to speech",
+        "Process and convert media files",
+        "Create automated content workflows"
+      ],
+      "warnings": [
+        "Requires powerful GPU for real-time generation",
+        "Model downloads can exceed 50GB",
+        "GPU memory requirements vary by model complexity"
+      ],
+      "notes": "Optimized for creative workflows; requires significant GPU resources"
+    },
+    {
+      "id": "platter.enterprise-starter",
+      "name": "Enterprise Starter",
+      "description": "Production-ready platform with essential compliance and security features for small to medium businesses entering the AI space. Provides authentication, secrets management, monitoring, and backup capabilities while maintaining reasonable complexity and cost. This platter bridges the gap between development and full enterprise deployments, offering professional-grade reliability without the overhead of comprehensive enterprise features.",
+      "category": "enterprise",
+      "target_audience": [
+        "small-business",
+        "startups",
+        "teams",
+        "professional-services"
+      ],
+      "combos": [
+        "combo.knowledge-rag",
+        "combo.security-core",
+        "combo.monitor-basic"
+      ],
+      "additional_services": [
+        "hosomaki.n8n",
+        "futomaki.minio",
+        "hosomaki.caddy",
+        "inari.grafana"
+      ],
+      "privacy_profile": "business_confidential",
+      "resource_requirements": {
+        "cpu_cores": 8,
+        "memory_gb": 16,
+        "storage_gb": 200,
+        "gpu_vram_gb": 0,
+        "gpu_required": false,
+        "backup_storage_gb": 100
+      },
+      "estimated_cost": {
+        "cloud_monthly_usd": 300,
+        "hardware_onetime_usd": 1500,
+        "notes": "Includes backup and redundancy costs"
+      },
+      "setup_time_minutes": 45,
+      "maintenance_level": "medium",
+      "enterprise_features": [
+        "Single sign-on authentication",
+        "Centralized secrets management",
+        "Comprehensive monitoring and alerting",
+        "Automated backup systems",
+        "Workflow automation capabilities"
+      ],
+      "compliance_features": {
+        "sso": {
+          "enabled": true,
+          "provider": "authentik"
+        },
+        "encryption": {
+          "at_rest": true,
+          "in_transit": true
+        },
+        "audit": {
+          "enabled": true,
+          "retention_days": 90
+        },
+        "backup": {
+          "automated": true,
+          "retention_policy": "30 days"
+        }
+      },
+      "use_cases": [
+        "Business AI implementations",
+        "Customer service automation",
+        "Internal knowledge management",
+        "Document processing workflows"
+      ],
+      "success_criteria": [
+        "Users can authenticate through SSO",
+        "All services monitored with alerts",
+        "Automated backups running successfully",
+        "Secrets managed centrally and securely"
+      ],
+      "notes": "Balanced approach to enterprise features; good stepping stone to full enterprise"
+    },
+    {
+      "id": "platter.enterprise-complete",
+      "name": "Enterprise Complete",
+      "description": "Full production stack with advanced compliance, high availability, and comprehensive security for regulated industries and large organizations. Includes HIPAA, GDPR, and SOX compliance features, advanced monitoring, centralized logging, and enterprise-grade security controls. This platter provides the complete infrastructure needed for mission-critical AI applications in regulated environments with strict data governance requirements.",
+      "category": "enterprise",
+      "target_audience": [
+        "enterprises",
+        "regulated-industries",
+        "government",
+        "healthcare"
+      ],
+      "combos": [
+        "combo.knowledge-rag",
+        "combo.security-core",
+        "combo.inference-fast"
+      ],
+      "additional_services": [
+        "hosomaki.n8n",
+        "futomaki.minio",
+        "hosomaki.caddy",
+        "inari.grafana",
+        "inari.prometheus",
+        "inari.loki",
+        "gunkanmaki.vault",
+        "chirashi.mlflow"
+      ],
+      "privacy_profile": "legal_privilege",
+      "resource_requirements": {
+        "cpu_cores": 16,
+        "memory_gb": 32,
+        "storage_gb": 500,
+        "gpu_vram_gb": 16,
+        "gpu_required": true,
+        "backup_storage_gb": 250
+      },
+      "estimated_cost": {
+        "cloud_monthly_usd": 800,
+        "hardware_onetime_usd": 4000,
+        "notes": "Multi-instance deployment with redundancy"
+      },
+      "setup_time_minutes": 90,
+      "maintenance_level": "high",
+      "enterprise_features": [
+        "Advanced identity and access management",
+        "Comprehensive audit logging and retention",
+        "High-performance model serving",
+        "Centralized log aggregation",
+        "Enterprise secrets management",
+        "Automated failover and recovery"
+      ],
+      "compliance_features": {
+        "hipaa": {
+          "enabled": true,
+          "audit_retention_years": 7,
+          "encryption": "AES-256",
+          "baa_ready": true
+        },
+        "gdpr": {
+          "enabled": true,
+          "right_to_deletion": true,
+          "data_residency": "configurable",
+          "dpo_dashboard": true
+        },
+        "sox": {
+          "enabled": true,
+          "change_control": true,
+          "audit_immutability": true,
+          "separation_of_duties": true
+        }
+      },
+      "high_availability": {
+        "database_replication": true,
+        "service_redundancy": true,
+        "automated_failover": true,
+        "backup_sites": "recommended"
+      },
+      "sla_targets": {
+        "uptime": "99.9%",
+        "rto_hours": 1,
+        "rpo_minutes": 15,
+        "response_time_p99_ms": 200
+      },
+      "use_cases": [
+        "Regulated industry AI deployments",
+        "Enterprise knowledge management",
+        "High-performance model serving",
+        "Compliance-critical applications"
+      ],
+      "success_criteria": [
+        "All compliance features validated and active",
+        "High availability targets met",
+        "Audit logs properly retained and searchable",
+        "Model serving meets performance SLA"
+      ],
+      "warnings": [
+        "Requires dedicated infrastructure team",
+        "Complex compliance configuration needed",
+        "Significant ongoing maintenance overhead"
+      ],
+      "notes": "Full enterprise deployment; requires expert configuration and management"
+    },
+    {
+      "id": "platter.voice-first",
+      "name": "Voice First",
+      "description": "Voice-centric AI interaction platform optimized for speech-based applications and accessibility use cases. Combines speech-to-text, text-to-speech, and conversation management to create seamless voice interactions. This platter addresses the growing need for voice-enabled AI applications, from accessibility tools to IoT integrations and hands-free computing environments.",
+      "category": "specialized",
+      "target_audience": [
+        "accessibility-focused",
+        "iot-developers",
+        "voice-app-creators"
+      ],
+      "combos": [
+        "combo.chat-local",
+        "combo.flow-builder"
+      ],
+      "additional_services": [
+        "temaki.whisper",
+        "temaki.coqui-tts",
+        "futomaki.redis",
+        "hosomaki.caddy"
+      ],
+      "privacy_profile": "business_confidential",
+      "resource_requirements": {
+        "cpu_cores": 6,
+        "memory_gb": 10,
+        "storage_gb": 80,
+        "gpu_vram_gb": 4,
+        "gpu_required": false
+      },
+      "estimated_cost": {
+        "cloud_monthly_usd": 120,
+        "hardware_onetime_usd": 700,
+        "notes": "Optimized for voice processing efficiency"
+      },
+      "setup_time_minutes": 20,
+      "maintenance_level": "low",
+      "voice_features": [
+        "Real-time speech-to-text with Whisper",
+        "Multi-language support",
+        "Natural voice synthesis",
+        "Conversation state management",
+        "Low-latency voice processing"
+      ],
+      "use_cases": [
+        "Accessibility applications",
+        "Voice-controlled IoT systems",
+        "Hands-free computing environments",
+        "Interactive voice assistants"
+      ],
+      "success_criteria": [
+        "Real-time speech recognition working",
+        "Natural voice synthesis responding",
+        "End-to-end voice conversation functional",
+        "Acceptable latency for real-time interaction"
+      ],
+      "notes": "Specialized for voice applications; can run without GPU but benefits from one"
+    },
+    {
+      "id": "platter.research-lab",
+      "name": "Research Lab",
+      "description": "Academic and research environment designed for experimental AI research, paper reproduction, and collaborative scientific work. Provides comprehensive tools for data analysis, experiment tracking, model development, and research collaboration. This platter addresses the specific needs of academic researchers, graduate students, and R&D teams who need sophisticated AI infrastructure for experimental work and reproducible research.",
+      "category": "specialized",
+      "target_audience": [
+        "academics",
+        "researchers",
+        "graduate-students",
+        "r&d-teams"
+      ],
+      "combos": [
+        "combo.knowledge-rag",
+        "combo.dev-workspace",
+        "combo.analytics-starter",
+        "combo.monitor-basic"
+      ],
+      "additional_services": [
+        "chirashi.mlflow",
+        "futomaki.neo4j",
+        "hosomaki.caddy"
+      ],
+      "privacy_profile": "open_research",
+      "resource_requirements": {
+        "cpu_cores": 8,
+        "memory_gb": 16,
+        "storage_gb": 300,
+        "gpu_vram_gb": 8,
+        "gpu_required": false
+      },
+      "estimated_cost": {
+        "cloud_monthly_usd": 200,
+        "hardware_onetime_usd": 1200,
+        "notes": "Often eligible for academic discounts"
+      },
+      "setup_time_minutes": 35,
+      "maintenance_level": "medium",
+      "research_features": [
+        "Comprehensive experiment tracking",
+        "Collaborative development environment",
+        "Graph database for knowledge modeling",
+        "Advanced analytics and visualization",
+        "Reproducible research workflows"
+      ],
+      "use_cases": [
+        "Academic AI research",
+        "Paper reproduction and validation",
+        "Collaborative research projects",
+        "Graduate student training"
+      ],
+      "success_criteria": [
+        "Reproduce published research results",
+        "Track and compare experiment variations",
+        "Collaborate on shared research projects",
+        "Visualize complex research data and relationships"
+      ],
+      "notes": "Comprehensive research environment; designed for experimental and collaborative work"
+    },
+    {
+      "id": "platter.homelab-enthusiast",
+      "name": "Homelab Enthusiast",
+      "description": "Comprehensive self-hosting platform for technology enthusiasts who want to explore every aspect of modern AI infrastructure. Combines advanced services, monitoring, and automation to create a complete homelab experience. This platter is designed for hobbyists and professionals who enjoy experimenting with technology and want hands-on experience with enterprise-grade AI infrastructure in a home environment.",
+      "category": "showcase",
+      "target_audience": [
+        "homelab-enthusiasts",
+        "self-hosters",
+        "technology-hobbyists"
+      ],
+      "combos": [
+        "combo.knowledge-rag",
+        "combo.dev-workspace",
+        "combo.security-core",
+        "combo.monitor-basic",
+        "combo.media-basic"
+      ],
+      "additional_services": [
+        "chirashi.mlflow",
+        "sashimi.gitea",
+        "sashimi.homepage",
+        "futomaki.neo4j",
+        "uramaki.comfyui",
+        "hosomaki.caddy"
+      ],
+      "privacy_profile": "business_confidential",
+      "resource_requirements": {
+        "cpu_cores": 12,
+        "memory_gb": 24,
+        "storage_gb": 500,
+        "gpu_vram_gb": 12,
+        "gpu_required": false
+      },
+      "estimated_cost": {
+        "cloud_monthly_usd": 400,
+        "hardware_onetime_usd": 2500,
+        "notes": "Designed for powerful homelab servers"
+      },
+      "setup_time_minutes": 60,
+      "maintenance_level": "high",
+      "homelab_features": [
+        "Complete AI development stack",
+        "Self-hosted version control",
+        "Personal dashboard and monitoring",
+        "Creative content generation",
+        "Advanced knowledge management",
+        "Comprehensive security stack"
+      ],
+      "use_cases": [
+        "Technology learning and experimentation",
+        "Personal AI assistant development",
+        "Content creation workflows",
+        "Self-hosted productivity suite"
+      ],
+      "success_criteria": [
+        "All major service categories functional",
+        "Unified dashboard showing system status",
+        "Personal AI assistant responding to queries",
+        "Content generation workflows operational"
+      ],
+      "notes": "Maximum functionality for enthusiasts; requires significant time investment"
+    },
+    {
+      "id": "platter.omakase",
+      "name": "Omakase",
+      "description": "The ultimate demonstration environment that includes every service in the Sushi Kitchen menu. This showcase platter is designed for testing, demonstrations, training, and comprehensive system validation. While not recommended for production use due to resource requirements and complexity, it provides the complete Sushi Kitchen experience and serves as a reference implementation for understanding service interactions across the entire platform.",
+      "category": "showcase",
+      "target_audience": [
+        "demonstrations",
+        "training",
+        "system-testing",
+        "comprehensive-evaluation"
+      ],
+      "combos": [
+        "combo.chat-local",
+        "combo.dev-workspace",
+        "combo.knowledge-rag",
+        "combo.flow-builder",
+        "combo.monitor-basic",
+        "combo.security-core",
+        "combo.storage-essentials",
+        "combo.inference-fast",
+        "combo.media-basic",
+        "combo.analytics-starter"
+      ],
+      "additional_services": [
+        "chirashi.mlflow",
+        "sashimi.gitea",
+        "sashimi.homepage",
+        "sashimi.docusaurus",
+        "futomaki.neo4j",
+        "uramaki.comfyui",
+        "temaki.whisper",
+        "temaki.coqui-tts",
+        "inari.loki",
+        "gunkanmaki.vault",
+        "otsumami.searxng"
+      ],
+      "privacy_profile": "open_research",
+      "resource_requirements": {
+        "cpu_cores": 24,
+        "memory_gb": 64,
+        "storage_gb": 1000,
+        "gpu_vram_gb": 24,
+        "gpu_required": true
+      },
+      "estimated_cost": {
+        "cloud_monthly_usd": 1200,
+        "hardware_onetime_usd": 8000,
+        "notes": "Requires server-class hardware or cluster deployment"
+      },
+      "setup_time_minutes": 120,
+      "maintenance_level": "expert",
+      "showcase_features": [
+        "Every service category represented",
+        "All major AI capabilities available",
+        "Complete observability stack",
+        "Full security and compliance features",
+        "Comprehensive development environment"
+      ],
+      "warnings": [
+        "Not recommended for production use",
+        "Intended for testing and demonstration only",
+        "Expect port conflicts without careful configuration",
+        "Requires significant expertise to manage",
+        "Resource consumption will be substantial"
+      ],
+      "use_cases": [
+        "Platform demonstrations",
+        "Comprehensive system testing",
+        "Training and education",
+        "Feature evaluation and comparison"
+      ],
+      "success_criteria": [
+        "All major service categories operational",
+        "No critical service failures or conflicts",
+        "Unified monitoring showing system health",
+        "Representative workflows from each category functional"
+      ],
+      "notes": "Complete showcase deployment; demonstrates full platform capabilities but requires expert management"
+    }
+  ],
+  "categories": {
+    "foundational": {
+      "name": "Foundation",
+      "description": "Essential starting points suitable for most users",
+      "icon": "foundation",
+      "color": "#28A745"
+    },
+    "specialized": {
+      "name": "Specialized",
+      "description": "Optimized for specific use cases and workflows",
+      "icon": "target",
+      "color": "#17A2B8"
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "description": "Production-ready with compliance and security features",
+      "icon": "building",
+      "color": "#6610F2"
+    },
+    "showcase": {
+      "name": "Showcase",
+      "description": "Demonstration and comprehensive testing environments",
+      "icon": "star",
+      "color": "#FFC107"
+    }
+  },
+  "deployment_profiles": {
+    "minimal": {
+      "description": "Bare minimum for testing and learning",
+      "recommended_platters": [
+        "platter.hosomaki-core"
+      ],
+      "target_use_case": "Learning and basic testing"
+    },
+    "balanced": {
+      "description": "Good balance of features and resource requirements",
+      "recommended_platters": [
+        "platter.knowledge-worker",
+        "platter.developer-complete"
+      ],
+      "target_use_case": "Professional and development work"
+    },
+    "production": {
+      "description": "Enterprise-ready deployments",
+      "recommended_platters": [
+        "platter.enterprise-starter",
+        "platter.enterprise-complete"
+      ],
+      "target_use_case": "Business and production applications"
+    },
+    "specialized": {
+      "description": "Optimized for specific workflows",
+      "recommended_platters": [
+        "platter.creative-professional",
+        "platter.voice-first",
+        "platter.research-lab"
+      ],
+      "target_use_case": "Domain-specific applications"
+    }
+  },
+  "hardware_recommendations": {
+    "mini_pc": {
+      "suitable_platters": [
+        "platter.hosomaki-core",
+        "platter.voice-first"
+      ],
+      "specs": "Intel N100/N305, 16GB RAM, 512GB SSD",
+      "estimated_cost": "$300-500"
+    },
+    "desktop": {
+      "suitable_platters": [
+        "platter.knowledge-worker",
+        "platter.developer-complete"
+      ],
+      "specs": "Intel i5/AMD Ryzen 5, 32GB RAM, RTX 4060, 1TB NVMe",
+      "estimated_cost": "$800-1200"
+    },
+    "workstation": {
+      "suitable_platters": [
+        "platter.creative-professional",
+        "platter.research-lab",
+        "platter.homelab-enthusiast"
+      ],
+      "specs": "Intel i7/AMD Ryzen 7, 64GB RAM, RTX 4080, 2TB NVMe",
+      "estimated_cost": "$1500-3000"
+    },
+    "server": {
+      "suitable_platters": [
+        "platter.enterprise-starter",
+        "platter.enterprise-complete"
+      ],
+      "specs": "Dual Xeon/EPYC, 128GB RAM, RTX A6000, RAID storage",
+      "estimated_cost": "$3000-8000"
+    },
+    "cluster": {
+      "suitable_platters": [
+        "platter.omakase"
+      ],
+      "specs": "Multiple nodes, Kubernetes orchestration, distributed storage",
+      "estimated_cost": "$8000+"
+    }
+  }
+}

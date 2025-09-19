@@ -1,0 +1,453 @@
+{
+  "schema_version": "0.1.0",
+  "icon_base_path": "assets/badges/",
+  "fallback_icon": "default.svg",
+  "categories": {
+    "adoption": {
+      "name": "Community Adoption",
+      "description": "Indicates community usage patterns and maturity",
+      "color_family": "green"
+    },
+    "requirements": {
+      "name": "Hardware Requirements",
+      "description": "Hardware dependencies and performance characteristics",
+      "color_family": "orange"
+    },
+    "deployment": {
+      "name": "Deployment Characteristics",
+      "description": "Deployment complexity and target environments",
+      "color_family": "blue"
+    },
+    "lifecycle": {
+      "name": "Development Lifecycle",
+      "description": "Development stage and stability indicators",
+      "color_family": "yellow"
+    },
+    "domain": {
+      "name": "Domain Specialization",
+      "description": "Specialized use cases and domain focus",
+      "color_family": "purple"
+    }
+  },
+  "badges": {
+    "popular": {
+      "label": "Popular",
+      "category": "adoption",
+      "color": "#28A745",
+      "background_color": "#D4EDDA",
+      "text_color": "#155724",
+      "icon": "star.svg",
+      "tooltip": "High community adoption with active maintenance and extensive documentation",
+      "weight": 100,
+      "usage_notes": "Services with proven track record and large user base"
+    },
+    "battle-tested": {
+      "label": "Battle Tested",
+      "category": "adoption",
+      "color": "#0056B3",
+      "background_color": "#D1ECF1",
+      "text_color": "#0C5460",
+      "icon": "shield-check.svg",
+      "tooltip": "Production-proven across multiple enterprise deployments",
+      "weight": 95,
+      "usage_notes": "Enterprise-grade reliability and stability"
+    },
+    "gpu": {
+      "label": "GPU Required",
+      "category": "requirements",
+      "color": "#FF6B35",
+      "background_color": "#FFE6E0",
+      "text_color": "#B8360A",
+      "icon": "gpu.svg",
+      "tooltip": "Requires CUDA-capable GPU for optimal performance. CPU fallback may be very slow",
+      "weight": 90,
+      "usage_notes": "Ensure NVIDIA GPU with sufficient VRAM before deployment",
+      "min_vram_gb": 8
+    },
+    "gpu-optional": {
+      "label": "GPU Optional",
+      "category": "requirements",
+      "color": "#FFA500",
+      "background_color": "#FFF3CD",
+      "text_color": "#856404",
+      "icon": "gpu-optional.svg",
+      "tooltip": "Runs on CPU but significantly faster with GPU acceleration",
+      "weight": 70,
+      "usage_notes": "CPU works but GPU provides 10-100x speedup",
+      "recommended_vram_gb": 4
+    },
+    "heavy": {
+      "label": "Heavy",
+      "category": "requirements",
+      "color": "#DC3545",
+      "background_color": "#F8D7DA",
+      "text_color": "#721C24",
+      "icon": "weight.svg",
+      "tooltip": "High resource requirements - ensure adequate RAM, storage, and CPU",
+      "weight": 85,
+      "usage_notes": "Monitor system resources carefully during deployment",
+      "min_ram_gb": 8,
+      "min_storage_gb": 50
+    },
+    "lightweight": {
+      "label": "Lightweight",
+      "category": "requirements",
+      "color": "#20C997",
+      "background_color": "#D1F2EB",
+      "text_color": "#0E6B47",
+      "icon": "feather.svg",
+      "tooltip": "Minimal resource requirements - works well on small machines",
+      "weight": 30,
+      "usage_notes": "Good for resource-constrained environments",
+      "max_ram_gb": 2
+    },
+    "enterprise": {
+      "label": "Enterprise",
+      "category": "deployment",
+      "color": "#17A2B8",
+      "background_color": "#D1ECF1",
+      "text_color": "#0C5460",
+      "icon": "building.svg",
+      "tooltip": "Designed for enterprise deployments with advanced configuration options",
+      "weight": 80,
+      "usage_notes": "Complex setup but powerful features for large organizations"
+    },
+    "k8s": {
+      "label": "Kubernetes",
+      "category": "deployment",
+      "color": "#326CE5",
+      "background_color": "#E7F1FF",
+      "text_color": "#1048A3",
+      "icon": "kubernetes.svg",
+      "tooltip": "Optimized for Kubernetes with advanced orchestration features",
+      "weight": 75,
+      "usage_notes": "Best deployed on Kubernetes clusters with Helm charts"
+    },
+    "edge": {
+      "label": "Edge Ready",
+      "category": "deployment",
+      "color": "#6610F2",
+      "background_color": "#E8D5FF",
+      "text_color": "#3D0A91",
+      "icon": "edge.svg",
+      "tooltip": "Optimized for edge computing and low-latency deployments",
+      "weight": 60,
+      "usage_notes": "Designed for distributed edge environments"
+    },
+    "cloud-native": {
+      "label": "Cloud Native",
+      "category": "deployment",
+      "color": "#0D6EFD",
+      "background_color": "#CCE5FF",
+      "text_color": "#0B4D37",
+      "icon": "cloud.svg",
+      "tooltip": "Designed with cloud-first principles and auto-scaling capabilities",
+      "weight": 65,
+      "usage_notes": "Best performance in cloud environments with auto-scaling"
+    },
+    "optional": {
+      "label": "Optional",
+      "category": "lifecycle",
+      "color": "#6C757D",
+      "background_color": "#F8F9FA",
+      "text_color": "#495057",
+      "icon": "circle-dashed.svg",
+      "tooltip": "Not required for most builds - enable for specific use cases",
+      "weight": 20,
+      "usage_notes": "Add when you need specific functionality this provides"
+    },
+    "experimental": {
+      "label": "Experimental",
+      "category": "lifecycle",
+      "color": "#FFC107",
+      "background_color": "#FFF8E1",
+      "text_color": "#533F03",
+      "icon": "beaker.svg",
+      "tooltip": "Early-stage technology - expect potential breaking changes",
+      "weight": 15,
+      "usage_notes": "Use with caution in production environments"
+    },
+    "deprecated": {
+      "label": "Deprecated",
+      "category": "lifecycle",
+      "color": "#6C757D",
+      "background_color": "#F1F3F4",
+      "text_color": "#495057",
+      "icon": "archive.svg",
+      "tooltip": "Being phased out - use alternatives for new deployments",
+      "weight": 5,
+      "usage_notes": "Migration path available in documentation"
+    },
+    "future": {
+      "label": "Roadmap",
+      "category": "lifecycle",
+      "color": "#868E96",
+      "background_color": "#E9ECEF",
+      "text_color": "#495057",
+      "icon": "calendar.svg",
+      "tooltip": "Planned for future versions - subject to change",
+      "weight": 10,
+      "usage_notes": "Not yet available - planned implementation"
+    },
+    "beta": {
+      "label": "Beta",
+      "category": "lifecycle",
+      "color": "#FD7E14",
+      "background_color": "#FFF0E6",
+      "text_color": "#7A3914",
+      "icon": "test-tube.svg",
+      "tooltip": "Beta quality - stable but may have minor issues",
+      "weight": 40,
+      "usage_notes": "Generally stable but test thoroughly before production"
+    },
+    "ci": {
+      "label": "CI/CD",
+      "category": "domain",
+      "color": "#20C997",
+      "background_color": "#D1F2EB",
+      "text_color": "#0E6B47",
+      "icon": "git-branch.svg",
+      "tooltip": "Primarily used in development and CI/CD workflows",
+      "weight": 50,
+      "usage_notes": "Essential for development and deployment pipelines"
+    },
+    "security": {
+      "label": "Security",
+      "category": "domain",
+      "color": "#E74C3C",
+      "background_color": "#FADBD8",
+      "text_color": "#A93226",
+      "icon": "lock.svg",
+      "tooltip": "Security-focused service with hardening and compliance features",
+      "weight": 85,
+      "usage_notes": "Critical for secure deployments and compliance"
+    },
+    "compliance": {
+      "label": "Compliance",
+      "category": "domain",
+      "color": "#8E44AD",
+      "background_color": "#EBDEF0",
+      "text_color": "#6A1B9A",
+      "icon": "check-circle.svg",
+      "tooltip": "Supports regulatory compliance requirements (GDPR, HIPAA, SOX)",
+      "weight": 80,
+      "usage_notes": "Required for regulated industries and data privacy"
+    },
+    "research": {
+      "label": "Research",
+      "category": "domain",
+      "color": "#3498DB",
+      "background_color": "#D6EAF8",
+      "text_color": "#1F618D",
+      "icon": "microscope.svg",
+      "tooltip": "Optimized for research workflows and academic use cases",
+      "weight": 55,
+      "usage_notes": "Excellent for research and experimentation"
+    },
+    "production": {
+      "label": "Production",
+      "category": "domain",
+      "color": "#27AE60",
+      "background_color": "#D5F4E6",
+      "text_color": "#186A3B",
+      "icon": "server.svg",
+      "tooltip": "Production-ready with monitoring, scaling, and reliability features",
+      "weight": 90,
+      "usage_notes": "Battle-tested for production workloads"
+    }
+  },
+  "combination_rules": {
+    "mutually_exclusive": [
+      [
+        "gpu",
+        "gpu-optional"
+      ],
+      [
+        "experimental",
+        "production",
+        "battle-tested"
+      ],
+      [
+        "deprecated",
+        "future"
+      ],
+      [
+        "lightweight",
+        "heavy"
+      ]
+    ],
+    "common_combinations": [
+      [
+        "popular",
+        "production"
+      ],
+      [
+        "gpu",
+        "heavy"
+      ],
+      [
+        "enterprise",
+        "battle-tested"
+      ],
+      [
+        "experimental",
+        "research"
+      ],
+      [
+        "security",
+        "compliance"
+      ],
+      [
+        "k8s",
+        "cloud-native"
+      ]
+    ],
+    "recommended_with": {
+      "gpu": [
+        "heavy"
+      ],
+      "enterprise": [
+        "security"
+      ],
+      "compliance": [
+        "security"
+      ],
+      "experimental": [
+        "optional"
+      ]
+    }
+  },
+  "display_config": {
+    "web": {
+      "max_badges_per_service": 4,
+      "show_tooltip_on_hover": true,
+      "badge_spacing": "4px",
+      "border_radius": "12px",
+      "font_size": "11px",
+      "font_weight": "500"
+    },
+    "cli": {
+      "use_emoji": true,
+      "show_full_label": false,
+      "color_support": true,
+      "emoji_mapping": {
+        "popular": "⭐",
+        "gpu": "🎮",
+        "gpu-optional": "🔧",
+        "heavy": "🏋️",
+        "enterprise": "🏢",
+        "experimental": "🧪",
+        "optional": "➡️",
+        "security": "🔒",
+        "production": "🚀"
+      }
+    },
+    "docs": {
+      "show_category": true,
+      "show_tooltip": true,
+      "markdown_format": "**{label}** - {tooltip}"
+    }
+  },
+  "validation": {
+    "max_badges_per_service": 5,
+    "required_for_types": {
+      "inference_engine": [
+        "gpu",
+        "gpu-optional"
+      ],
+      "security_service": [
+        "security"
+      ],
+      "monitoring_service": [
+        "production"
+      ]
+    },
+    "warn_combinations": [
+      {
+        "badges": [
+          "experimental",
+          "enterprise"
+        ],
+        "message": "Enterprise services should be stable - consider 'beta' instead"
+      },
+      {
+        "badges": [
+          "deprecated",
+          "popular"
+        ],
+        "message": "Popular services shouldn't be deprecated without migration path"
+      },
+      {
+        "badges": [
+          "lightweight",
+          "gpu"
+        ],
+        "message": "GPU services typically require significant resources"
+      }
+    ]
+  },
+  "i18n": {
+    "supported_languages": [
+      "en",
+      "es",
+      "fr",
+      "de",
+      "ja",
+      "zh"
+    ],
+    "translations": {
+      "popular": {
+        "en": {
+          "label": "Popular",
+          "tooltip": "High community adoption with active maintenance"
+        },
+        "es": {
+          "label": "Popular",
+          "tooltip": "Alta adopción comunitaria con mantenimiento activo"
+        },
+        "fr": {
+          "label": "Populaire",
+          "tooltip": "Forte adoption communautaire avec maintenance active"
+        },
+        "de": {
+          "label": "Beliebt",
+          "tooltip": "Hohe Community-Akzeptanz mit aktiver Wartung"
+        },
+        "ja": {
+          "label": "人気",
+          "tooltip": "活発なメンテナンスを伴うコミュニティでの高い採用"
+        },
+        "zh": {
+          "label": "热门",
+          "tooltip": "高社区采用率，维护活跃"
+        }
+      },
+      "gpu": {
+        "en": {
+          "label": "GPU Required",
+          "tooltip": "Requires CUDA-capable GPU for optimal performance"
+        },
+        "es": {
+          "label": "GPU Requerida",
+          "tooltip": "Requiere GPU compatible con CUDA para rendimiento óptimo"
+        },
+        "fr": {
+          "label": "GPU Requis",
+          "tooltip": "Nécessite un GPU compatible CUDA pour des performances optimales"
+        },
+        "de": {
+          "label": "GPU Erforderlich",
+          "tooltip": "Benötigt CUDA-fähige GPU für optimale Leistung"
+        },
+        "ja": {
+          "label": "GPU必須",
+          "tooltip": "最適なパフォーマンスにはCUDA対応GPUが必要"
+        },
+        "zh": {
+          "label": "需要GPU",
+          "tooltip": "需要支持CUDA的GPU以获得最佳性能"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "generated_at": "2025-09-18T17:24:01.541746+00:00",
+  "manifest_metadata": {
+    "name": "Sushi Kitchen Manifest System",
+    "version": "0.1.0",
+    "schema_version": "0.1.0",
+    "last_updated": "2025-09-18T22:45:00Z",
+    "description": "Comprehensive Docker Compose framework for AI infrastructure deployment with intelligent dependency resolution and resource management",
+    "repository": "https://github.com/yourusername/sushi-kitchen",
+    "documentation_url": "https://sushi-kitchen.dev/docs/manifest",
+    "license": "MIT"
+  },
+  "source_root": "..",
+  "files": [
+    {
+      "source": "core/badges.yml",
+      "output": "api/core/badges.json",
+      "sha256": "b05a189ed9fd77adea3f293f03c9d2dd733dc08a6536803b6671de05a39b3573"
+    },
+    {
+      "source": "core/bento-box.yml",
+      "output": "api/core/bento-box.json",
+      "sha256": "fa465511a073bb2c0c04f90c7307d32a5297083d09e4697f2148902b34cc614e"
+    },
+    {
+      "source": "core/combos.yml",
+      "output": "api/core/combos.json",
+      "sha256": "3cc016d4007206bc6368617d340b7b1b83e1a08b326c38936a52e3a99316f232"
+    },
+    {
+      "source": "core/contracts.yml",
+      "output": "api/core/contracts.json",
+      "sha256": "3950ea4f58f93f5444ebce70c65a072a46cf3c3775b6ebce015cece97360cd58"
+    },
+    {
+      "source": "core/platters.yml",
+      "output": "api/core/platters.json",
+      "sha256": "351238342f52fdfd07fbf4e2b9fd68b6b250175a904787aaf993c0c8ed111f09"
+    },
+    {
+      "source": "examples/basic-rag-setup/docker-compose.yml",
+      "output": "api/examples/basic-rag-setup/docker-compose.json",
+      "sha256": "54357451fc2f0f60f91dc0ad7cf73c0d0e462521c1903e450797b06e93dfef1b"
+    },
+    {
+      "source": "templates/environment-configs/development.yml",
+      "output": "api/templates/environment-configs/development.json",
+      "sha256": "de3fbacd92ffc01e5bbd0b5b6ae1c25c1b2271ca4de28b813405d52693b53415"
+    },
+    {
+      "source": "templates/environment-configs/production.yml",
+      "output": "api/templates/environment-configs/production.json",
+      "sha256": "91ad729ea36fb66d16f180d031874714f78f97a3c7ecf3453ebbf2d54e380dbf"
+    },
+    {
+      "source": "templates/network-profiles/business-confidential.yml",
+      "output": "api/templates/network-profiles/business-confidential.json",
+      "sha256": "974d737a31218ad06aaed9da4ab8778237634d9f9da000bb71c323e1887185a0"
+    },
+    {
+      "source": "templates/network-profiles/legal-privilege.yml",
+      "output": "api/templates/network-profiles/legal-privilege.json",
+      "sha256": "64125602376174a11812277eb9f83ce64daccfef8de5f2bf7334440b383c7c94"
+    },
+    {
+      "source": "templates/network-profiles/open-research.yml",
+      "output": "api/templates/network-profiles/open-research.json",
+      "sha256": "ff8fc90b749d9ce3e3600cbea2838bb91b3643126084800833b95d66209ce773"
+    }
+  ]
+}

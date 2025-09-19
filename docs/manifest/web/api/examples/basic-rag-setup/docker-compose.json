@@ -1,0 +1,428 @@
+{
+  "version": "3.9",
+  "x-sushi-metadata": {
+    "labels": [
+      "sushi.kitchen.generated=true",
+      "sushi.kitchen.version=1.0.0",
+      "sushi.kitchen.generated-at=2025-09-16T23:15:00Z",
+      "sushi.kitchen.privacy-profile=open_research",
+      "sushi.kitchen.environment-template=development",
+      "sushi.kitchen.combo-ids=combo.chat-local",
+      "sushi.kitchen.service-count=4",
+      "sushi.kitchen.estimated-resources=cpu:4,memory:8gb,storage:50gb"
+    ]
+  },
+  "x-common-logging": {
+    "logging": {
+      "driver": "json-file",
+      "options": {
+        "max-size": "50m",
+        "max-file": "5",
+        "labels": "sushi.service,sushi.style"
+      }
+    }
+  },
+  "x-common-restart": {
+    "restart": "unless-stopped"
+  },
+  "x-development-security": {
+    "security_opt": [
+      "no-new-privileges:false"
+    ]
+  },
+  "services": {
+    "ollama": {
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "50m",
+          "max-file": "5",
+          "labels": "sushi.service,sushi.style"
+        }
+      },
+      "restart": "unless-stopped",
+      "security_opt": [
+        "no-new-privileges:false"
+      ],
+      "image": "ollama/ollama:latest",
+      "container_name": "sushi_ollama",
+      "platform": "linux/amd64",
+      "profiles": [
+        "hosomaki"
+      ],
+      "ports": [
+        "11434:11434"
+      ],
+      "volumes": [
+        "ollama_data:/root/.ollama"
+      ],
+      "environment": {
+        "OLLAMA_HOST": "0.0.0.0",
+        "OLLAMA_MODELS": "/root/.ollama/models",
+        "OLLAMA_KEEP_ALIVE": "5m",
+        "OLLAMA_DEBUG": "true",
+        "OLLAMA_VERBOSE": "true",
+        "OLLAMA_LOG_LEVEL": "debug"
+      },
+      "deploy": {
+        "resources": {
+          "reservations": {
+            "devices": [
+              {
+                "driver": "nvidia",
+                "count": "all",
+                "capabilities": [
+                  "gpu"
+                ]
+              }
+            ]
+          },
+          "limits": {
+            "cpus": "2.0",
+            "memory": "4G"
+          }
+        }
+      },
+      "networks": [
+        "sushi_net"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:11434/api/tags"
+        ],
+        "interval": "30s",
+        "timeout": "10s",
+        "retries": 3,
+        "start_period": "60s"
+      }
+    },
+    "anythingllm": {
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "50m",
+          "max-file": "5",
+          "labels": "sushi.service,sushi.style"
+        }
+      },
+      "restart": "unless-stopped",
+      "security_opt": [
+        "no-new-privileges:false"
+      ],
+      "image": "mintplexlabs/anythingllm:latest",
+      "container_name": "sushi_anythingllm",
+      "platform": "linux/amd64",
+      "profiles": [
+        "hosomaki"
+      ],
+      "ports": [
+        "3001:3001"
+      ],
+      "volumes": [
+        "anythingllm_storage:/app/server/storage",
+        "anythingllm_hotdir:/app/collector/hotdir"
+      ],
+      "environment": {
+        "STORAGE_DIR": "/app/server/storage",
+        "LLM_PROVIDER": "ollama",
+        "OLLAMA_BASE_PATH": "http://ollama:11434",
+        "EMBEDDING_ENGINE": "ollama",
+        "EMBEDDING_BASE_PATH": "http://ollama:11434",
+        "VECTOR_DB": "qdrant",
+        "QDRANT_ENDPOINT": "http://qdrant:6333",
+        "DATABASE_CONNECTION_STRING": "postgresql://anythingllm:${POSTGRES_PASSWORD}@postgresql:5432/anythingllm",
+        "JWT_SECRET": "${ANYTHINGLLM_JWT_SECRET}"
+      },
+      "depends_on": {
+        "ollama": {
+          "condition": "service_healthy"
+        },
+        "qdrant": {
+          "condition": "service_healthy"
+        },
+        "postgresql": {
+          "condition": "service_healthy"
+        }
+      },
+      "deploy": {
+        "resources": {
+          "limits": {
+            "cpus": "1.0",
+            "memory": "2G"
+          }
+        }
+      },
+      "networks": [
+        "sushi_net"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:3001/api/system"
+        ],
+        "interval": "30s",
+        "timeout": "10s",
+        "retries": 3,
+        "start_period": "90s"
+      }
+    },
+    "qdrant": {
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "50m",
+          "max-file": "5",
+          "labels": "sushi.service,sushi.style"
+        }
+      },
+      "restart": "unless-stopped",
+      "security_opt": [
+        "no-new-privileges:false"
+      ],
+      "image": "qdrant/qdrant:latest",
+      "container_name": "sushi_qdrant",
+      "platform": "linux/amd64",
+      "profiles": [
+        "futomaki"
+      ],
+      "ports": [
+        "6333:6333",
+        "6334:6334"
+      ],
+      "volumes": [
+        "qdrant_storage:/qdrant/storage"
+      ],
+      "environment": {
+        "QDRANT__SERVICE__HTTP_PORT": "6333",
+        "QDRANT__SERVICE__GRPC_PORT": "6334",
+        "QDRANT__LOG_LEVEL": "debug",
+        "QDRANT__SERVICE__ENABLE_CORS": "true",
+        "QDRANT__TELEMETRY_DISABLED": "true",
+        "QDRANT__STORAGE__PERFORMANCE__MAX_SEARCH_THREADS": "2"
+      },
+      "deploy": {
+        "resources": {
+          "limits": {
+            "cpus": "1.0",
+            "memory": "2G"
+          }
+        }
+      },
+      "networks": [
+        "sushi_net"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "curl",
+          "-f",
+          "http://localhost:6333/health"
+        ],
+        "interval": "30s",
+        "timeout": "10s",
+        "retries": 3,
+        "start_period": "30s"
+      }
+    },
+    "postgresql": {
+      "logging": {
+        "driver": "json-file",
+        "options": {
+          "max-size": "50m",
+          "max-file": "5",
+          "labels": "sushi.service,sushi.style"
+        }
+      },
+      "restart": "unless-stopped",
+      "security_opt": [
+        "no-new-privileges:false"
+      ],
+      "image": "postgres:15-alpine",
+      "container_name": "sushi_postgresql",
+      "platform": "linux/amd64",
+      "profiles": [
+        "futomaki"
+      ],
+      "ports": [
+        "5432:5432"
+      ],
+      "volumes": [
+        "postgresql_data:/var/lib/postgresql/data"
+      ],
+      "environment": {
+        "POSTGRES_DB": "anythingllm",
+        "POSTGRES_USER": "anythingllm",
+        "POSTGRES_PASSWORD": "${POSTGRES_PASSWORD}",
+        "PGDATA": "/var/lib/postgresql/data/pgdata",
+        "POSTGRES_LOG_STATEMENT": "all",
+        "POSTGRES_LOG_DURATION": "true",
+        "POSTGRES_LOG_CHECKPOINTS": "true",
+        "POSTGRES_LOG_CONNECTIONS": "true",
+        "POSTGRES_LOG_DISCONNECTIONS": "true"
+      },
+      "deploy": {
+        "resources": {
+          "limits": {
+            "cpus": "1.0",
+            "memory": "1G"
+          }
+        }
+      },
+      "networks": [
+        "sushi_net"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U anythingllm -d anythingllm"
+        ],
+        "interval": "30s",
+        "timeout": "10s",
+        "retries": 3,
+        "start_period": "30s"
+      }
+    }
+  },
+  "networks": {
+    "sushi_net": {
+      "driver": "bridge",
+      "driver_opts": {
+        "com.docker.network.bridge.enable_icc": "true",
+        "com.docker.network.bridge.enable_ip_masquerade": "true"
+      },
+      "ipam": {
+        "driver": "default",
+        "config": [
+          {
+            "subnet": "172.20.0.0/16",
+            "gateway": "172.20.0.1",
+            "ip_range": "172.20.1.0/24"
+          }
+        ]
+      },
+      "labels": [
+        "sushi.kitchen.network.profile=open_research",
+        "sushi.kitchen.network.isolation=minimal",
+        "sushi.kitchen.network.purpose=development"
+      ]
+    }
+  },
+  "volumes": {
+    "ollama_data": {
+      "driver": "local",
+      "labels": [
+        "sushi.kitchen.volume.service=ollama",
+        "sushi.kitchen.volume.backup_priority=medium",
+        "sushi.kitchen.volume.content=models"
+      ]
+    },
+    "anythingllm_storage": {
+      "driver": "local",
+      "labels": [
+        "sushi.kitchen.volume.service=anythingllm",
+        "sushi.kitchen.volume.backup_priority=high",
+        "sushi.kitchen.volume.content=application_data"
+      ]
+    },
+    "anythingllm_hotdir": {
+      "driver": "local",
+      "labels": [
+        "sushi.kitchen.volume.service=anythingllm",
+        "sushi.kitchen.volume.backup_priority=high",
+        "sushi.kitchen.volume.content=document_uploads"
+      ]
+    },
+    "qdrant_storage": {
+      "driver": "local",
+      "labels": [
+        "sushi.kitchen.volume.service=qdrant",
+        "sushi.kitchen.volume.backup_priority=critical",
+        "sushi.kitchen.volume.content=vector_embeddings"
+      ]
+    },
+    "postgresql_data": {
+      "driver": "local",
+      "labels": [
+        "sushi.kitchen.volume.service=postgresql",
+        "sushi.kitchen.volume.backup_priority=critical",
+        "sushi.kitchen.volume.content=database"
+      ]
+    }
+  },
+  "x-sushi-deployment-info": {
+    "generation_timestamp": "2025-09-16T23:15:00Z",
+    "selected_combos": [
+      {
+        "id": "combo.chat-local",
+        "name": "Local Chat",
+        "services": [
+          "hosomaki.ollama",
+          "hosomaki.anythingllm"
+        ]
+      }
+    ],
+    "privacy_profile": "open_research",
+    "environment_template": "development",
+    "estimated_resources": {
+      "total_cpu_cores": 4,
+      "total_memory_gb": 8,
+      "total_storage_gb": 50,
+      "gpu_required": false,
+      "gpu_memory_gb": 0
+    },
+    "service_dependencies": {
+      "hosomaki.anythingllm": {
+        "requires": [
+          "hosomaki.ollama",
+          "futomaki.qdrant",
+          "futomaki.postgresql"
+        ]
+      },
+      "hosomaki.ollama": [],
+      "futomaki.qdrant": [],
+      "futomaki.postgresql": []
+    },
+    "capability_providers": {
+      "local_llm_inference": "hosomaki.ollama",
+      "vector_storage": "futomaki.qdrant",
+      "relational_storage": "futomaki.postgresql"
+    },
+    "health_check_endpoints": {
+      "ollama": "http://localhost:11434/api/tags",
+      "anythingllm": "http://localhost:3001/api/system",
+      "qdrant": "http://localhost:6333/health",
+      "postgresql": "pg_isready check"
+    },
+    "external_ports": {
+      "web_interface": "http://localhost:3001",
+      "ollama_api": "http://localhost:11434",
+      "qdrant_api": "http://localhost:6333",
+      "postgresql_db": "postgresql://localhost:5432"
+    },
+    "backup_priorities": {
+      "critical": [
+        "postgresql_data",
+        "qdrant_storage"
+      ],
+      "high": [
+        "anythingllm_storage",
+        "anythingllm_hotdir"
+      ],
+      "medium": [
+        "ollama_data"
+      ]
+    },
+    "validation_commands": {
+      "service_health": "docker-compose ps",
+      "ollama_models": "docker-compose exec ollama ollama list",
+      "qdrant_health": "curl -f http://localhost:6333/health",
+      "anythingllm_api": "curl -f http://localhost:3001/api/system",
+      "database_connection": "docker-compose exec postgresql pg_isready -U anythingllm"
+    }
+  }
+}
