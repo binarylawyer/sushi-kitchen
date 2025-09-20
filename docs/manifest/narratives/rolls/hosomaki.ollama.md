@@ -167,7 +167,7 @@ integration_notes:
       description: "Route multi-model traffic via LiteLLM while keeping Ollama local"
       example: |-
         services:
-          hosomaki.litellm:
+          litellm:
             environment:
               LITELLM_ROUTES: |
                 {

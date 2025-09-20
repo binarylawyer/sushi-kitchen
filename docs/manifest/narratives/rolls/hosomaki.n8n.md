@@ -181,7 +181,7 @@ integration_notes:
       description: "Example environment overrides to target the managed Postgres shipped with Supabase"
       example: |-
         services:
-          hosomaki.n8n:
+          n8n:
             environment:
               DB_POSTGRESDB_HOST: "supabase-db"
               DB_POSTGRESDB_DATABASE: "${N8N_DB_NAME:-n8n}"
