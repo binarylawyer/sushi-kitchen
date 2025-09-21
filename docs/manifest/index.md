@@ -1,6 +1,6 @@
 # 🍣 Sushi Kitchen Manifest System Architecture
 
-*A comprehensive guide to understanding and extending the Docker Compose framework*
+A comprehensive guide to understanding and extending the Docker Compose framework
 
 ## Understanding The Complete Manifest Architecture
 

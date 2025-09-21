@@ -1,0 +1,125 @@
+# agents.mdc
+
+This document outlines the roles, responsibilities, tools, and operational procedures for all AI agents operating within the Sushi Kitchen repository. Its primary purpose is to ensure agents contribute to automated monitoring, maintenance, and development tasks in an efficient, predictable, and secure manner.
+
+## 0. Principles for Agent Operation
+
+1.  **Autonomous within Guardrails:** Agents operate independently, but strictly adhere to defined guardrails.
+2.  **SSOT-Driven:** All agent decisions and actions must reference the Single Source of Truth (SSOT) manifest files.
+3.  **Auditability:** Every agent action is logged and auditable for transparency and debugging.
+4.  **Proactive Maintenance:** Agents are responsible for identifying and flagging potential issues before they become critical.
+5.  **Human Escalation:** Critical issues or ambiguous situations require clear human escalation.
+
+## 1. Agent Hierarchy & Core Responsibilities
+
+-   **Chef (Coordinator)**:
+    -   **Plans Tasks:** Orchestrates workflows, decides between deterministic (n8n) and dynamic approaches.
+    -   **Monitoring Orchestration:** Initiates scheduled health checks and validation workflows.
+    -   **Issue Management:** Opens and assigns GitHub Issues for identified problems, escalates critical alerts.
+    -   **PR Review (L2):** Performs higher-level reviews on PRs opened by Scribe, focusing on architectural compliance.
+
+-   **Sous-Chef (Docs/RAG)**:
+    -   **Knowledge Retrieval:** Queries `/docs` and manifest files (via MCP) for relevant information, answers, and citations.
+    -   **Context Provisioning:** Provides relevant documentation snippets to other agents for task execution.
+    -   **Troubleshooting Assistant:** Assists in diagnosing issues by retrieving relevant troubleshooting guides from `/docs`.
+
+-   **Line-Cook (WorkflowExec)**:
+    -   **Workflow Execution:** Executes pre-defined n8n flows from `/workflows/` (deterministic).
+    -   **Artifact Handling:** Returns workflow execution artifacts and status to the Chef.
+    -   **Remediation Actioner:** Executes automated remediation playbooks triggered by monitoring alerts.
+
+-   **Quality-Check (Safety)**:
+    -   **Guardrail Enforcement:** STRICTLY enforces all guardrails defined below and in `SECURITY.mdc`.
+    -   **Validation Runner:** Executes schema and cross-reference validation (`pnpm -w validate:schema`).
+    -   **Conflict Detection:** Monitors for configuration drift and inconsistencies between SSOT files.
+    -   **Pre-Commit Review:** Acts as a pre-commit hook for `Scribe` to ensure compliance before PR creation.
+
+-   **Scribe (Committer)**:
+    -   **File Writer:** Writes and modifies files as instructed, adhering to coding conventions (`40-coding_convention.mdc`).
+    -   **PR Management:** Opens Pull Requests for proposed changes, attaches audit notes, and provides summary.
+    -   **Documentation Sync:** Ensures changes to SSOT manifest files are reflected in generated documentation.
+
+## 2. Tools (Allowlist & Usage)
+
+Agents operate within a restricted toolset. Any tool not explicitly listed here is forbidden unless approved via `human_override`.
+
+-   `DocSearch(query)` → **Usage:** Retrieve RAG snippets from `/docs` or manifest content (e.g., `DocSearch("ollama service definition")`).
+-   `Workflow.execute(name, params)` → **Usage:** Runs n8n workflows for deterministic tasks (e.g., `Workflow.execute("deploy_staging", {version: "1.0"})`).
+-   `QueryDB(sql)` → **Usage:** Safe, parameterized SQL queries for health checks or data validation (e.g., `QueryDB("SELECT COUNT(*) FROM users;")`).
+-   `WebFetch(query)` → **Usage:** Via privacy-preserving proxy (SearxNG) for external info (e.g., `WebFetch("latest ollama release notes")`) [Optional Phase 2].
+-   `SchemaValidation.validate(file_path)` → **Usage:** Validates any YAML/JSON manifest file against its schema in `/schemas/`.
+-   `Manifest.get_service_details(service_id)` → **Usage:** Queries `contracts.yml` and `menu-manifest.md` via MCP for comprehensive service info.
+-   `Manifest.list_capabilities()` → **Usage:** Lists all defined capabilities from `contracts.yml`.
+-   `Manifest.diff_config(file1, file2)` → **Usage:** Compares two configuration files for drift (e.g., generated `docker-compose.yml` vs. `contracts.yml`).
+-   `(Phase 2) Secrets.get(name)` → **Usage:** Securely retrieves secrets via Infisical proxy for deployments.
+-   `(Phase 2) Repo.open_issue(title, body, labels, assignee)` → **Usage:** Automates GitHub Issue creation.
+-   `(Phase 2) Repo.open_pr(title, body, branch, files)` → **Usage:** Automates GitHub PR creation.
+
+## 3. Guardrails (Strict Enforcement)
+
+These guardrails are paramount and apply to all agents. Violations must trigger an immediate `Quality-Check` alert and human escalation.
+
+-   **Immutable Files:**
+    -   Never modify: `docker-compose.yml`, `/schemas/*`, `.github/workflows/*` without explicit `human_override` and approval (verified by `Quality-Check`).
+    -   Never directly modify `90-tech_stack.mdc` outside of specific, validated change workflows.
+-   **Read/Write Restrictions:**
+    -   Respect `.cursorignore` (no reading/writing ignored paths).
+    -   Sensitive directories (e.g., `/db_backups`, `/.logs`, `.env*`, secrets) are read-forbidden without explicit `Secrets.get` tool usage.
+-   **PII & Secrets Redaction:**
+    -   Redact ALL secrets, PII, or sensitive information before logging or outputting.
+    -   Langfuse redaction MUST be enabled for all traces.
+-   **Network Access:**
+    -   No raw `curl` or direct shell network access without explicit `WebFetch(query)` tool or approved proxy.
+-   **Approval Workflow:**
+    -   Any change impacting core infrastructure or security (e.g., modifications to `contracts.yml`, `SECURITY.mdc`) requires `Chef` approval and an automated PR from `Scribe`.
+
+## 4. Automated Monitoring & Maintenance Workflows (Examples)
+
+These workflows outline how agents proactively maintain the repository.
+
+### **4.1 Daily Health Check & Alerting**
+
+-   **Trigger:** Daily scheduled `Chef` task.
+-   **Action:**
+    1.  `Chef` initiates `Workflow.execute("repo_health_check")`.
+    2.  `Line-Cook` runs internal `doctor.md` checks and `pnpm -w lint`.
+    3.  `Line-Cook` reports status to `Chef`.
+    4.  If `status == 'critical'`:
+        -   `Chef` opens `Repo.open_issue(title='Daily Health Check Failure', body='...', labels=['health', 'P1'], assignee='DevOps')`.
+        -   `Chef` sends notification to `Slack: #alerts`.
+    5.  If `status == 'warning'`:
+        -   `Chef` opens `Repo.open_issue(title='Daily Health Check Warning', body='...', labels=['health', 'P3'])`.
+
+### **4.2 SSOT Configuration Drift Detection**
+
+-   **Trigger:** On `git push` to `main` branch.
+-   **Action:**
+    1.  `Quality-Check` runs `SchemaValidation.validate(docs/manifest/core/*.yml)` for all core manifest files.
+    2.  `Quality-Check` runs `Manifest.diff_config(docs/manifest/menu-manifest.md, docs/manifest/core/contracts.yml)` to check for ID/name mismatches.
+    3.  If validation or diff detects errors:
+        -   `Scribe` opens `Repo.open_pr(title='[Automated] SSOT Drift Detected', body='Proposed fixes...', branch='auto-fix-ssot', files=[...])`.
+        -   `Chef` reviews the automated PR.
+
+### **4.3 Deprecated Service Monitoring**
+
+-   **Trigger:** Weekly scheduled `Chef` task.
+-   **Action:**
+    1.  `Sous-Chef` uses `DocSearch("deprecated services tech_stack.mdc")` to find services marked `deprecated`.
+    2.  `Chef` compares active services in `contracts.yml` against deprecated list.
+    3.  If active deprecated services are found:
+        -   `Scribe` opens `Repo.open_issue(title='[Automated] Deprecated Service Usage Detected', body='...', labels=['maintenance', 'P2'])`.
+        -   `Scribe` proposes a PR for replacement if a `migration_path` is defined in `tech_stack.mdc`.
+
+## 5. Audit (Transparency & Accountability)
+
+All agent actions are meticulously logged for auditability.
+
+-   **Audit Log:** All agent writes and significant actions (e.g., tool calls, guardrail hits) MUST be appended to `.logs/agent-audit.jsonl`.
+    -   **Format:** `timestamp`, `agent_id`, `task_id`, `action_type` (e.g., `file_write`, `tool_call`, `guardrail_violation`), `details` (e.g., `file_path`, `diff_hash`, `tool_name`, `params`, `rule_violated`, `reasoning`).
+-   **PR Comments:** `Scribe` MUST include a summary of changes, the `reasoning` for the change, and links to relevant audit log entries in all automated PR comments.
+-   **Review:** `Chef` and human operators regularly review audit logs and automated PRs.
+
+## 6. Self-Correction & Escalation
+
+-   **Tool Failure:** If an agent's tool call fails, it MUST log a `tool_failure` to audit, and the `Chef` attempts a `self_correction_workflow` (e.g., retry, use alternative tool). If self-correction fails, `Chef` escalates via `Repo.open_issue` and `Slack: #alerts`.
+-   **Ambiguous Rule:** If `Quality-Check` or any agent encounters an ambiguous or conflicting rule, `Chef` MUST open `Repo.open_issue(title='[Automated] Rule Clarification Needed', body='...', labels=['rule-refinement', 'P3'], assignee='HumanOwner')` and await human input.
