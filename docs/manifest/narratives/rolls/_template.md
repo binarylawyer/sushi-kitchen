@@ -40,6 +40,8 @@ export:
       anchor: "further-reading-learning-paths"
 id: "TODO: manifest service id (e.g., hosomaki.ollama)"
 slug: "TODO: derived slug (e.g., hosomaki-ollama)"
+id: "TODO: manifest service id (e.g., hosomaki.ollama)"
+slug: "TODO: url-friendly-slug"
 style: "TODO: Hosomaki | Futomaki | Nigiri | Gunkanmaki | Sashimi | Temaki | Chirashi | Inari | Uramaki | Otsumami"
 title: "TODO: Display name for this roll"
 status: "TODO: recommended | optional | experimental"
@@ -51,6 +53,13 @@ category:
   primary_use_cases:
     - "TODO: highlight a practical use case"
     - "TODO: optional additional use case"
+  TODO: 2-3 sentence elevator pitch that mirrors the entry in `core/menu-manifest.md`
+category:
+  menu_section: "TODO: matching section from menu-manifest"
+  service_kind: "TODO: e.g., inference, workflow, storage"
+  primary_use_cases:
+    - "TODO: short use case"
+    - "TODO: additional use case"
 capabilities:
   provides:
     - "TODO: cap.* identifiers from contracts"
@@ -80,6 +89,30 @@ resources:
 docker:
   image: "TODO: upstream image reference"
   tag_strategy: "TODO: track-upstream | pin-to-digest"
+      - "TODO: cap.* dependencies (if any)"
+    services:
+      - "TODO: service ids this roll explicitly depends on"
+  suggests:
+    - "TODO: optional caps or companion services"
+resources:
+  cpu:
+    minimum_cores: "TODO: align with contracts.yml"
+    recommended_cores: "TODO"
+  memory:
+    minimum_mb: "TODO"
+    recommended_mb: "TODO"
+  storage:
+    persistent_volumes:
+      - name: "TODO"
+        size_gb: "TODO"
+        purpose: "TODO"
+  gpu:
+    required: "TODO: true | false"
+    minimum_vram_mb: "TODO if gpu required"
+    notes: "TODO: guidance on GPU usage or CPU-only fallback"
+docker:
+  image: "TODO: upstream image reference"
+  tag_strategy: "TODO: e.g., pin to digest, track latest"
   ports:
     - container: TODO
       host_range: "TODO"
@@ -114,6 +147,17 @@ dependencies:
     outbound:
       - description: "TODO: describe downstream output"
         target: "TODO: capability or service"
+    retention_days: "TODO"
+    recommended_sinks:
+      - "TODO: e.g., loki-promtail"
+dependencies:
+  data_flow:
+    inbound:
+      - description: "TODO"
+        source: "TODO"
+    outbound:
+      - description: "TODO"
+        target: "TODO"
   configuration_prerequisites:
     - "TODO: secrets, API keys, domain setup"
   failure_modes:
@@ -128,6 +172,11 @@ bundles:
   platters:
     - id: "TODO: platter id"
       name: "TODO: platter name"
+    - "TODO: combo ids using this roll"
+  bento_boxes:
+    - "TODO: bento ids using this roll"
+  platters:
+    - "TODO: platter ids using this roll"
   pairs_well_with:
     - "TODO: manifest service ids for cross-links"
 source:
@@ -135,6 +184,7 @@ source:
   documentation: "TODO: https://"
   repository: "TODO: https://"
   changelog: "TODO: https://"
+  changelog: "TODO: https:// or release notes"
   license: "TODO: license name"
   dockerfile: "TODO: upstream Dockerfile path if relevant"
   maintainer:
@@ -144,6 +194,7 @@ source:
 seo:
   description: >-
     TODO: 160-character meta description for search indices.
+    TODO: 160-character meta description for search indices
   llm_keywords:
     - "TODO: phrase targeted at LLM retrieval"
     - "TODO: alternate keyword"
