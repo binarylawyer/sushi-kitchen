@@ -7,7 +7,7 @@
 # - Provides deployment guidance from minimal to enterprise-scale environments
 # =====================================================================
 
-schema_version: "1.0"
+schema_version: "0.1.0"
 
 platters:
   - id: platter.hosomaki-core
