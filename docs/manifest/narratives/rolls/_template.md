@@ -1,10 +1,58 @@
 ---
+schema_version: 1.0.0
+content_version: 0.1.0
+last_updated: "TODO: YYYY-MM-DD"
+manifest_ref:
+  contracts: "docs/manifest/core/contracts.yml#services.TODO-service-id"
+  menu: "docs/manifest/core/menu-manifest.md#styles.TODO-style.TODO-service-id"
+assets: []
+export:
+  sections:
+    quick_service_snapshot:
+      heading: "🍱 Quick service snapshot"
+      anchor: "quick-service-snapshot"
+    origin_story:
+      heading: "🧭 Origin story & evolution"
+      anchor: "origin-story-evolution"
+    capabilities:
+      heading: "🛠️ Core capabilities & architecture"
+      anchor: "core-capabilities-architecture"
+    role:
+      heading: "🍣 Role inside Sushi Kitchen"
+      anchor: "role-inside-sushi-kitchen"
+    partnerships:
+      heading: "🤝 Works great with"
+      anchor: "works-great-with"
+    deployment:
+      heading: "⚙️ Deployment checklist"
+      anchor: "deployment-checklist"
+    observability:
+      heading: "📈 Observability & operations"
+      anchor: "observability-operations"
+    security:
+      heading: "🔐 Security, privacy, & governance"
+      anchor: "security-privacy-governance"
+    roadmap:
+      heading: "🚀 Future roadmap"
+      anchor: "future-roadmap"
+    further_reading:
+      heading: "📚 Further reading & learning paths"
+      anchor: "further-reading-learning-paths"
+id: "TODO: manifest service id (e.g., hosomaki.ollama)"
+slug: "TODO: derived slug (e.g., hosomaki-ollama)"
 id: "TODO: manifest service id (e.g., hosomaki.ollama)"
 slug: "TODO: url-friendly-slug"
 style: "TODO: Hosomaki | Futomaki | Nigiri | Gunkanmaki | Sashimi | Temaki | Chirashi | Inari | Uramaki | Otsumami"
 title: "TODO: Display name for this roll"
 status: "TODO: recommended | optional | experimental"
 summary: >-
+  TODO: 2-3 sentence elevator pitch that mirrors the entry in `core/menu-manifest.md`.
+category:
+  menu_section: "TODO: style name from menu-manifest"
+  service_kind: "TODO: runtime classification (e.g., inference, workflow, storage)"
+  primary_use_cases:
+    - "TODO: highlight a practical use case"
+    - "TODO: optional additional use case"
   TODO: 2-3 sentence elevator pitch that mirrors the entry in `core/menu-manifest.md`
 category:
   menu_section: "TODO: matching section from menu-manifest"
@@ -17,6 +65,30 @@ capabilities:
     - "TODO: cap.* identifiers from contracts"
   requires:
     capabilities:
+      - "TODO: cap.* dependency (omit if none)"
+    services:
+      - "TODO: explicit service dependency (omit if none)"
+  suggests:
+    - "TODO: optional companion capability"
+resources:
+  cpu:
+    minimum_cores: TODO
+    recommended_cores: TODO
+  memory:
+    minimum_mb: TODO
+    recommended_mb: TODO
+  storage:
+    persistent_volumes:
+      - name: "TODO"
+        size_gb: TODO
+        purpose: "TODO"
+  gpu:
+    required: TODO
+    minimum_vram_mb: "TODO if gpu required"
+    notes: "TODO: describe GPU expectations or CPU fallback"
+docker:
+  image: "TODO: upstream image reference"
+  tag_strategy: "TODO: track-upstream | pin-to-digest"
       - "TODO: cap.* dependencies (if any)"
     services:
       - "TODO: service ids this roll explicitly depends on"
@@ -64,6 +136,17 @@ observability:
     enabled: "TODO: true | false"
     collection_notes: "TODO"
   logging:
+    retention_days: TODO
+    recommended_sinks:
+      - "TODO: e.g., inari.loki"
+dependencies:
+  data_flow:
+    inbound:
+      - description: "TODO: describe upstream requirement"
+        source: "TODO: capability or service"
+    outbound:
+      - description: "TODO: describe downstream output"
+        target: "TODO: capability or service"
     retention_days: "TODO"
     recommended_sinks:
       - "TODO: e.g., loki-promtail"
@@ -81,6 +164,14 @@ dependencies:
     - "TODO: known issues and mitigations"
 bundles:
   combos:
+    - id: "TODO: combo id"
+      name: "TODO: combo name"
+  bento_boxes:
+    - id: "TODO: bento id"
+      name: "TODO: bento name"
+  platters:
+    - id: "TODO: platter id"
+      name: "TODO: platter name"
     - "TODO: combo ids using this roll"
   bento_boxes:
     - "TODO: bento ids using this roll"
@@ -92,6 +183,7 @@ source:
   homepage: "TODO: https://"
   documentation: "TODO: https://"
   repository: "TODO: https://"
+  changelog: "TODO: https://"
   changelog: "TODO: https:// or release notes"
   license: "TODO: license name"
   dockerfile: "TODO: upstream Dockerfile path if relevant"
@@ -101,6 +193,7 @@ source:
     last_reviewed: "TODO: YYYY-MM-DD"
 seo:
   description: >-
+    TODO: 160-character meta description for search indices.
     TODO: 160-character meta description for search indices
   llm_keywords:
     - "TODO: phrase targeted at LLM retrieval"
