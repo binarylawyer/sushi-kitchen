@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+  sushi-kitchen-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sushi-kitchen-api
+    ports:
+      - "${SUSHI_API_PORT:-8001}:8000"
+    environment:
+      # Path to the core repo when running standalone
+      - CORE_REPO_PATH=${CORE_REPO_PATH:-/sushi-kitchen}
+    volumes:
+      # For standalone mode, mount parent directory (assuming API repo is alongside main repo)
+      # In production, this should be configured to point to the main sushi-kitchen repo
+      - ${CORE_REPO_PATH:-../sushi-kitchen}:/sushi-kitchen:ro
+      # Generated files directory (for serving static bundles)
+      - ./generated:/app/generated:ro
+      # Temp directory for API operations
+      - api_temp:/tmp/sushi-api
+    restart: unless-stopped
+    networks:
+      - sushi_api_net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  api_temp:
+
+networks:
+  sushi_api_net:
+    driver: bridge

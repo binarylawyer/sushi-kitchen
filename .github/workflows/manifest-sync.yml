@@ -1,0 +1,263 @@
+name: Sync Manifests to API
+
+on:
+  push:
+    paths:
+      - 'docs/manifest/**'
+      - 'scripts/generate-compose.py'
+      - 'scripts/export-manifest-json.py'
+      - 'scripts/generate-api-bundle.py'
+      - 'scripts/generate-network-config.py'
+      - 'scripts/**'
+  workflow_dispatch:
+
+jobs:
+  generate-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install Python dependencies
+      run: |
+        pip install pyyaml
+
+    - name: Verify manifest structure
+      run: |
+        python -c "
+        import yaml
+        from pathlib import Path
+
+        manifest_dir = Path('docs/manifest')
+        if not manifest_dir.exists():
+            print('No manifest directory found, creating example structure...')
+            manifest_dir.mkdir(parents=True, exist_ok=True)
+
+            # Create example contracts.yml
+            example_contracts = {
+                'capabilities': {},
+                'services': {}
+            }
+            with open(manifest_dir / 'contracts.yml', 'w') as f:
+                yaml.dump(example_contracts, f)
+
+        print('Manifest structure verified')
+        "
+
+    - name: Generate API Bundle
+      run: |
+        # Create API generated directory
+        mkdir -p sushi-kitchen-api/generated
+
+        # Generate API bundle to API directory
+        python scripts/generate-api-bundle.py \
+          --manifest-dir docs/manifest \
+          --output sushi-kitchen-api/generated/api-bundle.json \
+          --pretty \
+          --stats
+
+    - name: Generate TypeScript Types
+      run: |
+        # Install TypeScript and ts-node
+        npm install -g typescript ts-node @types/node
+
+        # Make sure the API types directory exists
+        mkdir -p sushi-kitchen-api/generated/types
+
+        # Generate types to API directory
+        ts-node scripts/generate-types.ts \
+          sushi-kitchen-api/generated/api-bundle.json \
+          sushi-kitchen-api/generated/types/sushi-kitchen.ts
+
+    - name: Validate Generated Files
+      run: |
+        echo "Validating generated bundle..."
+        python -c "
+        import json
+        with open('sushi-kitchen-api/generated/api-bundle.json') as f:
+            bundle = json.load(f)
+        print(f'Bundle version: {bundle[\"version\"]}')
+        print(f'Generated at: {bundle[\"generated_at\"]}')
+        print(f'Services: {len(bundle[\"services\"])}')
+        print(f'Combos: {len(bundle[\"combos\"])}')
+        print(f'Platters: {len(bundle[\"platters\"])}')
+        "
+
+        echo "Checking TypeScript types..."
+        if [ -f "sushi-kitchen-api/generated/types/sushi-kitchen.ts" ]; then
+          echo "TypeScript types generated successfully"
+          head -20 sushi-kitchen-api/generated/types/sushi-kitchen.ts
+        else
+          echo "Warning: TypeScript types not generated"
+        fi
+
+    - name: Create Version Tag
+      run: |
+        # Create a version tag based on timestamp and commit
+        VERSION_TAG="bundle-$(date +%Y%m%d-%H%M%S)-${GITHUB_SHA:0:8}"
+        echo "VERSION_TAG=${VERSION_TAG}" >> $GITHUB_ENV
+
+        # Add version info to bundle
+        python -c "
+        import json
+        with open('sushi-kitchen-api/generated/api-bundle.json', 'r') as f:
+            bundle = json.load(f)
+        bundle['build'] = {
+            'version_tag': '${VERSION_TAG}',
+            'commit_sha': '${GITHUB_SHA}',
+            'branch': '${GITHUB_REF_NAME}',
+            'workflow_run': '${GITHUB_RUN_ID}'
+        }
+        with open('sushi-kitchen-api/generated/api-bundle.json', 'w') as f:
+            json.dump(bundle, f, indent=2)
+        "
+
+    - name: Upload Bundle as Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: sushi-kitchen-bundle-${{ env.VERSION_TAG }}
+        path: |
+          sushi-kitchen-api/generated/api-bundle.json
+          sushi-kitchen-api/generated/types/sushi-kitchen.ts
+
+    - name: Upload to S3 (if configured)
+      if: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION || 'us-east-1' }}
+      run: |
+        # Install AWS CLI
+        pip install awscli
+
+        # Upload versioned bundle
+        aws s3 cp sushi-kitchen-api/generated/api-bundle.json \
+          s3://${{ secrets.S3_BUCKET_NAME }}/bundles/v1/bundle-${{ env.VERSION_TAG }}.json \
+          --metadata version=${{ github.sha }},build-id=${{ github.run_id }}
+
+        # Upload as latest
+        aws s3 cp sushi-kitchen-api/generated/api-bundle.json \
+          s3://${{ secrets.S3_BUCKET_NAME }}/bundles/v1/bundle-latest.json \
+          --metadata version=${{ github.sha }},build-id=${{ github.run_id }}
+
+        # Upload TypeScript types
+        aws s3 cp sushi-kitchen-api/generated/types/sushi-kitchen.ts \
+          s3://${{ secrets.S3_BUCKET_NAME }}/types/v1/sushi-kitchen-${{ env.VERSION_TAG }}.ts
+
+        aws s3 cp sushi-kitchen-api/generated/types/sushi-kitchen.ts \
+          s3://${{ secrets.S3_BUCKET_NAME }}/types/v1/sushi-kitchen-latest.ts
+
+    - name: Invalidate API Cache (if configured)
+      if: ${{ secrets.API_URL && secrets.API_ADMIN_TOKEN }}
+      run: |
+        curl -X POST "${{ secrets.API_URL }}/admin/cache/refresh" \
+          -H "Authorization: Bearer ${{ secrets.API_ADMIN_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d "{\"bundle_url\": \"s3://${{ secrets.S3_BUCKET_NAME }}/bundles/v1/bundle-latest.json\"}" \
+          --fail-with-body || echo "Cache invalidation failed (non-critical)"
+
+    - name: Update Release Notes
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo "## Bundle ${{ env.VERSION_TAG }}" >> BUNDLE_CHANGELOG.md
+        echo "Generated: $(date -Iseconds)" >> BUNDLE_CHANGELOG.md
+        echo "Commit: ${{ github.sha }}" >> BUNDLE_CHANGELOG.md
+        echo "" >> BUNDLE_CHANGELOG.md
+        python -c "
+        import json
+        with open('sushi-kitchen-api/generated/api-bundle.json') as f:
+            bundle = json.load(f)
+        print(f'- Services: {len(bundle[\"services\"])}')
+        print(f'- Combos: {len(bundle[\"combos\"])}')
+        print(f'- Platters: {len(bundle[\"platters\"])}')
+        print(f'- Capabilities: {len(bundle[\"capabilities\"])}')
+        " >> BUNDLE_CHANGELOG.md
+        echo "" >> BUNDLE_CHANGELOG.md
+
+    - name: Comment on PR (if applicable)
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const bundle = JSON.parse(fs.readFileSync('sushi-kitchen-api/generated/api-bundle.json', 'utf8'));
+
+          const comment = `
+          ## 🍣 Sushi Kitchen Bundle Generated
+
+          **Bundle Version:** \`${{ env.VERSION_TAG }}\`
+
+          **Contents:**
+          - **Services:** ${Object.keys(bundle.services).length}
+          - **Combos:** ${Object.keys(bundle.combos).length}
+          - **Platters:** ${Object.keys(bundle.platters).length}
+          - **Capabilities:** ${Object.keys(bundle.capabilities).length}
+
+          **Files Generated:**
+          - \`sushi-kitchen-api/generated/api-bundle.json\` (${(fs.statSync('sushi-kitchen-api/generated/api-bundle.json').size / 1024).toFixed(1)} KB)
+          - \`sushi-kitchen-api/generated/types/sushi-kitchen.ts\` (TypeScript definitions)
+
+          The bundle is ready for deployment to the API service.
+          `;
+
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  validate-bundle:
+    runs-on: ubuntu-latest
+    needs: generate-and-deploy
+    if: github.event_name == 'pull_request'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download Bundle Artifact
+      uses: actions/download-artifact@v3
+      with:
+        pattern: sushi-kitchen-bundle-*
+        merge-multiple: true
+
+    - name: Validate Bundle Structure
+      run: |
+        python -c "
+        import json
+        import sys
+
+        try:
+            with open('sushi-kitchen-api/generated/api-bundle.json') as f:
+                bundle = json.load(f)
+
+            required_keys = ['version', 'generated_at', 'services', 'combos', 'platters', 'capabilities']
+            missing_keys = [key for key in required_keys if key not in bundle]
+
+            if missing_keys:
+                print(f'❌ Missing required keys: {missing_keys}')
+                sys.exit(1)
+
+            if not bundle['services']:
+                print('⚠️  Warning: No services defined in bundle')
+
+            print('✅ Bundle structure validation passed')
+            print(f'Bundle contains {len(bundle[\"services\"])} services')
+
+        except json.JSONDecodeError as e:
+            print(f'❌ Invalid JSON: {e}')
+            sys.exit(1)
+        except Exception as e:
+            print(f'❌ Validation error: {e}')
+            sys.exit(1)
+        "
