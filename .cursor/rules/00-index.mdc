@@ -16,6 +16,10 @@ This index provides a map of all Cursor Rules in this repository, their purpose,
 -   **70-personas_and_journeys.mdc**: Describes target user personas and their journeys within the Sushi Kitchen platform.
 -   **80-project_overview.mdc**: Presents a high-level project overview, including elevator pitch, goals, architecture, and roadmap.
 -   **90-tech_stack.mdc**: The primary SSOT for all applications, rolls, modes, routes, and badge metadata. This file drives UI generation and Caddy configuration.
+-   **agents.mdc**: Defines agent roles, tools, and automated workflows for monitoring and maintenance.
+-   **best-practices.mdc**: General principles and guidelines for agent operations and codebase interaction.
+-   **security-guardrails.mdc**: Specific security guardrails and restrictions for agent actions.
+-   **development-workflow.mdc**: Standardized workflow for agents contributing to development tasks.
 
 ## Compatibility Matrix (Who Consumes What)
 
@@ -33,6 +37,10 @@ Understanding how our rules and data sources interact is key to a harmonious kit
 | `70-personas_and_journeys.mdc`| (None directly, defines users/flows)                                              | Guide feature development based on user needs                                      |
 | `80-project_overview.mdc`     | `90-tech_stack.mdc` (for architectural components)                                | Provide high-level understanding of the project                                    |
 | `90-tech_stack.mdc`           | (None directly, primary SSOT)                                                     | **Primary SSOT** for all apps, rolls, modes, routes, security, badges, versions    |
+| `agents.mdc`                | All other rules files, `SECURITY.mdc`, `40-coding_convention.mdc`                         | Orchestrate automated monitoring, maintenance, and development tasks           |
+| `best-practices.mdc`        | (None directly)                                                                   | Define general principles and guidelines for agent operations                      |
+| `security-guardrails.mdc`   | `SECURITY.mdc`, `agents.mdc`                                                      | Enforce security policies and guardrails for agents                                |
+| `development-workflow.mdc`  | `40-coding_convention.mdc`, `agents.mdc`                                          | Standardize agent contributions to development workflows                           |
 | **UI (Next.js web)**          | `30-design_system.mdc`, `90-tech_stack.mdc` (names, status, badges, routes)     | Render app cards, menu, documentation dynamically                                  |
 | **Caddy/Ingress Config**      | `90-tech_stack.mdc` (routes, security.public_exposure, auth_required)             | Generate secure edge routing configuration                                         |
 | **Compose Generators**        | `90-tech_stack.mdc`, `docs/manifest/combos.yml`, `docs/manifest/platters.yml`   | Generate Docker Compose files from manifests                                       |

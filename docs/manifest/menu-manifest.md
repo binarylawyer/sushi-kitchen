@@ -418,16 +418,18 @@ enterprise_and_deployment:
   exports: ["Kubernetes/Helm", "Docker Swarm", "Ansible", "Bare-metal"]
 ---
 
-# 🍱 Sushi Kitchen Menu (human-facing)
+## 🍱 Sushi Kitchen Menu (human-facing)
 
-This is the **catalog** (Styles → Rolls).  
-- **Contracts (deps/images/versions/ports/env)** → `docs/manifest/contracts.yml`  
-- **Combos** → `docs/manifest/combos.yml`  
-- **Platters** → `docs/manifest/platters.yml`  
-- **Badges** → `docs/manifest/badges.yml` (icons in `assets/badges/`)  
+This is the **catalog** (Styles → Rolls).
 
-Meet our chefs: **Port** and **Starboard**.  
-- **Port's sushi** = core foundation you'll use daily (Hosomaki, Futomaki, Uramaki, Nigiri, Temaki, Gunkanmaki, Sashimi).  
-- **Starboard's bowls/specialties** = exploratory, observability, and feasts (Chirashi, Inari, Otsumami, plus Omakase/Kaiseki).  
+- **Contracts (deps/images/versions/ports/env)** → `docs/manifest/contracts.yml`
+- **Combos** → `docs/manifest/combos.yml`
+- **Platters** → `docs/manifest/platters.yml`
+- **Badges** → `docs/manifest/badges.yml` (icons in `assets/badges/`)
+
+Meet our chefs: **Port** and **Starboard**.
+
+- **Port's sushi** = core foundation you'll use daily (Hosomaki, Futomaki, Uramaki, Nigiri, Temaki, Gunkanmaki, Sashimi).
+- **Starboard's bowls/specialties** = exploratory, observability, and feasts (Chirashi, Inari, Otsumami, plus Omakase/Kaiseki).
 
 > "Every roll has its place; every bowl adds richness."

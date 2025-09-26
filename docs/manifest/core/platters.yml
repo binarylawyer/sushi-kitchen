@@ -7,7 +7,7 @@
 # - Provides deployment guidance from minimal to enterprise-scale environments
 # =====================================================================
 
-schema_version: "1.0"
+schema_version: "0.1.0"
 
 platters:
   - id: platter.hosomaki-core
@@ -116,7 +116,7 @@ platters:
     
     additional_services:
       - chirashi.mlflow
-      - sashimi.gitea
+      - temaki.gitea
       - futomaki.minio
       - futomaki.pgadmin
       - hosomaki.caddy
@@ -172,8 +172,8 @@ platters:
     
     additional_services:
       - uramaki.comfyui
-      - temaki.whisper
-      - temaki.coqui-tts
+      - nigiri.whisper
+      - nigiri.piper
       - futomaki.minio
       - hosomaki.caddy
     
@@ -308,7 +308,7 @@ platters:
       - inari.grafana
       - inari.prometheus
       - inari.loki
-      - gunkanmaki.vault
+      - gunkanmaki.vaultwarden
       - chirashi.mlflow
     
     privacy_profile: "legal_privilege"
@@ -396,8 +396,8 @@ platters:
       - combo.flow-builder
     
     additional_services:
-      - temaki.whisper
-      - temaki.coqui-tts
+      - nigiri.whisper
+      - nigiri.piper
       - futomaki.redis
       - hosomaki.caddy
     
@@ -509,8 +509,8 @@ platters:
     
     additional_services:
       - chirashi.mlflow
-      - sashimi.gitea
-      - sashimi.homepage
+      - temaki.gitea
+      - sashimi.swaggerui
       - futomaki.neo4j
       - uramaki.comfyui
       - hosomaki.caddy
@@ -574,15 +574,15 @@ platters:
     
     additional_services:
       - chirashi.mlflow
-      - sashimi.gitea
-      - sashimi.homepage
+      - temaki.gitea
+      - sashimi.redoc
       - sashimi.docusaurus
       - futomaki.neo4j
       - uramaki.comfyui
-      - temaki.whisper
-      - temaki.coqui-tts
+      - nigiri.whisper
+      - nigiri.piper
       - inari.loki
-      - gunkanmaki.vault
+      - gunkanmaki.vaultwarden
       - otsumami.searxng
     
     privacy_profile: "open_research"

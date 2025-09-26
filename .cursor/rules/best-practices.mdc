@@ -1,0 +1,43 @@
+ # best-practices.mdc
+
+    This document outlines the best practices for AI agents operating within the Sushi Kitchen repository. Adhering to these guidelines ensures consistency, maintainability, and optimal performance of agent-driven tasks.
+
+    ## 1. General Principles
+
+    -   **Modularity:** Break down complex tasks into smaller, manageable sub-tasks.
+    -   **Readability:** Ensure all generated code and documentation is clear, concise, and easy for humans to understand.
+    -   **Efficiency:** Optimize tool usage and resource consumption to minimize operational costs.
+    -   **Reproducibility:** All automated changes should be reproducible and easily reversible.
+    -   **Context Awareness:** Always consider the broader context of the repository (SSOT, existing rules) before making changes.
+
+    ## 2. Manifest System Interaction
+
+    -   **Query, Don't Assume:** Always use `Manifest` tools (e.g., `Manifest.get_service_details()`) to query the manifest files (`contracts.yml`, `menu-manifest.md`, `badges.yml`, `combos.yml`, `platters.yml`) for service information, capabilities, and dependencies.
+    -   **Validate Inputs:** Before proposing changes to any manifest file, run `SchemaValidation.validate()` against the relevant schema in `/schemas/`.
+    -   **SSOT Adherence:** Ensure all proposed changes uphold the SSOT structure and invariants defined in `10-ssot-structure.mdc` and `90-tech_stack.mdc`.
+    -   **Generated Files:** Never directly modify files in the `docs/manifest/web/` or `build/` directories; these are generated.
+
+    ## 3. Code Generation & Modification
+
+    -   **Coding Conventions:** Adhere strictly to `40-coding_convention.mdc` for all code generation and modifications.
+    -   **Idempotency:** Generated code should be idempotent; running the generation process multiple times should produce the same result if inputs are unchanged.
+    -   **Minimal Changes:** When modifying existing code, strive to make the smallest possible change that achieves the objective. Use `// ... existing code ...` to preserve context without unnecessary duplication.
+    -   **Dependency Management:** Automatically update `package.json`, `requirements.txt`, or other dependency files when introducing new packages or versions.
+
+    ## 4. Pull Request & Commit Workflow
+
+    -   **Clear Descriptions:** All automated PRs MUST have clear titles and detailed descriptions of the changes, the rationale, and any potential impacts.
+    -   **Audit Trail:** Link directly to relevant audit logs (`.logs/agent-audit.jsonl`) in PR descriptions for full transparency.
+    -   **Incremental Changes:** Prefer small, focused PRs over large, sweeping changes.
+    -   **Self-Review:** Before opening a PR, perform a `Quality-Check` self-review to catch common errors and ensure compliance with guardrails.
+
+    ## 5. Error Handling & Resilience
+
+    -   **Graceful Degradation:** Design workflows to degrade gracefully in case of unexpected errors (e.g., retry mechanisms, fallback options).
+    -   **Informative Logging:** Ensure all logs are informative, actionable, and do not contain sensitive information.
+    -   **Alerting:** Integrate with existing alerting systems (e.g., Slack) for critical failures.
+
+    ## 6. Learning & Adaptation
+
+    -   **Feedback Loop:** Incorporate feedback from human reviews and monitoring alerts to improve agent behavior and rules.
+    -   **Rule Refinement:** Propose refinements to `.cursor/rules/` files when ambiguities or inefficiencies are identified (via `Repo.open_issue`).

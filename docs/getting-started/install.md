@@ -1,4 +1,4 @@
-# Install Guide
+Install Guide
 
 ## Requirements
 - OS: Ubuntu 22.04+/Debian 12+, macOS (Docker Desktop), Windows (WSL2)
@@ -14,11 +14,16 @@
    cd sushi-kitchen
    cp .env.example .env
    ./install/setup.sh
+   ```
 3. Start Lite profile
+    ```bash
     docker compose --profile core up -d
+    ```
 
 or Full:
+```bash
 docker compose up -d
+```
 
 ## GPU (NVIDIA)
 

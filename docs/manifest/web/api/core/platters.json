@@ -116,7 +116,7 @@
       ],
       "additional_services": [
         "chirashi.mlflow",
-        "sashimi.gitea",
+        "temaki.gitea",
         "futomaki.minio",
         "futomaki.pgadmin",
         "hosomaki.caddy"
@@ -175,8 +175,8 @@
       ],
       "additional_services": [
         "uramaki.comfyui",
-        "temaki.whisper",
-        "temaki.coqui-tts",
+        "nigiri.whisper",
+        "nigiri.piper",
         "futomaki.minio",
         "hosomaki.caddy"
       ],
@@ -321,7 +321,7 @@
         "inari.grafana",
         "inari.prometheus",
         "inari.loki",
-        "gunkanmaki.vault",
+        "gunkanmaki.vaultwarden",
         "chirashi.mlflow"
       ],
       "privacy_profile": "legal_privilege",
@@ -414,8 +414,8 @@
         "combo.flow-builder"
       ],
       "additional_services": [
-        "temaki.whisper",
-        "temaki.coqui-tts",
+        "nigiri.whisper",
+        "nigiri.piper",
         "futomaki.redis",
         "hosomaki.caddy"
       ],
@@ -532,8 +532,8 @@
       ],
       "additional_services": [
         "chirashi.mlflow",
-        "sashimi.gitea",
-        "sashimi.homepage",
+        "temaki.gitea",
+        "sashimi.swaggerui",
         "futomaki.neo4j",
         "uramaki.comfyui",
         "hosomaki.caddy"
@@ -600,15 +600,15 @@
       ],
       "additional_services": [
         "chirashi.mlflow",
-        "sashimi.gitea",
-        "sashimi.homepage",
+        "temaki.gitea",
+        "sashimi.redoc",
         "sashimi.docusaurus",
         "futomaki.neo4j",
         "uramaki.comfyui",
-        "temaki.whisper",
-        "temaki.coqui-tts",
+        "nigiri.whisper",
+        "nigiri.piper",
         "inari.loki",
-        "gunkanmaki.vault",
+        "gunkanmaki.vaultwarden",
         "otsumami.searxng"
       ],
       "privacy_profile": "open_research",

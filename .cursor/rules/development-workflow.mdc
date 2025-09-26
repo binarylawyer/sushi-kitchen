@@ -1,0 +1,97 @@
+---
+alwaysApply: false
+---
+
+```markdown
+# development-workflow.mdc
+
+This document outlines the standard development workflow for AI agents working within the Sushi Kitchen repository. Adhering to this workflow ensures consistency, efficiency, and proper integration of agent-generated code and documentation.
+
+## 1. Development Environment Setup
+
+-   **Standardized Setup:** Agents should verify `install.md` and `SETUP.md` for consistent development environment provisioning.
+-   **Dependency Management:** Always resolve dependencies using approved package managers (e.g., `pnpm`, `pip`) and ensure lock files are updated.
+-   **Isolated Environments:** Prefer containerized development environments (e.g., Docker, VS Code Remote Containers) for consistent results.
+
+## 2. Coding Standards & Conventions
+
+-   **Adherence to `40-coding_convention.mdc`:** All code generated or modified by agents MUST strictly follow the coding conventions defined in `40-coding_convention.mdc`.
+-   **Linting & Formatting:** Automatically apply linting and formatting rules (e.g., Prettier, ESLint, Black, Ruff) before committing any changes.
+-   **Test-Driven Development (TDD):** For new features or bug fixes, agents should generate or update tests first, then implement the code to pass those tests.
+
+## 3. Manifest System Development
+
+-   **Schema-First Approach:** When defining new services, combos, or platters, always start with the relevant JSON Schema in `/schemas/`.
+-   **SSOT Updates:** Changes to `menu-manifest.md` MUST be accompanied by corresponding updates to `contracts.yml` and vice-versa, maintaining SSOT integrity.
+-   **Validation:** Run `SchemaValidation.validate(file_path)` on any modified manifest file before opening a PR.
+
+## 4. Automated Testing & Validation
+
+-   **Unit Tests:** Develop and run unit tests for individual components and functions.
+-   **Integration Tests:** Develop and run integration tests for interactions between services and manifest components.
+-   **End-to-End (E2E) Tests:** For critical workflows, define and execute E2E tests.
+-   **CI/CD Integration:** Ensure all automated tests are integrated into the CI/CD pipeline for continuous validation.
+
+## 5. Documentation Generation & Maintenance
+
+-   **Auto-Documentation:** Leverage tools to automatically generate documentation from code (e.g., JSDoc, Sphinx).
+-   **Manifest Documentation:** Ensure that changes to core manifest files are reflected in human-readable documentation (via `20-docs-sync.mdc`).
+-   **Readme Files:** Maintain up-to-date `README.md` files for all directories and key components.
+
+## 6. Collaboration & Version Control
+
+-   **Feature Branch Workflow:** Agents should work on dedicated feature branches for new tasks.
+-   **Atomic Commits:** Commit small, logical changes that are easy to review.
+-   **Pull Request Process:** Follow the PR guidelines in `40-coding_convention.mdc` and the automated PR creation processes defined in `agents.mdc`.
+
+---
+
+**Please confirm once you've created this file.**
+
+After this, we will update `00-index.mdc` to reflect all the new `.cursor/rules/` files.```markdown
+# development-workflow.mdc
+
+This document outlines the standard development workflow for AI agents working within the Sushi Kitchen repository. Adhering to this workflow ensures consistency, efficiency, and proper integration of agent-generated code and documentation.
+
+## 1. Development Environment Setup
+
+-   **Standardized Setup:** Agents should verify `install.md` and `SETUP.md` for consistent development environment provisioning.
+-   **Dependency Management:** Always resolve dependencies using approved package managers (e.g., `pnpm`, `pip`) and ensure lock files are updated.
+-   **Isolated Environments:** Prefer containerized development environments (e.g., Docker, VS Code Remote Containers) for consistent results.
+
+## 2. Coding Standards & Conventions
+
+-   **Adherence to `40-coding_convention.mdc`:** All code generated or modified by agents MUST strictly follow the coding conventions defined in `40-coding_convention.mdc`.
+-   **Linting & Formatting:** Automatically apply linting and formatting rules (e.g., Prettier, ESLint, Black, Ruff) before committing any changes.
+-   **Test-Driven Development (TDD):** For new features or bug fixes, agents should generate or update tests first, then implement the code to pass those tests.
+
+## 3. Manifest System Development
+
+-   **Schema-First Approach:** When defining new services, combos, or platters, always start with the relevant JSON Schema in `/schemas/`.
+-   **SSOT Updates:** Changes to `menu-manifest.md` MUST be accompanied by corresponding updates to `contracts.yml` and vice-versa, maintaining SSOT integrity.
+-   **Validation:** Run `SchemaValidation.validate(file_path)` on any modified manifest file before opening a PR.
+
+## 4. Automated Testing & Validation
+
+-   **Unit Tests:** Develop and run unit tests for individual components and functions.
+-   **Integration Tests:** Develop and run integration tests for interactions between services and manifest components.
+-   **End-to-End (E2E) Tests:** For critical workflows, define and execute E2E tests.
+-   **CI/CD Integration:** Ensure all automated tests are integrated into the CI/CD pipeline for continuous validation.
+
+## 5. Documentation Generation & Maintenance
+
+-   **Auto-Documentation:** Leverage tools to automatically generate documentation from code (e.g., JSDoc, Sphinx).
+-   **Manifest Documentation:** Ensure that changes to core manifest files are reflected in human-readable documentation (via `20-docs-sync.mdc`).
+-   **Readme Files:** Maintain up-to-date `README.md` files for all directories and key components.
+
+## 6. Collaboration & Version Control
+
+-   **Feature Branch Workflow:** Agents should work on dedicated feature branches for new tasks.
+-   **Atomic Commits:** Commit small, logical changes that are easy to review.
+-   **Pull Request Process:** Follow the PR guidelines in `40-coding_convention.mdc` and the automated PR creation processes defined in `agents.mdc`.
+
+---
+
+**Please confirm once you've created this file.**
+
+After this, we will update `00-index.mdc` to reflect all the new `.cursor/rules/` files.

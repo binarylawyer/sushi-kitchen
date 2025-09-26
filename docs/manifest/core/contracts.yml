@@ -255,6 +255,21 @@ capabilities:
     description: "File synchronization and cloud integration"
     providers: ["uramaki.rclone", "futomaki.rclone-browser"]
     interface: "Sync and transfer API"
+    
+  cap.media-tool:
+    description: "Media processing and manipulation tools"
+    providers: ["uramaki.ffmpeg", "uramaki.imagemagick"]
+    interface: "CLI and API media operations"
+    
+  cap.image-tool:
+    description: "Image processing and generation tools"
+    providers: ["uramaki.comfyui", "uramaki.automatic1111"]
+    interface: "Web UI and API for image operations"
+    
+  cap.object-store:
+    description: "Object storage for files and artifacts (alias for object-storage)"
+    providers: ["futomaki.minio"]
+    interface: "S3-compatible API"
 
 # ========================================================================
 # NETWORK PROFILES
