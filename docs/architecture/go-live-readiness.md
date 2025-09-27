@@ -65,3 +65,4 @@ To get momentum, tackle the following in order. Each item either unlocks a broke
 
 5. **Frontend unblockers**
    - Once the API returns real data, scaffold `sushi-kitchen-web` with an API client that consumes the JSON bundle so we can iterate on UI without waiting for compose generation to stabilize.
+
