@@ -42,3 +42,27 @@
    - Create smoke tests that clone all three repositories, run the exporter + bundler, start the API, and hit key endpoints with sample data.
 
 Once those items are complete—and we verify compose generation against a few representative platters—the platform will be ready for a public launch.
+
+## Immediate Cleanup Checklist
+
+To get momentum, tackle the following in order. Each item either unlocks a broken path in the FastAPI service or removes drift between the manifests and the automation scripts.
+
+1. **Point runtime code at the exported JSON**
+   - Teach `ManifestOrchestrator` to read from `docs/manifest/web/api` (or an injected bundle directory) instead of the legacy `docs/manifest/*.yml` tree so `/api/v1/components` stops returning empty payloads.【F:sushi-kitchen-api/app/orchestrators/manifest_orchestrator.py†L55-L121】【F:sushi-kitchen-api/app/orchestrators/manifest_orchestrator.py†L154-L209】
+   - Add the missing `json` import in `app/main.py` before we refactor logic that expects dict-shaped collections.【F:sushi-kitchen-api/app/main.py†L1-L105】
+
+2. **Normalize API models and responses**
+   - Replace mutable defaults (`List[str] = []`) with `Field(default_factory=list)` so request state does not bleed between calls.【F:sushi-kitchen-api/app/models.py†L1-L36】
+   - Adjust the `/api/v1/components` response builder to accept list-based `platters`/`combos` and the `services` roll map that the exporter already emits.【F:sushi-kitchen-api/app/main.py†L53-L105】
+
+3. **Patch the compose pipeline**
+   - Update `generate-compose.py` to understand `docs/manifest/core/*` (combos reference `services` instead of `includes`, etc.), or give it a lightweight adapter that hydrates the old dataclasses from the exported JSON.【F:scripts/generate-compose.py†L1-L129】
+   - Once the generator can read the new schema, fix `_run_compose_generator` so it passes the correct `--manifest-dir` location and fails fast with actionable errors instead of silently pointing at a stale directory.【F:sushi-kitchen-api/app/orchestrators/manifest_orchestrator.py†L88-L121】
+
+4. **Rebuild the bundle automation**
+   - Restore `scripts/generate-api-bundle.py` (or create a replacement) so it composes a single `api-bundle.json` matching what the orchestrator will load, then wire CI to publish it into `sushi-kitchen-api/generated/` for Docker images.【F:sushi-kitchen-api/app/orchestrators/manifest_orchestrator.py†L55-L87】
+   - Add smoke coverage that exercises the exporter + bundler to guard against schema drift.
+
+5. **Frontend unblockers**
+   - Once the API returns real data, scaffold `sushi-kitchen-web` with an API client that consumes the JSON bundle so we can iterate on UI without waiting for compose generation to stabilize.
+
